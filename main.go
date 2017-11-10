@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/cgi"
 	"net/http/fcgi"
 	"os"
 
@@ -14,6 +15,7 @@ import (
 
 var (
 	usefcgi = flag.Bool("fcgi", false, "Use Fast CGI")
+	usecgi  = flag.Bool("cgi", false, "Use CGI")
 	addr    = flag.String("addr", ":8080", "Bind address")
 )
 
@@ -33,6 +35,8 @@ func main() {
 
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)
+	} else if *usecgi {
+		err = cgi.Serve(r)
 	} else {
 		err = http.ListenAndServe(*addr, r)
 	}
