@@ -1,10 +1,22 @@
 package main
 
 import (
-  "fmt"
+	"flag"
+	"fmt"
+)
+
+var (
+	fcgi = flag.Bool("fcgi", false, "Use Fast CGI")
+	addr = flag.String("addr", ":8080", "Bind address")
 )
 
 func main() {
-  fmt.Println("Implement recall")
-}
+	flag.Parse()
 
+	if *fcgi {
+		fmt.Println("Run FastCGI server")
+		return
+	}
+
+	fmt.Println("Run http server", *addr)
+}
