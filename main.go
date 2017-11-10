@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -22,10 +23,11 @@ func main() {
 	r := mux.NewRouter()
 
 	// Routes
-	r.HandleFunc("/", HomeView)
-	r.HandleFunc("/bookmarks", BookmarksView)
-	r.HandleFunc("/import", ImportView)
-	r.HandleFunc("/login", LoginView)
+	r.HandleFunc("/", HomeHandler)
+	r.HandleFunc("/bookmarks", BookmarksHandler)
+	r.HandleFunc("/import", ImportHandler)
+	r.HandleFunc("/login", LoginHandler)
+	r.HandleFunc("/add", AddHandler).Methods("POST")
 
 	var err error
 
@@ -41,18 +43,33 @@ func main() {
 	}
 }
 
-func LoginView(w http.ResponseWriter, r *http.Request) {
+type Bookmark struct {
+	Title string
+	URL   string
+}
+
+func AddHandler(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var b Bookmark
+	err := decoder.Decode(&b)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500"))
+	}
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "<h1>Login</h1>")
 }
 
-func ImportView(w http.ResponseWriter, r *http.Request) {
+func ImportHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "<h1>Import</h1>")
 }
 
-func BookmarksView(w http.ResponseWriter, r *http.Request) {
+func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "<h1>Bookmarks</h1>")
 }
 
-func HomeView(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "<h1>Recall</h1>")
 }
