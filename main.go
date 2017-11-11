@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/cgi"
 	"net/http/fcgi"
@@ -63,17 +62,17 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "<h1>Login</h1>")
+	RenderTemplate(w, "login.html", "")
 }
 
 func ImportHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "<h1>Import</h1>")
+	RenderTemplate(w, "import.html", "")
 }
 
 func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "<h1>Bookmarks</h1>")
+	RenderTemplate(w, "bookmarks.html", "")
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "<h1>Recall</h1>")
+	RenderTemplate(w, "index.html", "")
 }
