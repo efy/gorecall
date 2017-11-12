@@ -10,16 +10,38 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
 	usefcgi = flag.Bool("fcgi", false, "Use Fast CGI")
 	usecgi  = flag.Bool("cgi", false, "Use CGI")
 	addr    = flag.String("addr", ":8080", "Bind address")
+	dbname  = flag.String("dbname", "gorecall.db", "Path to the SQLite database file")
+	migrate = flag.Bool("migrate", false, "Run database migrations")
 )
 
 func main() {
+	var err error
+
 	flag.Parse()
+
+	db, err := InitDatabase(*dbname)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if *migrate {
+		MigrateDatabase(db)
+		os.Exit(0)
+	}
 
 	r := mux.NewRouter()
 
@@ -29,8 +51,6 @@ func main() {
 	r.HandleFunc("/import", ImportHandler)
 	r.HandleFunc("/login", LoginHandler)
 	r.HandleFunc("/add", AddHandler).Methods("POST")
-
-	var err error
 
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)
