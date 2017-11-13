@@ -52,6 +52,9 @@ func main() {
 	r.HandleFunc("/login", LoginHandler)
 	r.HandleFunc("/add", AddHandler).Methods("POST")
 
+	// Static file handler
+	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)
 	} else if *usecgi {
