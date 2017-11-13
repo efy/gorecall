@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
