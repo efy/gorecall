@@ -19,6 +19,7 @@ var (
 	addr    = flag.String("addr", ":8080", "Bind address")
 	dbname  = flag.String("dbname", "gorecall.db", "Path to the SQLite database file")
 	migrate = flag.Bool("migrate", false, "Run database migrations")
+	bmRepo  *bookmarkRepo
 )
 
 func main() {
@@ -41,6 +42,13 @@ func main() {
 	if *migrate {
 		MigrateDatabase(db)
 		os.Exit(0)
+	}
+
+	// Initialize repositories
+	bmRepo, err = NewBookmarkRepo(db)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	r := mux.NewRouter()
@@ -70,19 +78,25 @@ func main() {
 	}
 }
 
-type Bookmark struct {
-	Title string
-	URL   string
-}
-
 func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CreateBookmarkHandler")
 	decoder := json.NewDecoder(r.Body)
 	var b Bookmark
 	err := decoder.Decode(&b)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("500"))
+		return
 	}
+
+	_, err = bmRepo.Create(&b)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500"))
+		return
+	}
+
+	w.Write([]byte("bookmark created"))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {

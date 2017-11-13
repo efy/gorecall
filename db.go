@@ -1,9 +1,9 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -12,7 +12,7 @@ const (
     CREATE TABLE bookmarks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT,
-      uri TEXT
+      url TEXT
     );
   `
 
@@ -25,15 +25,19 @@ const (
   `
 )
 
-func InitDatabase(file string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", file)
+func InitDatabase(file string) (*sqlx.DB, error) {
+	db, err := sqlx.Open("sqlite3", file)
+	if err != nil {
+		return nil, err
+	}
+	err = db.Ping()
 	if err != nil {
 		return nil, err
 	}
 	return db, nil
 }
 
-func MigrateDatabase(db *sql.DB) {
+func MigrateDatabase(db *sqlx.DB) {
 	fmt.Println("migrating database")
 
 	_, err := db.Exec(bookmarksMigration)
