@@ -9,6 +9,7 @@ import (
 	"net/http/fcgi"
 	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -61,7 +62,7 @@ func main() {
 	} else if *usecgi {
 		err = cgi.Serve(r)
 	} else {
-		err = http.ListenAndServe(*addr, r)
+		err = http.ListenAndServe(*addr, handlers.LoggingHandler(os.Stdout, r))
 	}
 
 	if err != nil {
