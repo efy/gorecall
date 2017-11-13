@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"os"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -69,10 +67,6 @@ func NewBookmarkRepo(database *sqlx.DB) (*bookmarkRepo, error) {
 	}
 	bmr := bookmarkRepo{
 		db: database,
-	}
-	if err := bmr.db.Ping(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
 	return &bmr, nil
 }
