@@ -16,14 +16,16 @@ const layouttmpl = `
     <link rel="stylesheet" href="/public/style.css">
   </head>
   <body>
-    <header>
-      <nav>
-        <a href="/bookmarks">Bookmarks</a>
-        <a href="/import">Import</a>
-        <a href="/login">Login</a>
-      </nav>
-    </header>
-    {{ block "content" . }} {{ end }}
+    <div class="wrapper">
+      <header>
+        <nav>
+          <a href="/bookmarks">Bookmarks</a>
+          <a href="/import">Import</a>
+          <a href="/login">Login</a>
+        </nav>
+      </header>
+      {{ block "content" . }} {{ end }}
+    </div>
   </body>
 </html>
 `
@@ -52,16 +54,44 @@ const bookmarkstmpl = `
 {{ end }}
 `
 
+const bookmarksnewtmpl = `
+{{ define "content" }}
+<h2>New Bookmark</h2>
+
+<form action="/new" method="post">
+  <div class="field">
+    <label for="title">Title</label>
+    <input type="text" name="title">
+  </div>
+
+  <div class="field">
+    <label for="uri">URI</label>
+    <input type="text" name="uri">
+  </div>
+
+  <div class="field">
+    <button type="submit" class="button-primary">Create</button>
+    <button type="reset" disabled>Reset</button>
+  </div>
+</form>
+
+{{ end }}
+`
+
 const importtmpl = `
 {{ define "content" }}
 
 <h2>Import</h2>
 
 <form method="post" action="/import">
-  <label for="bookmarks">bookmarks file</label>
-  <input type="file" name="bookmarks">
+  <div class="field">
+    <label for="bookmarks">bookmarks file</label>
+    <input type="file" name="bookmarks">
+  </div>
 
-  <button>import</button>
+  <div class="field">
+    <button type="submit" class="button-primary">Import</button>
+  </div>
 </form>
 
 {{ end }}
@@ -73,13 +103,19 @@ const logintmpl = `
 <h2>Login</h2>
 
 <form method="post" action="/login">
-  <label for="username">Username</label>
-  <input type="text" name="username">
+  <div class="field">
+    <label for="username">Username</label>
+    <input type="text" name="username">
+  </div>
 
-  <label for="password">Password</label>
-  <input type="password" name="password">
+  <div class="field">
+    <label for="password">Password</label>
+    <input type="password" name="password">
+  </div>
 
-  <button>Login</button>
+  <div class="field">
+    <button type="submit" class="button-primary">Login</button>
+  </div>
 </form>
 
 {{ end }}
@@ -97,6 +133,9 @@ func init() {
 
 	templates["login.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["login.html"].Parse(logintmpl))
+
+	templates["bookmarksnew.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["bookmarksnew.html"].Parse(bookmarksnewtmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {

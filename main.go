@@ -48,6 +48,7 @@ func main() {
 	// Routes
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/bookmarks", BookmarksHandler)
+	r.HandleFunc("/bookmarks/new", BookmarksNewHandler)
 	r.HandleFunc("/import", ImportHandler)
 	r.HandleFunc("/login", LoginHandler)
 	r.HandleFunc("/add", AddHandler).Methods("POST")
@@ -98,4 +99,8 @@ func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	RenderTemplate(w, "index.html", "")
+}
+
+func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
+	RenderTemplate(w, "bookmarksnew.html", "")
 }
