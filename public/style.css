@@ -70,6 +70,11 @@ input {
   padding: 4px;
 }
 
+table {
+  text-align: left;
+  width: 100%;
+}
+
 .top-nav {
   display: flex;
   align-items: center;

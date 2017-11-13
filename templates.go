@@ -50,10 +50,21 @@ const bookmarkstmpl = `
 
 <table>
   <thead>
-    <th>Icon</th>
     <th>Title</th>
-    <th>Created</th>
+    <th>URL</th>
   </thead>
+  <tbody>
+    {{ range . }}
+      <tr>
+        <td>
+          {{ .Title }}
+        </td>
+        <td>
+          {{ .URL }}
+        </td>
+      </tr>
+    {{ end }}
+  </tbody>
 </table>
 
 {{ end }}

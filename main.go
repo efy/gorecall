@@ -108,7 +108,13 @@ func ImportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, "bookmarks.html", "")
+	bookmarks, err := bmRepo.GetAll()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500"))
+		return
+	}
+	RenderTemplate(w, "bookmarks.html", bookmarks)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
