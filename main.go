@@ -8,6 +8,7 @@ import (
 	"net/http/cgi"
 	"net/http/fcgi"
 	"os"
+	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -122,5 +123,26 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, "bookmarksnew.html", "")
+	if r.Method == "GET" {
+		RenderTemplate(w, "bookmarksnew.html", "")
+	}
+
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		bm := Bookmark{
+			Title: strings.Join(r.Form["title"], ""),
+			URL:   strings.Join(r.Form["url"], ""),
+		}
+
+		bookmark, err := bmRepo.Create(&bm)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("500"))
+			return
+		}
+
+		w.Write([]byte("created"))
+		fmt.Println(bookmark)
+	}
 }

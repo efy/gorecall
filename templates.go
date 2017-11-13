@@ -74,15 +74,15 @@ const bookmarksnewtmpl = `
 {{ define "content" }}
 <h2>New Bookmark</h2>
 
-<form action="/new" method="post">
+<form action="/bookmarks/new" method="post">
   <div class="field">
     <label for="title">Title</label>
     <input type="text" name="title">
   </div>
 
   <div class="field">
-    <label for="uri">URI</label>
-    <input type="text" name="uri">
+    <label for="url">URL</label>
+    <input type="text" name="url">
   </div>
 
   <div class="field">
