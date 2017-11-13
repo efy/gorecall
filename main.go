@@ -44,14 +44,14 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-
-	// Routes
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/bookmarks", BookmarksHandler)
 	r.HandleFunc("/bookmarks/new", BookmarksNewHandler)
 	r.HandleFunc("/import", ImportHandler)
 	r.HandleFunc("/login", LoginHandler)
-	r.HandleFunc("/add", AddHandler).Methods("POST")
+
+	api := r.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/bookmarks", CreateBookmarkHandler).Methods("POST")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
@@ -75,7 +75,7 @@ type Bookmark struct {
 	URL   string
 }
 
-func AddHandler(w http.ResponseWriter, r *http.Request) {
+func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var b Bookmark
 	err := decoder.Decode(&b)
