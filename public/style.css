@@ -30,6 +30,7 @@ button, .button {
   font-weight: 700;
   text-transform: uppercase;
   border-radius: 3px;
+  font-size: 11px;
 }
 
 button:disabled, .button-disabled {
@@ -69,3 +70,15 @@ input {
   padding: 4px;
 }
 
+.top-nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-left {
+  margin-right: auto;
+}
+
+.nav-right {
+  margin-left: auto;
+}

@@ -18,10 +18,15 @@ const layouttmpl = `
   <body>
     <div class="wrapper">
       <header>
-        <nav>
-          <a href="/bookmarks">Bookmarks</a>
-          <a href="/import">Import</a>
-          <a href="/login">Login</a>
+        <nav class="top-nav">
+          <div class="nav-left">
+            <a href="/bookmarks">Bookmarks</a>
+            <a href="/import">Import</a>
+            <a href="/login">Login</a>
+          </div>
+          <div class="nav-right">
+            <a href="/bookmarks/new" class="button">New</a>
+          </div>
         </nav>
       </header>
       {{ block "content" . }} {{ end }}
