@@ -1,24 +1,31 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"net/http"
 	"net/http/cgi"
 	"net/http/fcgi"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
 )
 
 var (
-	usefcgi = flag.Bool("fcgi", false, "Use Fast CGI")
-	usecgi  = flag.Bool("cgi", false, "Use CGI")
 	addr    = flag.String("addr", ":8080", "Bind address")
 	dbname  = flag.String("dbname", "gorecall.db", "Path to the SQLite database file")
-	migrate = flag.Bool("migrate", false, "Run database migrations")
-	bmRepo  *bookmarkRepo
+	usefcgi = flag.Bool("fcgi", false, "Use Fast CGI")
+	usecgi  = flag.Bool("cgi", false, "Use CGI")
+
+	// Command flags
+	migrate    = flag.Bool("migrate", false, "Run database migrations")
+	createuser = flag.Bool("createuser", false, "Create a user")
+
+	bmRepo *bookmarkRepo
+	uRepo  *userRepo
 )
 
 func main() {
@@ -48,6 +55,59 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	uRepo, err = NewUserRepo(db)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if *createuser {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("Creating user...")
+
+		fmt.Println("Enter username:")
+		username, _ := reader.ReadString('\n')
+		username = strings.TrimSpace(username)
+		user, err := uRepo.GetByUsername(username)
+		if err != nil && user != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		if user != nil {
+			fmt.Println("User already exists")
+			os.Exit(1)
+		}
+
+		fmt.Println("Enter password:")
+		password, _ := reader.ReadString('\n')
+		password = strings.TrimSpace(password)
+
+		if len(password) < 8 {
+			fmt.Println("Password should be at least 8 characters long")
+			os.Exit(1)
+		}
+
+		hash, err := HashPassword(password)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		u := &User{
+			Username: username,
+			Password: hash,
+		}
+
+		u, err = uRepo.Create(u)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Println("created user:", u.Username)
+		os.Exit(0)
 	}
 
 	r := mux.NewRouter()
