@@ -60,6 +60,11 @@ label {
   margin: 0 0 18px 0;
 }
 
+.field.inline label, .field.inline input {
+  display: inline-block;
+  width: auto;
+}
+
 .field label, .field input {
   display: block;
   width: 100%;

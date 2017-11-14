@@ -162,6 +162,11 @@ const logintmpl = `
     <input type="password" name="password">
   </div>
 
+  <div class="field inline">
+    <input id="remember_me" type="checkbox" name="remember_me">
+    <label for="remember_me">Remember me?</label>
+  </div>
+
   <div class="field">
     <button type="submit" class="button-primary">Login</button>
   </div>
