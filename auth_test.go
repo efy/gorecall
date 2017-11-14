@@ -19,6 +19,12 @@ func TestCheckPasswordHashPrecomputed(t *testing.T) {
 	hash := "$2a$10$StmyKkvbf4f/XJ9cQDv/IOMfU.7Q8Kzns/fwqIOutOW.52lAwAnAq"
 	match := CheckPasswordHash(password, hash)
 	if match != true {
-		t.Error("expected", true, "got", "match")
+		t.Error("expected", true, "got", match)
+	}
+}
+
+func BenchmarkHashPassword(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = HashPassword("test")
 	}
 }
