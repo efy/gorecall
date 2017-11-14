@@ -19,6 +19,13 @@ body {
   margin-top: 40px;
 }
 
+.logo {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+}
+
 * {
   box-sizing: border-box;
 }

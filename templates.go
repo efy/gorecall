@@ -19,13 +19,11 @@ const layouttmpl = `
     <div class="wrapper">
       <header class="navbar">
         <nav class="navbar-section">
+          <img src="/public/logo.svg" class="logo">
           <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
           <a href="/import" class="btn btn-link">Import</a>
           <a href="/login" class="btn btn-link">Login</a>
         </nav>
-        <div class="navbar-center">
-          Recall
-        </div>
         <nav class="navbar-section">
           <a href="/bookmarks/new" class="btn btn-primary">New</a>
         </nav>
