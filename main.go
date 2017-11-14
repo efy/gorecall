@@ -8,8 +8,8 @@ import (
 	"net/http/fcgi"
 	"os"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
 )
 
 var (
@@ -51,28 +51,32 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/bookmarks", BookmarksHandler)
-	r.HandleFunc("/bookmarks/new", BookmarksNewHandler)
-	r.HandleFunc("/bookmarks/{id:[0-9]+}", BookmarksShowHandler)
-	r.HandleFunc("/import", ImportHandler)
-	r.HandleFunc("/login", LoginHandler)
-	r.HandleFunc("/", LoginHandler)
-	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	r.Handle("/", AuthMiddleware(http.HandlerFunc(HomeHandler)))
+	r.Handle("/bookmarks", AuthMiddleware(http.HandlerFunc(BookmarksHandler)))
+	r.Handle("/bookmarks/new", AuthMiddleware(http.HandlerFunc(BookmarksNewHandler)))
+	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(http.HandlerFunc(BookmarksShowHandler)))
+	r.Handle("/import", AuthMiddleware(http.HandlerFunc(ImportHandler)))
+
+	r.Handle("/login", http.HandlerFunc(LoginHandler))
+
+	r.NotFoundHandler = http.HandlerFunc(http.HandlerFunc(NotFoundHandler))
 
 	api := r.PathPrefix("/api").Subrouter()
-	api.HandleFunc("/bookmarks", CreateBookmarkHandler).Methods("POST")
-	api.HandleFunc("/ping", ApiPingHandler).Methods("GET")
+	api.Handle("/bookmarks", http.HandlerFunc(CreateBookmarkHandler)).Methods("POST")
+	api.HandleFunc("/ping", http.HandlerFunc(ApiPingHandler)).Methods("GET")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
+	// Build middleware chain that is run for all requests
+	chain := alice.New(LoggingMiddleware).Then(r)
 
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)
 	} else if *usecgi {
 		err = cgi.Serve(r)
 	} else {
-		err = http.ListenAndServe(*addr, handlers.LoggingHandler(os.Stdout, r))
+		err = http.ListenAndServe(*addr, chain)
 	}
 
 	if err != nil {
