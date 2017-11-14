@@ -8,6 +8,7 @@ import (
 	"net/http/cgi"
 	"net/http/fcgi"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/handlers"
@@ -56,6 +57,7 @@ func main() {
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/bookmarks", BookmarksHandler)
 	r.HandleFunc("/bookmarks/new", BookmarksNewHandler)
+	r.HandleFunc("/bookmarks/{id}", BookmarksShowHandler)
 	r.HandleFunc("/import", ImportHandler)
 	r.HandleFunc("/login", LoginHandler)
 
@@ -122,6 +124,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	RenderTemplate(w, "index.html", "")
 }
 
+func BookmarksShowHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
+
+	bookmark, err := bmRepo.GetByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500"))
+		return
+	}
+	RenderTemplate(w, "bookmarksshow.html", bookmark)
+}
+
 func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		RenderTemplate(w, "bookmarksnew.html", "")
@@ -135,14 +150,13 @@ func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
 			URL:   strings.Join(r.Form["url"], ""),
 		}
 
-		bookmark, err := bmRepo.Create(&bm)
+		_, err := bmRepo.Create(&bm)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("500"))
 			return
 		}
 
-		w.Write([]byte("created"))
-		fmt.Println(bookmark)
+		http.Redirect(w, r, "/bookmarks", 302)
 	}
 }

@@ -70,6 +70,23 @@ const bookmarkstmpl = `
 {{ end }}
 `
 
+const bookmarksshowtmpl = `
+{{ define "content" }}
+
+<h2>Show bookmark</h2>
+
+<dl>
+  <dt>ID</dt>
+  <dd>{{ .ID }}</dd>
+  <dt>Title</dt>
+  <dd>{{ .Title }}</dd>
+  <dt>URL</dt>
+  <dd>{{ .URL }}</dd>
+</dl>
+
+{{ end }}
+`
+
 const bookmarksnewtmpl = `
 {{ define "content" }}
 <h2>New Bookmark</h2>
@@ -152,6 +169,9 @@ func init() {
 
 	templates["bookmarksnew.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["bookmarksnew.html"].Parse(bookmarksnewtmpl))
+
+	templates["bookmarksshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["bookmarksshow.html"].Parse(bookmarksshowtmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {

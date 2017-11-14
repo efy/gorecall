@@ -35,7 +35,7 @@ type bookmarkRepo struct {
 	db *sqlx.DB
 }
 
-func (b *bookmarkRepo) GetByID(id int) (*Bookmark, error) {
+func (b *bookmarkRepo) GetByID(id int64) (*Bookmark, error) {
 	bm := Bookmark{}
 	if err := b.db.Get(&bm, bookmarkSelectByID, id); err != nil {
 		return nil, err
