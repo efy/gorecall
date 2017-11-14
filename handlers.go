@@ -69,9 +69,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("error getting session")
 	}
-	session.Values["authenticated"] = false
-	session.Save(r, w)
-
+	session.Options.MaxAge = -1
+	err = session.Save(r, w)
+	if err != nil {
+		renderError(w, err)
+		return
+	}
 	http.Redirect(w, r, "/login", 302)
 }
 

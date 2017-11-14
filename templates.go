@@ -23,6 +23,7 @@ const layouttmpl = `
           <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
           <a href="/import" class="btn btn-link">Import</a>
           <a href="/login" class="btn btn-link">Login</a>
+          <a href="/logout" class="btn btn-link">Logout</a>
         </nav>
         <nav class="navbar-section">
           <a href="/bookmarks/new" class="btn btn-primary">New</a>
