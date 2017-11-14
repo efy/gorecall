@@ -58,6 +58,7 @@ func main() {
 	r.Handle("/import", AuthMiddleware(http.HandlerFunc(ImportHandler)))
 
 	r.Handle("/login", http.HandlerFunc(LoginHandler))
+	r.Handle("/logout", http.HandlerFunc(LogoutHandler))
 
 	r.NotFoundHandler = http.HandlerFunc(http.HandlerFunc(NotFoundHandler))
 

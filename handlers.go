@@ -29,7 +29,50 @@ func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		RenderTemplate(w, "login.html", "")
+		return
+	}
+
+	name := r.FormValue("username")
+	pass := r.FormValue("password")
+
+	fmt.Println(name, pass)
+
+	if name != "" && pass != "" {
+		check := authenticate(name, pass)
+
+		fmt.Println(check)
+
+		if !check {
+			RenderTemplate(w, "login.html", "")
+			return
+		}
+
+		session, err := store.Get(r, "sesh")
+		if err != nil {
+			fmt.Println(err)
+		}
+		session.Values["username"] = name
+		session.Values["authenticated"] = true
+		session.Save(r, w)
+
+		http.Redirect(w, r, "/", 302)
+		return
+	}
 	RenderTemplate(w, "login.html", "")
+	return
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "sesh")
+	if err != nil {
+		fmt.Println("error getting session")
+	}
+	session.Values["authenticated"] = false
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/login", 302)
 }
 
 func ImportHandler(w http.ResponseWriter, r *http.Request) {
@@ -100,4 +143,11 @@ func renderError(w http.ResponseWriter, err error) {
 		w.WriteHeader(http.StatusInternalServerError)
 		RenderTemplate(w, "servererror.html", err)
 	}
+}
+
+func authenticate(username string, password string) bool {
+	if username == "test" && password == "test" {
+		return true
+	}
+	return false
 }
