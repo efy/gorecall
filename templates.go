@@ -56,7 +56,7 @@ const notfoundtmpl = `
 const indextmpl = `
 {{ define "content" }}
 
-<h2>Home</h2>
+<h2 class="text-center">Home</h2>
 
 {{ end }}
 `
@@ -64,7 +64,7 @@ const indextmpl = `
 const bookmarkstmpl = `
 {{ define "content" }}
 
-<h2>Bookmarks</h2>
+<h2 class="text-center">Bookmarks</h2>
 
 {{ if not . }}
 <div class="empty">
@@ -107,7 +107,7 @@ const bookmarkstmpl = `
 const bookmarksshowtmpl = `
 {{ define "content" }}
 
-<h2>Show bookmark</h2>
+<h2 class="text-center">Show bookmark</h2>
 
 <dl>
   <dt>ID</dt>
@@ -123,7 +123,7 @@ const bookmarksshowtmpl = `
 
 const bookmarksnewtmpl = `
 {{ define "content" }}
-<h2>New Bookmark</h2>
+<h2 class="text-center">New Bookmark</h2>
 
 <form action="/bookmarks/new" method="post">
   <div class="form-group">
@@ -148,16 +148,19 @@ const bookmarksnewtmpl = `
 const importtmpl = `
 {{ define "content" }}
 
-<h2>Import</h2>
+<h2 class="text-center">Import</h2>
 
 <form method="post" action="/import">
   <div class="form-group">
-    <label for="bookmarks">bookmarks file</label>
-    <input type="file" name="bookmarks">
+    <label class="form-label" for="bookmarks">File</label>
+    <input id="bookmarks_file" class="form-input" type="file" name="bookmarks">
+    <p class="form-input-hint">
+      A file exported from your browser or bookmarking service.
+    </p>
   </div>
 
   <div class="form-group">
-    <button type="submit" class="btn-primary">Import</button>
+    <button type="submit" class="btn btn-primary">Import</button>
   </div>
 </form>
 
@@ -167,7 +170,7 @@ const importtmpl = `
 const logintmpl = `
 {{ define "content" }}
 
-<h2>Login</h2>
+<h2 class="text-center">Login</h2>
 
 <form method="post" action="/login">
   <div class="form-group">
