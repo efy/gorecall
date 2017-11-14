@@ -57,9 +57,11 @@ func main() {
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/bookmarks", BookmarksHandler)
 	r.HandleFunc("/bookmarks/new", BookmarksNewHandler)
-	r.HandleFunc("/bookmarks/{id}", BookmarksShowHandler)
+	r.HandleFunc("/bookmarks/{id:[0-9]+}", BookmarksShowHandler)
 	r.HandleFunc("/import", ImportHandler)
 	r.HandleFunc("/login", LoginHandler)
+	r.HandleFunc("/", LoginHandler)
+	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/bookmarks", CreateBookmarkHandler).Methods("POST")
@@ -87,15 +89,12 @@ func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	var b Bookmark
 	err := decoder.Decode(&b)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500"))
-		return
+		renderError(w, err)
 	}
 
 	_, err = bmRepo.Create(&b)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500"))
+		renderError(w, err)
 		return
 	}
 
@@ -113,8 +112,7 @@ func ImportHandler(w http.ResponseWriter, r *http.Request) {
 func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
 	bookmarks, err := bmRepo.GetAll()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500"))
+		renderError(w, err)
 		return
 	}
 	RenderTemplate(w, "bookmarks.html", bookmarks)
@@ -130,8 +128,7 @@ func BookmarksShowHandler(w http.ResponseWriter, r *http.Request) {
 
 	bookmark, err := bmRepo.GetByID(id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("500"))
+		renderError(w, err)
 		return
 	}
 	RenderTemplate(w, "bookmarksshow.html", bookmark)
@@ -152,11 +149,21 @@ func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, err := bmRepo.Create(&bm)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("500"))
+			renderError(w, err)
 			return
 		}
 
 		http.Redirect(w, r, "/bookmarks", 302)
+	}
+}
+
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+	RenderTemplate(w, "notfound.html", "")
+}
+
+func renderError(w http.ResponseWriter, err error) {
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		RenderTemplate(w, "servererror.html", err)
 	}
 }

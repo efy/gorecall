@@ -34,6 +34,22 @@ const layouttmpl = `
   </body>
 </html>
 `
+const servererrortmpl = `
+{{ define "content" }}
+
+<h2>500 Internal server error</h2>
+<pre>{{ .Error }}</pre>
+
+{{ end }}
+`
+
+const notfoundtmpl = `
+{{ define "content" }}
+
+<h2>404 Not found</h2>
+
+{{ end }}
+`
 
 const indextmpl = `
 {{ define "content" }}
@@ -172,6 +188,12 @@ func init() {
 
 	templates["bookmarksshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["bookmarksshow.html"].Parse(bookmarksshowtmpl))
+
+	templates["servererror.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["servererror.html"].Parse(servererrortmpl))
+
+	templates["notfound.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["notfound.html"].Parse(notfoundtmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {
