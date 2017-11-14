@@ -37,8 +37,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("username")
 	pass := r.FormValue("password")
 
-	fmt.Println(name, pass)
-
 	if name != "" && pass != "" {
 		check := authenticate(name, pass)
 
@@ -149,8 +147,16 @@ func renderError(w http.ResponseWriter, err error) {
 }
 
 func authenticate(username string, password string) bool {
-	if username == "test" && password == "test" {
-		return true
+	u, err := uRepo.GetByUsername(username)
+
+	if err != nil {
+		return false
 	}
-	return false
+
+	match := CheckPasswordHash(password, u.Password)
+	if !match {
+		return false
+	}
+
+	return true
 }
