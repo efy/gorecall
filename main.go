@@ -65,6 +65,7 @@ func main() {
 
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/bookmarks", CreateBookmarkHandler).Methods("POST")
+	api.HandleFunc("/ping", ApiPingHandler).Methods("GET")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
@@ -155,6 +156,13 @@ func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/bookmarks", 302)
 	}
+}
+
+func ApiPingHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write([]byte(`{"version": "v0", "status": "ok"}`))
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
