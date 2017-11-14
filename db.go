@@ -19,8 +19,8 @@ const (
 	usersMigration = `
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name VARCHAR(250),
-      password_hash VARCHAR(250)
+      username VARCHAR(50),
+      password CHAR(60)
     );
   `
 )
