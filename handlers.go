@@ -35,6 +35,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := r.FormValue("username")
+	name = strings.TrimSpace(strings.ToLower(name))
+
 	pass := r.FormValue("password")
 
 	if name != "" && pass != "" {
