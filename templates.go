@@ -115,6 +115,40 @@ const bookmarkstmpl = `
 {{ end }}
 `
 
+const accountshowtmpl = `
+{{ define "content" }}
+
+<h2 class="text-center">Account</h2>
+
+<dl>
+  <dt>ID</dt>
+  <dd>{{ .User.ID}}</dd>
+  <dt>Username</dt>
+  <dd>{{ .User.Username}}</dd>
+</dl>
+
+{{ end }}
+`
+
+const accountedittmpl = `
+{{ define "content" }}
+
+<h2 class="text-center">Account</h2>
+
+<form action="/account/edit" method="post">
+  <div class="form-group">
+    <label class="form-label" for="username">Username</label>
+    <input id="username" class="form-input" value="{{ .User.Username }}" type="text" name="username">
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">Update</button>
+  </div>
+</form>
+
+{{ end }}
+`
+
 const bookmarksshowtmpl = `
 {{ define "content" }}
 
@@ -227,6 +261,12 @@ func init() {
 
 	templates["bookmarksshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["bookmarksshow.html"].Parse(bookmarksshowtmpl))
+
+	templates["accountshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["accountshow.html"].Parse(accountshowtmpl))
+
+	templates["accountedit.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["accountedit.html"].Parse(accountedittmpl))
 
 	templates["servererror.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["servererror.html"].Parse(servererrortmpl))

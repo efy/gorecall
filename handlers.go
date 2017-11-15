@@ -16,6 +16,7 @@ import (
 type Env struct {
 	Authenticated bool
 	Username      string
+	User          *User
 	Bookmarks     []Bookmark
 	Bookmark      *Bookmark
 }
@@ -93,6 +94,21 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func ImportHandler(w http.ResponseWriter, r *http.Request) {
 	env := buildEnv(r)
 	RenderTemplate(w, "import.html", env)
+}
+
+func AccountShowHandler(w http.ResponseWriter, r *http.Request) {
+	env := buildEnv(r)
+	RenderTemplate(w, "accountshow.html", env)
+}
+
+func AccountEditHandler(w http.ResponseWriter, r *http.Request) {
+	env := buildEnv(r)
+	if r.Method == "POST" {
+		fmt.Println("Account update not implemented")
+		RenderTemplate(w, "accountedit.html", env)
+	} else {
+		RenderTemplate(w, "accountedit.html", env)
+	}
 }
 
 func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
@@ -244,6 +260,13 @@ func buildEnv(r *http.Request) *Env {
 	if ok {
 		env.Username = username
 	}
+
+	user, err := uRepo.GetByUsername(username)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	env.User = user
 
 	return env
 }

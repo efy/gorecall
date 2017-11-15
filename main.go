@@ -116,6 +116,8 @@ func main() {
 	r.Handle("/bookmarks/new", AuthMiddleware(http.HandlerFunc(BookmarksNewHandler)))
 	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(http.HandlerFunc(BookmarksShowHandler)))
 	r.Handle("/import", AuthMiddleware(http.HandlerFunc(ImportHandler)))
+	r.Handle("/account", AuthMiddleware(http.HandlerFunc(AccountShowHandler)))
+	r.Handle("/account/edit", AuthMiddleware(http.HandlerFunc(AccountEditHandler)))
 
 	r.Handle("/login", http.HandlerFunc(LoginHandler))
 	r.Handle("/logout", http.HandlerFunc(LogoutHandler))
