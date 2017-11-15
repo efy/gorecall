@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"os"
 
@@ -48,15 +47,6 @@ func TokenAuthMiddleware(h http.Handler) http.Handler {
 	})
 
 	return mw.Handler(h)
-}
-
-// basic middleware example
-func NotifyMiddleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("before")
-		defer log.Println("after")
-		h.ServeHTTP(w, r)
-	})
 }
 
 func AuthMiddleware(h http.Handler) http.Handler {
