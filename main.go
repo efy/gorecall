@@ -110,26 +110,30 @@ func main() {
 		os.Exit(0)
 	}
 
+	appHandler := AppHandler{
+		db: db,
+	}
+
 	r := mux.NewRouter()
-	r.Handle("/", AuthMiddleware(http.HandlerFunc(HomeHandler)))
-	r.Handle("/bookmarks", AuthMiddleware(http.HandlerFunc(BookmarksHandler)))
-	r.Handle("/bookmarks/new", AuthMiddleware(http.HandlerFunc(BookmarksNewHandler)))
-	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(http.HandlerFunc(BookmarksShowHandler)))
-	r.Handle("/import", AuthMiddleware(http.HandlerFunc(ImportHandler)))
-	r.Handle("/account", AuthMiddleware(http.HandlerFunc(AccountShowHandler)))
-	r.Handle("/account/edit", AuthMiddleware(http.HandlerFunc(AccountEditHandler)))
+	r.Handle("/", AuthMiddleware(HomeHandler(appHandler)))
+	r.Handle("/bookmarks", AuthMiddleware(BookmarksHandler(appHandler)))
+	r.Handle("/bookmarks/new", AuthMiddleware(BookmarksNewHandler(appHandler)))
+	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(BookmarksShowHandler(appHandler)))
+	r.Handle("/import", AuthMiddleware(ImportHandler(appHandler)))
+	r.Handle("/account", AuthMiddleware(AccountShowHandler(appHandler)))
+	r.Handle("/account/edit", AuthMiddleware(AccountEditHandler(appHandler)))
 
-	r.Handle("/login", http.HandlerFunc(LoginHandler))
-	r.Handle("/logout", http.HandlerFunc(LogoutHandler))
+	r.Handle("/login", LoginHandler(appHandler))
+	r.Handle("/logout", LogoutHandler(appHandler))
 
-	r.NotFoundHandler = http.HandlerFunc(http.HandlerFunc(NotFoundHandler))
+	r.NotFoundHandler = NotFoundHandler(appHandler)
 
 	api := r.PathPrefix("/api").Subrouter()
-	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(CreateBookmarkHandler))).Methods("POST")
-	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(ApiBookmarksHandler))).Methods("GET")
-	api.Handle("/ping", CORSMiddleware(http.HandlerFunc(ApiPingHandler))).Methods("GET")
-	api.Handle("/auth", CORSMiddleware(http.HandlerFunc(CreateTokenHandler))).Methods("POST")
-	api.Handle("/auth", http.HandlerFunc(PreflightHandler)).Methods("OPTIONS")
+	api.Handle("/bookmarks", TokenAuthMiddleware(CreateBookmarkHandler(appHandler))).Methods("POST")
+	api.Handle("/bookmarks", TokenAuthMiddleware(ApiBookmarksHandler(appHandler))).Methods("GET")
+	api.Handle("/ping", CORSMiddleware(ApiPingHandler(appHandler))).Methods("GET")
+	api.Handle("/auth", CORSMiddleware(CreateTokenHandler(appHandler))).Methods("POST")
+	api.Handle("/auth", PreflightHandler(appHandler)).Methods("OPTIONS")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
