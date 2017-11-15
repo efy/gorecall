@@ -144,15 +144,32 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["name"] = "shaun"
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-	tokenString, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		fmt.Println(err)
+	username := r.Header.Get("Username")
+	password := r.Header.Get("Password")
+
+	if username == "" || password == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Authentication failure, please check your credentails"))
+		return
 	}
-	w.Write([]byte(tokenString))
+
+	match := authenticate(username, password)
+
+	if match {
+		token := jwt.New(jwt.SigningMethodHS256)
+		claims := token.Claims.(jwt.MapClaims)
+		claims["username"] = username
+		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+		tokenString, err := token.SignedString([]byte("secret"))
+		if err != nil {
+			fmt.Println(err)
+		}
+		w.Write([]byte(tokenString))
+		return
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Authentication failure, please check your credentails"))
+	}
 }
 
 func ApiBookmarksHandler(w http.ResponseWriter, r *http.Request) {
