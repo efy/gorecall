@@ -13,8 +13,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Env that can be built and passed to templates
-type Env struct {
+// AppData that can be built and passed to templates
+type AppData struct {
 	Authenticated bool
 	Username      string
 	User          *User
@@ -23,7 +23,8 @@ type Env struct {
 }
 
 type AppHandler struct {
-	db *sqlx.DB
+	db   *sqlx.DB
+	Data *AppData
 }
 
 func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -51,10 +52,8 @@ func CreateBookmarkHandler(app AppHandler) http.Handler {
 
 func LoginHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := Env{}
-
 		if r.Method == "GET" {
-			RenderTemplate(w, "login.html", env)
+			RenderTemplate(w, "login.html", app.Data)
 			return
 		}
 
@@ -69,7 +68,7 @@ func LoginHandler(app AppHandler) http.Handler {
 			fmt.Println(check)
 
 			if !check {
-				RenderTemplate(w, "login.html", env)
+				RenderTemplate(w, "login.html", app.Data)
 				return
 			}
 
@@ -84,7 +83,7 @@ func LoginHandler(app AppHandler) http.Handler {
 			http.Redirect(w, r, "/", 302)
 			return
 		}
-		RenderTemplate(w, "login.html", env)
+		RenderTemplate(w, "login.html", app.Data)
 		return
 	})
 }
@@ -107,52 +106,48 @@ func LogoutHandler(app AppHandler) http.Handler {
 
 func ImportHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
-		RenderTemplate(w, "import.html", env)
+		initAppData(r, app.Data)
+		RenderTemplate(w, "import.html", app.Data)
 	})
 }
 
 func AccountShowHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := app.db.Ping()
-		if err == nil {
-			fmt.Println("dbping")
-		}
-		env := buildEnv(r)
-		RenderTemplate(w, "accountshow.html", env)
+		initAppData(r, app.Data)
+		RenderTemplate(w, "accountshow.html", app.Data)
 	})
 }
 
 func AccountEditHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
+		initAppData(r, app.Data)
 		if r.Method == "POST" {
 			fmt.Println("Account update not implemented")
-			RenderTemplate(w, "accountedit.html", env)
+			RenderTemplate(w, "accountedit.html", app.Data)
 		} else {
-			RenderTemplate(w, "accountedit.html", env)
+			RenderTemplate(w, "accountedit.html", app.Data)
 		}
 	})
 }
 
 func BookmarksHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
+		initAppData(r, app.Data)
 		bookmarks, err := bmRepo.GetAll()
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		env.Bookmarks = bookmarks
+		app.Data.Bookmarks = bookmarks
 
-		RenderTemplate(w, "bookmarks.html", env)
+		RenderTemplate(w, "bookmarks.html", app.Data)
 	})
 }
 
 func HomeHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
-		RenderTemplate(w, "index.html", env)
+		initAppData(r, app.Data)
+		RenderTemplate(w, "index.html", app.Data)
 	})
 }
 
@@ -161,24 +156,24 @@ func BookmarksShowHandler(app AppHandler) http.Handler {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 
-		env := buildEnv(r)
+		initAppData(r, app.Data)
 
 		bookmark, err := bmRepo.GetByID(id)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		env.Bookmark = bookmark
+		app.Data.Bookmark = bookmark
 
-		RenderTemplate(w, "bookmarksshow.html", env)
+		RenderTemplate(w, "bookmarksshow.html", app.Data)
 	})
 }
 
 func BookmarksNewHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
+		initAppData(r, app.Data)
 		if r.Method == "GET" {
-			RenderTemplate(w, "bookmarksnew.html", env)
+			RenderTemplate(w, "bookmarksnew.html", app.Data)
 		}
 
 		if r.Method == "POST" {
@@ -202,8 +197,8 @@ func BookmarksNewHandler(app AppHandler) http.Handler {
 
 func NotFoundHandler(app AppHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		env := buildEnv(r)
-		RenderTemplate(w, "notfound.html", env)
+		initAppData(r, app.Data)
+		RenderTemplate(w, "notfound.html", app.Data)
 	})
 }
 
@@ -283,11 +278,9 @@ func authenticate(username string, password string) bool {
 	return true
 }
 
-// Helper to build and env object and populate it with
-// auth details
-func buildEnv(r *http.Request) *Env {
-	env := &Env{}
-
+// Helper to populate app data object from the session
+// TODO: move this into auth middleware
+func initAppData(r *http.Request, data *AppData) {
 	session, err := store.Get(r, "sesh")
 	if err != nil {
 		fmt.Println("error retrieving session")
@@ -295,12 +288,12 @@ func buildEnv(r *http.Request) *Env {
 
 	auth, ok := session.Values["authenticated"].(bool)
 	if ok {
-		env.Authenticated = auth
+		data.Authenticated = auth
 	}
 
 	username, ok := session.Values["username"].(string)
 	if ok {
-		env.Username = username
+		data.Username = username
 	}
 
 	user, err := uRepo.GetByUsername(username)
@@ -308,7 +301,5 @@ func buildEnv(r *http.Request) *Env {
 		fmt.Println(err)
 	}
 
-	env.User = user
-
-	return env
+	data.User = user
 }
