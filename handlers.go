@@ -133,14 +133,17 @@ func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiPingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-
 	w.Write([]byte(`{"version": "v0", "status": "ok"}`))
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	RenderTemplate(w, "notfound.html", "")
+}
+
+func PreflightHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Date, Username, Password")
 }
 
 func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
@@ -165,10 +168,12 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 		w.Write([]byte(tokenString))
+		fmt.Println(tokenString)
 		return
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Authentication failure, please check your credentails"))
+		return
 	}
 }
 

@@ -29,6 +29,16 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, h)
 }
 
+// Set CORS header
+func CORSMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+
+		h.ServeHTTP(w, r)
+	})
+}
+
 func TokenAuthMiddleware(h http.Handler) http.Handler {
 	mw := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {

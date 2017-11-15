@@ -125,8 +125,9 @@ func main() {
 	api := r.PathPrefix("/api").Subrouter()
 	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(CreateBookmarkHandler))).Methods("POST")
 	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(ApiBookmarksHandler))).Methods("GET")
-	api.Handle("/ping", http.HandlerFunc(ApiPingHandler)).Methods("GET")
-	api.Handle("/auth", http.HandlerFunc(CreateTokenHandler))
+	api.Handle("/ping", CORSMiddleware(http.HandlerFunc(ApiPingHandler))).Methods("GET")
+	api.Handle("/auth", CORSMiddleware(http.HandlerFunc(CreateTokenHandler))).Methods("POST")
+	api.Handle("/auth", http.HandlerFunc(PreflightHandler)).Methods("OPTIONS")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
