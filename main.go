@@ -123,8 +123,10 @@ func main() {
 	r.NotFoundHandler = http.HandlerFunc(http.HandlerFunc(NotFoundHandler))
 
 	api := r.PathPrefix("/api").Subrouter()
-	api.Handle("/bookmarks", http.HandlerFunc(CreateBookmarkHandler)).Methods("POST")
-	api.HandleFunc("/ping", http.HandlerFunc(ApiPingHandler)).Methods("GET")
+	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(CreateBookmarkHandler))).Methods("POST")
+	api.Handle("/bookmarks", TokenAuthMiddleware(http.HandlerFunc(ApiBookmarksHandler))).Methods("GET")
+	api.Handle("/ping", http.HandlerFunc(ApiPingHandler)).Methods("GET")
+	api.Handle("/auth", http.HandlerFunc(CreateTokenHandler))
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))

@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
@@ -139,6 +141,23 @@ func ApiPingHandler(w http.ResponseWriter, r *http.Request) {
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	RenderTemplate(w, "notfound.html", "")
+}
+
+func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["name"] = "shaun"
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	tokenString, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	w.Write([]byte(tokenString))
+}
+
+func ApiBookmarksHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Bookmarks listing not implemented"))
+	return
 }
 
 func renderError(w http.ResponseWriter, err error) {

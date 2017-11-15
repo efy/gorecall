@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/sessions"
 )
@@ -25,6 +27,17 @@ func CookieMiddleware(h http.Handler) http.Handler {
 // Wrap the gorilla handler for use with alice
 func LoggingMiddleware(h http.Handler) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, h)
+}
+
+func TokenAuthMiddleware(h http.Handler) http.Handler {
+	mw := jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return []byte("secret"), nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+	})
+
+	return mw.Handler(h)
 }
 
 // basic middleware example
