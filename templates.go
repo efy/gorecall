@@ -20,13 +20,23 @@ const layouttmpl = `
       <header class="navbar">
         <nav class="navbar-section">
           <img src="/public/logo.svg" class="logo">
-          <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
-          <a href="/import" class="btn btn-link">Import</a>
-          <a href="/login" class="btn btn-link">Login</a>
-          <a href="/logout" class="btn btn-link">Logout</a>
+          {{ if .Authenticated }}
+            <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
+            <a href="/import" class="btn btn-link">Import</a>
+          {{ end }}
         </nav>
         <nav class="navbar-section">
-          <a href="/bookmarks/new" class="btn btn-primary">New</a>
+          {{ if .Authenticated }}
+            <a href="/logout" class="btn btn-link">Logout</a>
+            <a href="/account" class="btn btn-link">
+              {{ .Username }}
+              <figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
+                <img>
+              </figure>
+            </a>
+          {{ else }}
+            <a href="/login" class="btn btn-link">Login</a>
+          {{ end }}
         </nav>
       </header>
 
@@ -49,7 +59,7 @@ const servererrortmpl = `
 const notfoundtmpl = `
 {{ define "content" }}
 
-<h2>404 Not found</h2>
+<h2 class="text-center">404 Not found</h2>
 
 {{ end }}
 `
@@ -67,7 +77,7 @@ const bookmarkstmpl = `
 
 <h2 class="text-center">Bookmarks</h2>
 
-{{ if not . }}
+{{ if not .Bookmarks }}
 <div class="empty">
   <div class="empty-icon">
     <i class="icon icon-bookmark"></i>
@@ -112,11 +122,11 @@ const bookmarksshowtmpl = `
 
 <dl>
   <dt>ID</dt>
-  <dd>{{ .ID }}</dd>
+  <dd>{{ .Bookmark.ID }}</dd>
   <dt>Title</dt>
-  <dd>{{ .Title }}</dd>
+  <dd>{{ .Bookmark.Title }}</dd>
   <dt>URL</dt>
-  <dd>{{ .URL }}</dd>
+  <dd>{{ .Bookmark.URL }}</dd>
 </dl>
 
 {{ end }}

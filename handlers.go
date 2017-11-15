@@ -12,6 +12,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Env that can be built and passed to templates
+type Env struct {
+	Authenticated bool
+	Username      string
+	Bookmarks     []Bookmark
+	Bookmark      *Bookmark
+}
+
 func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("CreateBookmarkHandler")
 	decoder := json.NewDecoder(r.Body)
@@ -31,8 +39,10 @@ func CreateBookmarkHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	env := Env{}
+
 	if r.Method == "GET" {
-		RenderTemplate(w, "login.html", "")
+		RenderTemplate(w, "login.html", env)
 		return
 	}
 
@@ -47,7 +57,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(check)
 
 		if !check {
-			RenderTemplate(w, "login.html", "")
+			RenderTemplate(w, "login.html", env)
 			return
 		}
 
@@ -62,14 +72,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 302)
 		return
 	}
-	RenderTemplate(w, "login.html", "")
+	RenderTemplate(w, "login.html", env)
 	return
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "sesh")
 	if err != nil {
-		fmt.Println("error getting session")
+		fmt.Println("error retrieving session")
 	}
 	session.Options.MaxAge = -1
 	err = session.Save(r, w)
@@ -81,37 +91,47 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ImportHandler(w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, "import.html", "")
+	env := buildEnv(r)
+	RenderTemplate(w, "import.html", env)
 }
 
 func BookmarksHandler(w http.ResponseWriter, r *http.Request) {
+	env := buildEnv(r)
 	bookmarks, err := bmRepo.GetAll()
 	if err != nil {
 		renderError(w, err)
 		return
 	}
-	RenderTemplate(w, "bookmarks.html", bookmarks)
+	env.Bookmarks = bookmarks
+
+	RenderTemplate(w, "bookmarks.html", env)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, "index.html", "")
+	env := buildEnv(r)
+	RenderTemplate(w, "index.html", env)
 }
 
 func BookmarksShowHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 64)
 
+	env := buildEnv(r)
+
 	bookmark, err := bmRepo.GetByID(id)
 	if err != nil {
 		renderError(w, err)
 		return
 	}
-	RenderTemplate(w, "bookmarksshow.html", bookmark)
+	env.Bookmark = bookmark
+
+	RenderTemplate(w, "bookmarksshow.html", env)
 }
 
 func BookmarksNewHandler(w http.ResponseWriter, r *http.Request) {
+	env := buildEnv(r)
 	if r.Method == "GET" {
-		RenderTemplate(w, "bookmarksnew.html", "")
+		RenderTemplate(w, "bookmarksnew.html", env)
 	}
 
 	if r.Method == "POST" {
@@ -137,7 +157,8 @@ func ApiPingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, "notfound.html", "")
+	env := buildEnv(r)
+	RenderTemplate(w, "notfound.html", env)
 }
 
 func PreflightHandler(w http.ResponseWriter, r *http.Request) {
@@ -202,4 +223,27 @@ func authenticate(username string, password string) bool {
 	}
 
 	return true
+}
+
+// Helper to build and env object and populate it with
+// auth details
+func buildEnv(r *http.Request) *Env {
+	env := &Env{}
+
+	session, err := store.Get(r, "sesh")
+	if err != nil {
+		fmt.Println("error retrieving session")
+	}
+
+	auth, ok := session.Values["authenticated"].(bool)
+	if ok {
+		env.Authenticated = auth
+	}
+
+	username, ok := session.Values["username"].(string)
+	if ok {
+		env.Username = username
+	}
+
+	return env
 }
