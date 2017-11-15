@@ -17,28 +17,30 @@ const layouttmpl = `
   </head>
   <body>
     <div class="wrapper">
-      <header class="navbar">
-        <nav class="navbar-section">
-          <img src="/public/logo.svg" class="logo">
-          {{ if .Authenticated }}
-            <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
-            <a href="/import" class="btn btn-link">Import</a>
-          {{ end }}
-        </nav>
-        <nav class="navbar-section">
-          {{ if .Authenticated }}
-            <a href="/logout" class="btn btn-link">Logout</a>
-            <a href="/account" class="btn btn-link">
-              {{ .Username }}
-              <figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
-                <img>
-              </figure>
-            </a>
-          {{ else }}
-            <a href="/login" class="btn btn-link">Login</a>
-          {{ end }}
-        </nav>
-      </header>
+      <div class="container">
+        <header class="navbar">
+          <nav class="navbar-section">
+            <img src="/public/logo.svg" class="logo">
+            {{ if .Authenticated }}
+              <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
+              <a href="/import" class="btn btn-link">Import</a>
+            {{ end }}
+          </nav>
+          <nav class="navbar-section">
+            {{ if .Authenticated }}
+              <a href="/logout" class="btn btn-link">Logout</a>
+              <a href="/account" class="btn btn-link">
+                {{ .Username }}
+                <figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
+                  <img>
+                </figure>
+              </a>
+            {{ else }}
+              <a href="/login" class="btn btn-link">Login</a>
+            {{ end }}
+          </nav>
+        </header>
+      </div>
 
       <div class="content-area container">
         {{ block "content" . }} {{ end }}
@@ -118,7 +120,14 @@ const bookmarkstmpl = `
 const accountshowtmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Account</h2>
+<header class="navbar">
+  <div class="navbar-section">
+    <h2>Account</h2>
+  </div>
+  <div class="navbar-section">
+    <a class="btn btn-default" href="/account/edit">Update Account</a>
+  <div>
+</header>
 
 <dl>
   <dt>ID</dt>
@@ -133,7 +142,14 @@ const accountshowtmpl = `
 const accountedittmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Account</h2>
+<header class="navbar">
+  <div class="navbar-section">
+    <h2>Account</h2>
+  </div>
+  <div class="navbar-section">
+    <a class="btn btn-default" href="/account">Show Account</a>
+  <div>
+</header>
 
 <form action="/account/edit" method="post">
   <div class="form-group">
