@@ -140,7 +140,7 @@ func main() {
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 	// Build middleware chain that is run for all requests
-	chain := alice.New(LoggingMiddleware).Then(r)
+	chain := alice.New(LoggingMiddleware, TimeoutMiddleware).Then(r)
 
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -10,17 +11,12 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// TODO: Pass as part of the app context
 var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
-func CookieMiddleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, _ := store.Get(r, "sesh")
-
-		session.Values["username"] = "shaun"
-		session.Values["authenticated"] = true
-		session.Save(r, w)
-		h.ServeHTTP(w, r)
-	})
+// Wrap http timeout handler
+func TimeoutMiddleware(h http.Handler) http.Handler {
+	return http.TimeoutHandler(h, 30*time.Second, "timed out")
 }
 
 // Wrap the gorilla handler for use with alice
