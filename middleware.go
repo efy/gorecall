@@ -8,11 +8,7 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/sessions"
 )
-
-// TODO: Pass as part of the app context
-var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 // Wrap http timeout handler
 func TimeoutMiddleware(h http.Handler) http.Handler {

@@ -10,11 +10,12 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 )
 
-// AppData that can be built and passed to templates
-type AppData struct {
+// AppCtx that can be built and passed to templates
+type AppCtx struct {
 	Authenticated bool
 	Username      string
 	User          *User
@@ -22,15 +23,21 @@ type AppData struct {
 	Bookmark      *Bookmark
 }
 
-type AppHandler struct {
-	db   *sqlx.DB
-	Data *AppData
+func NewAppCtx() *AppCtx {
+	return &AppCtx{}
 }
 
-func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+type App struct {
+	db    *sqlx.DB
+	ur    *userRepo
+	br    *bookmarkRepo
+	store *sessions.CookieStore
 }
 
-func (app *AppHandler) CreateBookmarkHandler() http.Handler {
+func (h App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+}
+
+func (app *App) CreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("CreateBookmarkHandler")
 		decoder := json.NewDecoder(r.Body)
@@ -50,10 +57,12 @@ func (app *AppHandler) CreateBookmarkHandler() http.Handler {
 	})
 }
 
-func (app *AppHandler) LoginHandler() http.Handler {
+func (app *App) LoginHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := NewAppCtx()
+
 		if r.Method == "GET" {
-			RenderTemplate(w, "login.html", app.Data)
+			RenderTemplate(w, "login.html", ctx)
 			return
 		}
 
@@ -68,7 +77,7 @@ func (app *AppHandler) LoginHandler() http.Handler {
 			fmt.Println(check)
 
 			if !check {
-				RenderTemplate(w, "login.html", app.Data)
+				RenderTemplate(w, "login.html", ctx)
 				return
 			}
 
@@ -83,12 +92,12 @@ func (app *AppHandler) LoginHandler() http.Handler {
 			http.Redirect(w, r, "/", 302)
 			return
 		}
-		RenderTemplate(w, "login.html", app.Data)
+		RenderTemplate(w, "login.html", ctx)
 		return
 	})
 }
 
-func (app *AppHandler) LogoutHandler() http.Handler {
+func (app *App) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := store.Get(r, "sesh")
 		if err != nil {
@@ -104,76 +113,76 @@ func (app *AppHandler) LogoutHandler() http.Handler {
 	})
 }
 
-func (app *AppHandler) ImportHandler() http.Handler {
+func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
-		RenderTemplate(w, "import.html", app.Data)
+		ctx := initAppCtx(r)
+		RenderTemplate(w, "import.html", ctx)
 	})
 }
 
-func (app *AppHandler) AccountShowHandler() http.Handler {
+func (app *App) AccountShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
-		RenderTemplate(w, "accountshow.html", app.Data)
+		ctx := initAppCtx(r)
+		RenderTemplate(w, "accountshow.html", ctx)
 	})
 }
 
-func (app *AppHandler) AccountEditHandler() http.Handler {
+func (app *App) AccountEditHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
+		ctx := initAppCtx(r)
 		if r.Method == "POST" {
 			fmt.Println("Account update not implemented")
-			RenderTemplate(w, "accountedit.html", app.Data)
+			RenderTemplate(w, "accountedit.html", ctx)
 		} else {
-			RenderTemplate(w, "accountedit.html", app.Data)
+			RenderTemplate(w, "accountedit.html", ctx)
 		}
 	})
 }
 
-func (app *AppHandler) BookmarksHandler() http.Handler {
+func (app *App) BookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
+		ctx := initAppCtx(r)
 		bookmarks, err := bmRepo.GetAll()
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		app.Data.Bookmarks = bookmarks
+		ctx.Bookmarks = bookmarks
 
-		RenderTemplate(w, "bookmarks.html", app.Data)
+		RenderTemplate(w, "bookmarks.html", ctx)
 	})
 }
 
-func (app *AppHandler) HomeHandler() http.Handler {
+func (app *App) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
-		RenderTemplate(w, "index.html", app.Data)
+		ctx := initAppCtx(r)
+		RenderTemplate(w, "index.html", ctx)
 	})
 }
 
-func (app *AppHandler) BookmarksShowHandler() http.Handler {
+func (app *App) BookmarksShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 
-		initAppData(r, app.Data)
+		ctx := initAppCtx(r)
 
 		bookmark, err := bmRepo.GetByID(id)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		app.Data.Bookmark = bookmark
+		ctx.Bookmark = bookmark
 
-		RenderTemplate(w, "bookmarksshow.html", app.Data)
+		RenderTemplate(w, "bookmarksshow.html", ctx)
 	})
 }
 
-func (app *AppHandler) BookmarksNewHandler() http.Handler {
+func (app *App) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
+		ctx := initAppCtx(r)
 		if r.Method == "GET" {
-			RenderTemplate(w, "bookmarksnew.html", app.Data)
+			RenderTemplate(w, "bookmarksnew.html", ctx)
 		}
 
 		if r.Method == "POST" {
@@ -195,20 +204,20 @@ func (app *AppHandler) BookmarksNewHandler() http.Handler {
 	})
 }
 
-func (app *AppHandler) NotFoundHandler() http.Handler {
+func (app *App) NotFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		initAppData(r, app.Data)
-		RenderTemplate(w, "notfound.html", app.Data)
+		ctx := initAppCtx(r)
+		RenderTemplate(w, "notfound.html", ctx)
 	})
 }
 
-func (app *AppHandler) ApiPingHandler() http.Handler {
+func (app *App) ApiPingHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"version": "v0", "status": "ok"}`))
 	})
 }
 
-func (app *AppHandler) PreflightHandler() http.Handler {
+func (app *App) PreflightHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -216,7 +225,7 @@ func (app *AppHandler) PreflightHandler() http.Handler {
 	})
 }
 
-func (app *AppHandler) CreateTokenHandler() http.Handler {
+func (app *App) CreateTokenHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username := r.Header.Get("Username")
 		password := r.Header.Get("Password")
@@ -249,7 +258,7 @@ func (app *AppHandler) CreateTokenHandler() http.Handler {
 	})
 }
 
-func (app *AppHandler) ApiBookmarksHandler() http.Handler {
+func (app *App) ApiBookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Bookmarks listing not implemented"))
 		return
@@ -278,9 +287,10 @@ func authenticate(username string, password string) bool {
 	return true
 }
 
-// Helper to populate app data object from the session
+// Builds app data from the request
 // TODO: move this into auth middleware
-func initAppData(r *http.Request, data *AppData) {
+func initAppCtx(r *http.Request) *AppCtx {
+	ctx := NewAppCtx()
 	session, err := store.Get(r, "sesh")
 	if err != nil {
 		fmt.Println("error retrieving session")
@@ -288,12 +298,12 @@ func initAppData(r *http.Request, data *AppData) {
 
 	auth, ok := session.Values["authenticated"].(bool)
 	if ok {
-		data.Authenticated = auth
+		ctx.Authenticated = auth
 	}
 
 	username, ok := session.Values["username"].(string)
 	if ok {
-		data.Username = username
+		ctx.Username = username
 	}
 
 	user, err := uRepo.GetByUsername(username)
@@ -301,5 +311,7 @@ func initAppData(r *http.Request, data *AppData) {
 		fmt.Println(err)
 	}
 
-	data.User = user
+	ctx.User = user
+
+	return ctx
 }

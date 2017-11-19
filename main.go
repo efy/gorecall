@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
 )
 
@@ -26,6 +27,7 @@ var (
 
 	bmRepo *bookmarkRepo
 	uRepo  *userRepo
+	store  *sessions.CookieStore
 )
 
 func main() {
@@ -110,9 +112,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	app := AppHandler{
-		db:   db,
-		Data: &AppData{},
+	// Initize the cookie store
+	store = sessions.NewCookieStore([]byte("something-very-secret"))
+
+	app := App{
+		db:    db,
+		ur:    uRepo,
+		br:    bmRepo,
+		store: store,
 	}
 
 	r := mux.NewRouter()
