@@ -116,25 +116,25 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.Handle("/", AuthMiddleware(HomeHandler(app)))
-	r.Handle("/bookmarks", AuthMiddleware(BookmarksHandler(app)))
-	r.Handle("/bookmarks/new", AuthMiddleware(BookmarksNewHandler(app)))
-	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(BookmarksShowHandler(app)))
-	r.Handle("/import", AuthMiddleware(ImportHandler(app)))
-	r.Handle("/account", AuthMiddleware(AccountShowHandler(app)))
-	r.Handle("/account/edit", AuthMiddleware(AccountEditHandler(app)))
+	r.Handle("/", AuthMiddleware(app.HomeHandler()))
+	r.Handle("/bookmarks", AuthMiddleware(app.BookmarksHandler()))
+	r.Handle("/bookmarks/new", AuthMiddleware(app.BookmarksNewHandler()))
+	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(app.BookmarksShowHandler()))
+	r.Handle("/import", AuthMiddleware(app.ImportHandler()))
+	r.Handle("/account", AuthMiddleware(app.AccountShowHandler()))
+	r.Handle("/account/edit", AuthMiddleware(app.AccountEditHandler()))
 
-	r.Handle("/login", LoginHandler(app))
-	r.Handle("/logout", LogoutHandler(app))
+	r.Handle("/login", app.LoginHandler())
+	r.Handle("/logout", app.LogoutHandler())
 
-	r.NotFoundHandler = NotFoundHandler(app)
+	r.NotFoundHandler = app.NotFoundHandler()
 
 	api := r.PathPrefix("/api").Subrouter()
-	api.Handle("/bookmarks", TokenAuthMiddleware(CreateBookmarkHandler(app))).Methods("POST")
-	api.Handle("/bookmarks", TokenAuthMiddleware(ApiBookmarksHandler(app))).Methods("GET")
-	api.Handle("/ping", CORSMiddleware(ApiPingHandler(app))).Methods("GET")
-	api.Handle("/auth", CORSMiddleware(CreateTokenHandler(app))).Methods("POST")
-	api.Handle("/auth", PreflightHandler(app)).Methods("OPTIONS")
+	api.Handle("/bookmarks", TokenAuthMiddleware(app.CreateBookmarkHandler())).Methods("POST")
+	api.Handle("/bookmarks", TokenAuthMiddleware(app.ApiBookmarksHandler())).Methods("GET")
+	api.Handle("/ping", CORSMiddleware(app.ApiPingHandler())).Methods("GET")
+	api.Handle("/auth", CORSMiddleware(app.CreateTokenHandler())).Methods("POST")
+	api.Handle("/auth", app.PreflightHandler()).Methods("OPTIONS")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))

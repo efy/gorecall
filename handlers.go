@@ -30,7 +30,7 @@ type AppHandler struct {
 func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
-func CreateBookmarkHandler(app AppHandler) http.Handler {
+func (app *AppHandler) CreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("CreateBookmarkHandler")
 		decoder := json.NewDecoder(r.Body)
@@ -50,7 +50,7 @@ func CreateBookmarkHandler(app AppHandler) http.Handler {
 	})
 }
 
-func LoginHandler(app AppHandler) http.Handler {
+func (app *AppHandler) LoginHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			RenderTemplate(w, "login.html", app.Data)
@@ -88,7 +88,7 @@ func LoginHandler(app AppHandler) http.Handler {
 	})
 }
 
-func LogoutHandler(app AppHandler) http.Handler {
+func (app *AppHandler) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := store.Get(r, "sesh")
 		if err != nil {
@@ -104,21 +104,21 @@ func LogoutHandler(app AppHandler) http.Handler {
 	})
 }
 
-func ImportHandler(app AppHandler) http.Handler {
+func (app *AppHandler) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		RenderTemplate(w, "import.html", app.Data)
 	})
 }
 
-func AccountShowHandler(app AppHandler) http.Handler {
+func (app *AppHandler) AccountShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		RenderTemplate(w, "accountshow.html", app.Data)
 	})
 }
 
-func AccountEditHandler(app AppHandler) http.Handler {
+func (app *AppHandler) AccountEditHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		if r.Method == "POST" {
@@ -130,7 +130,7 @@ func AccountEditHandler(app AppHandler) http.Handler {
 	})
 }
 
-func BookmarksHandler(app AppHandler) http.Handler {
+func (app *AppHandler) BookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		bookmarks, err := bmRepo.GetAll()
@@ -144,14 +144,14 @@ func BookmarksHandler(app AppHandler) http.Handler {
 	})
 }
 
-func HomeHandler(app AppHandler) http.Handler {
+func (app *AppHandler) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		RenderTemplate(w, "index.html", app.Data)
 	})
 }
 
-func BookmarksShowHandler(app AppHandler) http.Handler {
+func (app *AppHandler) BookmarksShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
@@ -169,7 +169,7 @@ func BookmarksShowHandler(app AppHandler) http.Handler {
 	})
 }
 
-func BookmarksNewHandler(app AppHandler) http.Handler {
+func (app *AppHandler) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		if r.Method == "GET" {
@@ -195,20 +195,20 @@ func BookmarksNewHandler(app AppHandler) http.Handler {
 	})
 }
 
-func NotFoundHandler(app AppHandler) http.Handler {
+func (app *AppHandler) NotFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		initAppData(r, app.Data)
 		RenderTemplate(w, "notfound.html", app.Data)
 	})
 }
 
-func ApiPingHandler(app AppHandler) http.Handler {
+func (app *AppHandler) ApiPingHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"version": "v0", "status": "ok"}`))
 	})
 }
 
-func PreflightHandler(app AppHandler) http.Handler {
+func (app *AppHandler) PreflightHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -216,7 +216,7 @@ func PreflightHandler(app AppHandler) http.Handler {
 	})
 }
 
-func CreateTokenHandler(app AppHandler) http.Handler {
+func (app *AppHandler) CreateTokenHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username := r.Header.Get("Username")
 		password := r.Header.Get("Password")
@@ -249,7 +249,7 @@ func CreateTokenHandler(app AppHandler) http.Handler {
 	})
 }
 
-func ApiBookmarksHandler(app AppHandler) http.Handler {
+func (app *AppHandler) ApiBookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Bookmarks listing not implemented"))
 		return
