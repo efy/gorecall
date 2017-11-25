@@ -127,7 +127,7 @@ func main() {
 	r.Handle("/bookmarks", AuthMiddleware(app.BookmarksHandler()))
 	r.Handle("/bookmarks/new", AuthMiddleware(app.BookmarksNewHandler()))
 	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(app.BookmarksShowHandler()))
-	r.Handle("/import", AuthMiddleware(app.ImportHandler()))
+	r.Handle("/import", AuthMiddleware(app.ImportHandler())).Methods("GET", "POST")
 	r.Handle("/account", AuthMiddleware(app.AccountShowHandler()))
 	r.Handle("/account/edit", AuthMiddleware(app.AccountEditHandler()))
 

@@ -92,14 +92,13 @@ const bookmarkstmpl = `
   </div>
 </div>
 {{ else }}
-
 <table class="table">
   <thead>
     <th>Title</th>
     <th>URL</th>
   </thead>
   <tbody>
-    {{ range . }}
+    {{ range .Bookmarks }}
       <tr>
         <td>
           {{ .Title }}
@@ -206,12 +205,25 @@ const bookmarksnewtmpl = `
 {{ end }}
 `
 
+const importsuccesstmpl = `
+{{ define "content" }}
+
+<h2 class="text-center">Import</h2>
+
+<div>
+  <p>
+    Imported {{ len .Bookmarks }}
+  </p>
+</div>
+{{ end }}
+`
+
 const importtmpl = `
 {{ define "content" }}
 
 <h2 class="text-center">Import</h2>
 
-<form method="post" action="/import">
+<form enctype="multipart/form-data" method="post" action="/import">
   <div class="form-group">
     <label class="form-label" for="bookmarks">File</label>
     <input id="bookmarks_file" class="form-input" type="file" name="bookmarks">
@@ -268,6 +280,9 @@ func init() {
 
 	templates["import.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["import.html"].Parse(importtmpl))
+
+	templates["importsuccess.html"] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["importsuccess.html"].Parse(importsuccesstmpl))
 
 	templates["login.html"] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates["login.html"].Parse(logintmpl))

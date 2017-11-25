@@ -9,6 +9,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/efy/bookmark"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -116,7 +117,34 @@ func (app *App) LogoutHandler() http.Handler {
 func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := initAppCtx(r)
-		RenderTemplate(w, "import.html", ctx)
+		if r.Method != "POST" {
+			RenderTemplate(w, "import.html", ctx)
+			return
+		}
+		r.ParseMultipartForm(32 << 20)
+
+		file, _, err := r.FormFile("bookmarks")
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
+		parsed, err := bookmark.Parse(file)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		// Convert from bookmark.Bookmark to Bookmark and populate ctx.Bookmarks
+		for _, v := range parsed {
+			ctx.Bookmarks = append(ctx.Bookmarks, Bookmark{
+				Title: v.Title,
+				URL:   v.Url,
+			})
+		}
+
+		RenderTemplate(w, "importsuccess.html", ctx)
 	})
 }
 
