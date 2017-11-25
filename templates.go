@@ -92,25 +92,23 @@ const bookmarkstmpl = `
   </div>
 </div>
 {{ else }}
-<table class="table">
-  <thead>
-    <th>Title</th>
-    <th>URL</th>
-  </thead>
-  <tbody>
-    {{ range .Bookmarks }}
-      <tr>
-        <td>
-          {{ .Title }}
-        </td>
-        <td>
-          {{ .URL }}
-        </td>
-      </tr>
-    {{ end }}
-  </tbody>
-</table>
-
+<div class="rc-list">
+  {{ range .Bookmarks }}
+    <div class="rc-bookmark columns">
+      <div class="column col-1">
+        <figure class="avatar" data-initial="BM" style="background: #5755d9;">
+        </figure>
+      </div>
+      <div class="column col-11">
+        <div class="rc-bm-title">
+          <a href="{{ .URL }}" target="_blank" rel="noopener">
+            {{ .Title }}
+          </a>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+</div>
 {{ end }}
 
 {{ end }}
@@ -211,8 +209,8 @@ const importsuccesstmpl = `
 <h2 class="text-center">Import</h2>
 
 <div>
-  <p>
-    Imported {{ len .Bookmarks }}
+  <p class="text-center">
+    Successfully imported {{ len .Bookmarks }} bookmarks.
   </p>
 </div>
 {{ end }}

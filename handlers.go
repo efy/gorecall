@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -142,6 +143,13 @@ func (app *App) ImportHandler() http.Handler {
 				Title: v.Title,
 				URL:   v.Url,
 			})
+		}
+
+		for _, bm := range ctx.Bookmarks {
+			_, err := app.br.Create(&bm)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 
 		RenderTemplate(w, "importsuccess.html", ctx)

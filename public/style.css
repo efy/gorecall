@@ -2,8 +2,7 @@
 @import url(/public/spectre-icons.min.css);
 @import url(/public/spectre-exp.min.css);
 
-body {
-  font-size: 16px;
+body { font-size: 16px;
   background-color: #fbfbfb;
 }
 
@@ -28,4 +27,21 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+.rc-bookmark {
+  padding: 4px 0;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+}
+
+.rc-bm-title a {
+  text-decoration: none;
+  color: #1d1123;
+  font-weight: bold;
+}
+
+.rc-bm-title a:hover {
+  opacity: .9;
 }
