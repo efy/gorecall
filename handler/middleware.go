@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"net/http"
@@ -41,9 +41,9 @@ func TokenAuthMiddleware(h http.Handler) http.Handler {
 	return mw.Handler(h)
 }
 
-func AuthMiddleware(h http.Handler) http.Handler {
+func (app *App) AuthMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, _ := store.Get(r, "sesh")
+		session, _ := app.store.Get(r, "sesh")
 
 		if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 			// Pay the troll toll
@@ -54,16 +54,4 @@ func AuthMiddleware(h http.Handler) http.Handler {
 			h.ServeHTTP(w, r)
 		}
 	})
-}
-
-func getUsername(r *http.Request) string {
-	session, err := store.Get(r, "sesh")
-	if err == nil {
-		un, ok := session.Values["username"].(string)
-		if ok && un != "" {
-			return un
-		}
-		return ""
-	}
-	return ""
 }

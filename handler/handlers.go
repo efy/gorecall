@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -11,6 +11,9 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/efy/bookmark"
+	"github.com/efy/gorecall/auth"
+	"github.com/efy/gorecall/datastore"
+	"github.com/efy/gorecall/templates"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -20,9 +23,9 @@ import (
 type AppCtx struct {
 	Authenticated bool
 	Username      string
-	User          *User
-	Bookmarks     []Bookmark
-	Bookmark      *Bookmark
+	User          *datastore.User
+	Bookmarks     []datastore.Bookmark
+	Bookmark      *datastore.Bookmark
 }
 
 func NewAppCtx() *AppCtx {
@@ -31,8 +34,8 @@ func NewAppCtx() *AppCtx {
 
 type App struct {
 	db    *sqlx.DB
-	ur    *userRepo
-	br    *bookmarkRepo
+	ur    datastore.UserRepo
+	br    datastore.BookmarkRepo
 	store *sessions.CookieStore
 }
 
@@ -43,13 +46,13 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("CreateBookmarkHandler")
 		decoder := json.NewDecoder(r.Body)
-		var b Bookmark
+		var b datastore.Bookmark
 		err := decoder.Decode(&b)
 		if err != nil {
 			renderError(w, err)
 		}
 
-		_, err = bmRepo.Create(&b)
+		_, err = app.br.Create(&b)
 		if err != nil {
 			renderError(w, err)
 			return
@@ -64,7 +67,7 @@ func (app *App) LoginHandler() http.Handler {
 		ctx := NewAppCtx()
 
 		if r.Method == "GET" {
-			RenderTemplate(w, "login.html", ctx)
+			templates.RenderTemplate(w, "login.html", ctx)
 			return
 		}
 
@@ -74,16 +77,16 @@ func (app *App) LoginHandler() http.Handler {
 		pass := r.FormValue("password")
 
 		if name != "" && pass != "" {
-			check := authenticate(name, pass)
+			check := app.authenticate(name, pass)
 
 			fmt.Println(check)
 
 			if !check {
-				RenderTemplate(w, "login.html", ctx)
+				templates.RenderTemplate(w, "login.html", ctx)
 				return
 			}
 
-			session, err := store.Get(r, "sesh")
+			session, err := app.store.Get(r, "sesh")
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -94,14 +97,14 @@ func (app *App) LoginHandler() http.Handler {
 			http.Redirect(w, r, "/", 302)
 			return
 		}
-		RenderTemplate(w, "login.html", ctx)
+		templates.RenderTemplate(w, "login.html", ctx)
 		return
 	})
 }
 
 func (app *App) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		session, err := store.Get(r, "sesh")
+		session, err := app.store.Get(r, "sesh")
 		if err != nil {
 			fmt.Println("error retrieving session")
 		}
@@ -117,9 +120,9 @@ func (app *App) LogoutHandler() http.Handler {
 
 func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
+		ctx := app.initAppCtx(r)
 		if r.Method != "POST" {
-			RenderTemplate(w, "import.html", ctx)
+			templates.RenderTemplate(w, "import.html", ctx)
 			return
 		}
 		r.ParseMultipartForm(32 << 20)
@@ -137,9 +140,9 @@ func (app *App) ImportHandler() http.Handler {
 			return
 		}
 
-		// Convert from bookmark.Bookmark to Bookmark and populate ctx.Bookmarks
+		// Convert from bookmark.Bookmark to datastore.Bookmark and populate ctx.Bookmarks
 		for _, v := range parsed {
-			ctx.Bookmarks = append(ctx.Bookmarks, Bookmark{
+			ctx.Bookmarks = append(ctx.Bookmarks, datastore.Bookmark{
 				Title: v.Title,
 				URL:   v.Url,
 				Icon:  v.Icon,
@@ -153,47 +156,47 @@ func (app *App) ImportHandler() http.Handler {
 			}
 		}
 
-		RenderTemplate(w, "importsuccess.html", ctx)
+		templates.RenderTemplate(w, "importsuccess.html", ctx)
 	})
 }
 
 func (app *App) AccountShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
-		RenderTemplate(w, "accountshow.html", ctx)
+		ctx := app.initAppCtx(r)
+		templates.RenderTemplate(w, "accountshow.html", ctx)
 	})
 }
 
 func (app *App) AccountEditHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
+		ctx := app.initAppCtx(r)
 		if r.Method == "POST" {
 			fmt.Println("Account update not implemented")
-			RenderTemplate(w, "accountedit.html", ctx)
+			templates.RenderTemplate(w, "accountedit.html", ctx)
 		} else {
-			RenderTemplate(w, "accountedit.html", ctx)
+			templates.RenderTemplate(w, "accountedit.html", ctx)
 		}
 	})
 }
 
 func (app *App) BookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
-		bookmarks, err := bmRepo.GetAll()
+		ctx := app.initAppCtx(r)
+		bookmarks, err := app.br.GetAll()
 		if err != nil {
 			renderError(w, err)
 			return
 		}
 		ctx.Bookmarks = bookmarks
 
-		RenderTemplate(w, "bookmarks.html", ctx)
+		templates.RenderTemplate(w, "bookmarks.html", ctx)
 	})
 }
 
 func (app *App) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
-		RenderTemplate(w, "index.html", ctx)
+		ctx := app.initAppCtx(r)
+		templates.RenderTemplate(w, "index.html", ctx)
 	})
 }
 
@@ -202,35 +205,35 @@ func (app *App) BookmarksShowHandler() http.Handler {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 
-		ctx := initAppCtx(r)
+		ctx := app.initAppCtx(r)
 
-		bookmark, err := bmRepo.GetByID(id)
+		bookmark, err := app.br.GetByID(id)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
 		ctx.Bookmark = bookmark
 
-		RenderTemplate(w, "bookmarksshow.html", ctx)
+		templates.RenderTemplate(w, "bookmarksshow.html", ctx)
 	})
 }
 
 func (app *App) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
+		ctx := app.initAppCtx(r)
 		if r.Method == "GET" {
-			RenderTemplate(w, "bookmarksnew.html", ctx)
+			templates.RenderTemplate(w, "bookmarksnew.html", ctx)
 		}
 
 		if r.Method == "POST" {
 			r.ParseForm()
 
-			bm := Bookmark{
+			bm := datastore.Bookmark{
 				Title: strings.Join(r.Form["title"], ""),
 				URL:   strings.Join(r.Form["url"], ""),
 			}
 
-			_, err := bmRepo.Create(&bm)
+			_, err := app.br.Create(&bm)
 			if err != nil {
 				renderError(w, err)
 				return
@@ -243,8 +246,8 @@ func (app *App) BookmarksNewHandler() http.Handler {
 
 func (app *App) NotFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := initAppCtx(r)
-		RenderTemplate(w, "notfound.html", ctx)
+		ctx := app.initAppCtx(r)
+		templates.RenderTemplate(w, "notfound.html", ctx)
 	})
 }
 
@@ -273,7 +276,7 @@ func (app *App) CreateTokenHandler() http.Handler {
 			return
 		}
 
-		match := authenticate(username, password)
+		match := app.authenticate(username, password)
 
 		if match {
 			token := jwt.New(jwt.SigningMethodHS256)
@@ -305,18 +308,18 @@ func (app *App) ApiBookmarksHandler() http.Handler {
 func renderError(w http.ResponseWriter, err error) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		RenderTemplate(w, "servererror.html", err)
+		templates.RenderTemplate(w, "servererror.html", err)
 	}
 }
 
-func authenticate(username string, password string) bool {
-	u, err := uRepo.GetByUsername(username)
+func (app *App) authenticate(username string, password string) bool {
+	u, err := app.ur.GetByUsername(username)
 
 	if err != nil {
 		return false
 	}
 
-	match := CheckPasswordHash(password, u.Password)
+	match := auth.CheckPasswordHash(password, u.Password)
 	if !match {
 		return false
 	}
@@ -326,9 +329,9 @@ func authenticate(username string, password string) bool {
 
 // Builds app data from the request
 // TODO: move this into auth middleware
-func initAppCtx(r *http.Request) *AppCtx {
+func (app *App) initAppCtx(r *http.Request) *AppCtx {
 	ctx := NewAppCtx()
-	session, err := store.Get(r, "sesh")
+	session, err := app.store.Get(r, "sesh")
 	if err != nil {
 		fmt.Println("error retrieving session")
 	}
@@ -343,7 +346,7 @@ func initAppCtx(r *http.Request) *AppCtx {
 		ctx.Username = username
 	}
 
-	user, err := uRepo.GetByUsername(username)
+	user, err := app.ur.GetByUsername(username)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -351,4 +354,13 @@ func initAppCtx(r *http.Request) *AppCtx {
 	ctx.User = user
 
 	return ctx
+}
+
+func NewApp(db *sqlx.DB, ur datastore.UserRepo, br datastore.BookmarkRepo, store *sessions.CookieStore) App {
+	return App{
+		db,
+		ur,
+		br,
+		store,
+	}
 }

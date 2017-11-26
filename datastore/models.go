@@ -1,4 +1,4 @@
-package main
+package datastore
 
 import (
 	"errors"
@@ -28,8 +28,8 @@ const (
 
 type BookmarkRepo interface {
 	Create(bookmark *Bookmark) (*Bookmark, error)
-	GetByID(id int) (*Bookmark, error)
-	GetAll() ([]*Bookmark, error)
+	GetByID(id int64) (*Bookmark, error)
+	GetAll() ([]Bookmark, error)
 }
 
 type bookmarkRepo struct {
@@ -92,8 +92,8 @@ const (
 
 type UserRepo interface {
 	Create(user *User) (*User, error)
-	GetByID(id int) (*User, error)
-	GetAll() ([]*User, error)
+	GetByID(id int64) (*User, error)
+	GetAll() ([]User, error)
 	GetByUsername(username string) (*User, error)
 }
 

@@ -1,4 +1,4 @@
-package main
+package templates
 
 import (
 	"fmt"
@@ -285,6 +285,7 @@ func init() {
 	registerTemplate("accountedit.html", accountedittmpl)
 	registerTemplate("servererror.html", servererrortmpl)
 	registerTemplate("notfound.html", notfoundtmpl)
+	registerTemplate("login.html", logintmpl)
 }
 
 // Helper to compile template within a layout context with funcs

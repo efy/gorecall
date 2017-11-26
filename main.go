@@ -10,6 +10,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/efy/gorecall/auth"
+	"github.com/efy/gorecall/database"
+	"github.com/efy/gorecall/datastore"
+	"github.com/efy/gorecall/handler"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
@@ -25,8 +29,8 @@ var (
 	migrate    = flag.Bool("migrate", false, "Run database migrations")
 	createuser = flag.Bool("createuser", false, "Create a user")
 
-	bmRepo *bookmarkRepo
-	uRepo  *userRepo
+	bmRepo datastore.BookmarkRepo
+	uRepo  datastore.UserRepo
 	store  *sessions.CookieStore
 )
 
@@ -35,7 +39,7 @@ func main() {
 
 	flag.Parse()
 
-	db, err := InitDatabase(*dbname)
+	db, err := database.InitDatabase(*dbname)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -48,18 +52,18 @@ func main() {
 	}
 
 	if *migrate {
-		MigrateDatabase(db)
+		database.MigrateDatabase(db)
 		os.Exit(0)
 	}
 
 	// Initialize repositories
-	bmRepo, err = NewBookmarkRepo(db)
+	bmRepo, err = datastore.NewBookmarkRepo(db)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	uRepo, err = NewUserRepo(db)
+	uRepo, err = datastore.NewUserRepo(db)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -91,13 +95,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		hash, err := HashPassword(password)
+		hash, err := auth.HashPassword(password)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		u := &User{
+		u := &datastore.User{
 			Username: username,
 			Password: hash,
 		}
@@ -115,21 +119,16 @@ func main() {
 	// Initize the cookie store
 	store = sessions.NewCookieStore([]byte("something-very-secret"))
 
-	app := App{
-		db:    db,
-		ur:    uRepo,
-		br:    bmRepo,
-		store: store,
-	}
+	app := handler.NewApp(db, uRepo, bmRepo, store)
 
 	r := mux.NewRouter()
-	r.Handle("/", AuthMiddleware(app.HomeHandler()))
-	r.Handle("/bookmarks", AuthMiddleware(app.BookmarksHandler()))
-	r.Handle("/bookmarks/new", AuthMiddleware(app.BookmarksNewHandler()))
-	r.Handle("/bookmarks/{id:[0-9]+}", AuthMiddleware(app.BookmarksShowHandler()))
-	r.Handle("/import", AuthMiddleware(app.ImportHandler())).Methods("GET", "POST")
-	r.Handle("/account", AuthMiddleware(app.AccountShowHandler()))
-	r.Handle("/account/edit", AuthMiddleware(app.AccountEditHandler()))
+	r.Handle("/", app.AuthMiddleware(app.HomeHandler()))
+	r.Handle("/bookmarks", app.AuthMiddleware(app.BookmarksHandler()))
+	r.Handle("/bookmarks/new", app.AuthMiddleware(app.BookmarksNewHandler()))
+	r.Handle("/bookmarks/{id:[0-9]+}", app.AuthMiddleware(app.BookmarksShowHandler()))
+	r.Handle("/import", app.AuthMiddleware(app.ImportHandler())).Methods("GET", "POST")
+	r.Handle("/account", app.AuthMiddleware(app.AccountShowHandler()))
+	r.Handle("/account/edit", app.AuthMiddleware(app.AccountEditHandler()))
 
 	r.Handle("/login", app.LoginHandler())
 	r.Handle("/logout", app.LogoutHandler())
@@ -137,17 +136,17 @@ func main() {
 	r.NotFoundHandler = app.NotFoundHandler()
 
 	api := r.PathPrefix("/api").Subrouter()
-	api.Handle("/bookmarks", TokenAuthMiddleware(app.CreateBookmarkHandler())).Methods("POST")
-	api.Handle("/bookmarks", TokenAuthMiddleware(app.ApiBookmarksHandler())).Methods("GET")
-	api.Handle("/ping", CORSMiddleware(app.ApiPingHandler())).Methods("GET")
-	api.Handle("/auth", CORSMiddleware(app.CreateTokenHandler())).Methods("POST")
+	api.Handle("/bookmarks", handler.TokenAuthMiddleware(app.CreateBookmarkHandler())).Methods("POST")
+	api.Handle("/bookmarks", handler.TokenAuthMiddleware(app.ApiBookmarksHandler())).Methods("GET")
+	api.Handle("/ping", handler.CORSMiddleware(app.ApiPingHandler())).Methods("GET")
+	api.Handle("/auth", handler.CORSMiddleware(app.CreateTokenHandler())).Methods("POST")
 	api.Handle("/auth", app.PreflightHandler()).Methods("OPTIONS")
 
 	// Static file handler
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 	// Build middleware chain that is run for all requests
-	chain := alice.New(LoggingMiddleware, TimeoutMiddleware).Then(r)
+	chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(r)
 
 	if *usefcgi {
 		err = fcgi.Serve(nil, r)
