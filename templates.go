@@ -96,9 +96,7 @@ const bookmarkstmpl = `
   {{ range .Bookmarks }}
     <div class="rc-bookmark columns">
       <div class="column col-1">
-        <figure class="avatar" data-initial="BM" style="background: #5755d9;">
-          <img src="{{ .Icon }}">
-        </figure>
+        <img width="20" height="20" src="{{ .Icon | base64 }}">
       </div>
       <div class="column col-11">
         <div class="rc-bm-title">
@@ -270,6 +268,12 @@ const logintmpl = `
 {{ end }}
 `
 
+var funcMap = template.FuncMap{
+	"base64": func(s string) template.URL {
+		return template.URL(s)
+	},
+}
+
 func init() {
 	registerTemplate("index.html", indextmpl)
 	registerTemplate("bookmarks.html", bookmarkstmpl)
@@ -286,7 +290,7 @@ func init() {
 // Helper to compile template within a layout context with funcs
 func registerTemplate(label string, tmpl string) {
 	templates[label] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["label"].Parse(tmpl))
+	template.Must(templates[label].Funcs(funcMap).Parse(tmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {
