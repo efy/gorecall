@@ -271,38 +271,22 @@ const logintmpl = `
 `
 
 func init() {
-	templates["index.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["index.html"].Parse(indextmpl))
+	registerTemplate("index.html", indextmpl)
+	registerTemplate("bookmarks.html", bookmarkstmpl)
+	registerTemplate("bookmarksnew.html", bookmarksnewtmpl)
+	registerTemplate("bookmarksshow.html", bookmarksshowtmpl)
+	registerTemplate("import.html", importtmpl)
+	registerTemplate("importsuccess.html", importsuccesstmpl)
+	registerTemplate("accountshow.html", accountshowtmpl)
+	registerTemplate("accountedit.html", accountedittmpl)
+	registerTemplate("servererror.html", servererrortmpl)
+	registerTemplate("notfound.html", notfoundtmpl)
+}
 
-	templates["bookmarks.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["bookmarks.html"].Parse(bookmarkstmpl))
-
-	templates["import.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["import.html"].Parse(importtmpl))
-
-	templates["importsuccess.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["importsuccess.html"].Parse(importsuccesstmpl))
-
-	templates["login.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["login.html"].Parse(logintmpl))
-
-	templates["bookmarksnew.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["bookmarksnew.html"].Parse(bookmarksnewtmpl))
-
-	templates["bookmarksshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["bookmarksshow.html"].Parse(bookmarksshowtmpl))
-
-	templates["accountshow.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["accountshow.html"].Parse(accountshowtmpl))
-
-	templates["accountedit.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["accountedit.html"].Parse(accountedittmpl))
-
-	templates["servererror.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["servererror.html"].Parse(servererrortmpl))
-
-	templates["notfound.html"] = template.Must(template.New("layout").Parse(layouttmpl))
-	template.Must(templates["notfound.html"].Parse(notfoundtmpl))
+// Helper to compile template within a layout context with funcs
+func registerTemplate(label string, tmpl string) {
+	templates[label] = template.Must(template.New("layout").Parse(layouttmpl))
+	template.Must(templates["label"].Parse(tmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {
