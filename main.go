@@ -5,8 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"net/http/cgi"
-	"net/http/fcgi"
 	"os"
 	"strings"
 
@@ -14,6 +12,7 @@ import (
 	"github.com/efy/gorecall/database"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/handler"
+	"github.com/efy/gorecall/server"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
@@ -149,11 +148,14 @@ func main() {
 	chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(r)
 
 	if *usefcgi {
-		err = fcgi.Serve(nil, r)
+		err = server.FCGI(nil, chain)
 	} else if *usecgi {
-		err = cgi.Serve(r)
+		err = server.CGI(chain)
 	} else {
-		err = http.ListenAndServe(*addr, chain)
+		srv := server.HTTP
+		srv.Addr = *addr
+		srv.Handler = chain
+		err = srv.ListenAndServe()
 	}
 
 	if err != nil {
