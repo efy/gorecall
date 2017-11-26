@@ -12,8 +12,8 @@ import (
 	"github.com/efy/gorecall/database"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/handler"
+	"github.com/efy/gorecall/router"
 	"github.com/efy/gorecall/server"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
 )
@@ -120,32 +120,33 @@ func main() {
 
 	app := handler.NewApp(db, uRepo, bmRepo, store)
 
-	r := mux.NewRouter()
-	r.Handle("/", app.AuthMiddleware(app.HomeHandler()))
-	r.Handle("/bookmarks", app.AuthMiddleware(app.BookmarksHandler()))
-	r.Handle("/bookmarks/new", app.AuthMiddleware(app.BookmarksNewHandler()))
-	r.Handle("/bookmarks/{id:[0-9]+}", app.AuthMiddleware(app.BookmarksShowHandler()))
-	r.Handle("/import", app.AuthMiddleware(app.ImportHandler())).Methods("GET", "POST")
-	r.Handle("/account", app.AuthMiddleware(app.AccountShowHandler()))
-	r.Handle("/account/edit", app.AuthMiddleware(app.AccountEditHandler()))
+	m := router.App()
+	m.Get(router.Dashboard).Handler(app.AuthMiddleware(app.HomeHandler()))
+	m.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
+	m.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
+	m.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
+	m.Get(router.Import).Handler(app.AuthMiddleware(app.ImportHandler()))
+	m.Get(router.Account).Handler(app.AuthMiddleware(app.AccountShowHandler()))
+	m.Get(router.EditAccount).Handler(app.AuthMiddleware(app.AccountEditHandler()))
+	m.Get(router.Login).Handler(app.LoginHandler())
+	m.Get(router.Logout).Handler(app.LogoutHandler())
+	m.NotFoundHandler = app.NotFoundHandler()
 
-	r.Handle("/login", app.LoginHandler())
-	r.Handle("/logout", app.LogoutHandler())
-
-	r.NotFoundHandler = app.NotFoundHandler()
-
-	api := r.PathPrefix("/api").Subrouter()
-	api.Handle("/bookmarks", handler.TokenAuthMiddleware(app.CreateBookmarkHandler())).Methods("POST")
-	api.Handle("/bookmarks", handler.TokenAuthMiddleware(app.ApiBookmarksHandler())).Methods("GET")
-	api.Handle("/ping", handler.CORSMiddleware(app.ApiPingHandler())).Methods("GET")
-	api.Handle("/auth", handler.CORSMiddleware(app.CreateTokenHandler())).Methods("POST")
-	api.Handle("/auth", app.PreflightHandler()).Methods("OPTIONS")
+	api := router.Api()
+	api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.CreateBookmarkHandler()))
+	api.Get(router.Bookmarks).Handler(handler.TokenAuthMiddleware(app.ApiBookmarksHandler()))
+	api.Get(router.Ping).Handler(handler.CORSMiddleware(app.ApiPingHandler()))
+	api.Get(router.Authenticate).Handler(handler.CORSMiddleware(app.CreateTokenHandler()))
+	api.Get(router.Preflight).Handler(app.PreflightHandler())
 
 	// Static file handler
-	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	m.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
+	// Mount api router onto app
+	m.PathPrefix("/api/").Handler(http.StripPrefix("/api/", api))
 
 	// Build middleware chain that is run for all requests
-	chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(r)
+	chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(m)
 
 	if *usefcgi {
 		err = server.FCGI(nil, chain)
