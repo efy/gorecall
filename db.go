@@ -12,7 +12,8 @@ const (
     CREATE TABLE bookmarks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT,
-      url TEXT
+      url TEXT,
+      icon TEXT
     );
   `
 

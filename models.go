@@ -12,12 +12,13 @@ type Bookmark struct {
 	ID    int64  `db:"id"`
 	Title string `db:"title"`
 	URL   string `db:"url"`
+	Icon  string `db:"icon"`
 }
 
 const (
 	bookmarkInsert = `
-    INSERT INTO bookmarks (title, url)
-    VALUES (?, ?)
+    INSERT INTO bookmarks (title, url, icon)
+    VALUES (?, ?, ?)
   `
 	bookmarkSelectBase = `
     SELECT * FROM bookmarks
@@ -44,7 +45,7 @@ func (b *bookmarkRepo) GetByID(id int64) (*Bookmark, error) {
 }
 
 func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
-	result, err := b.db.Exec(bookmarkInsert, bm.Title, bm.URL)
+	result, err := b.db.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon)
 	if err != nil {
 		return nil, err
 	}

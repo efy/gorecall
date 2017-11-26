@@ -142,6 +142,7 @@ func (app *App) ImportHandler() http.Handler {
 			ctx.Bookmarks = append(ctx.Bookmarks, Bookmark{
 				Title: v.Title,
 				URL:   v.Url,
+				Icon:  v.Icon,
 			})
 		}
 

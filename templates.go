@@ -97,6 +97,7 @@ const bookmarkstmpl = `
     <div class="rc-bookmark columns">
       <div class="column col-1">
         <figure class="avatar" data-initial="BM" style="background: #5755d9;">
+          <img src="{{ .Icon }}">
         </figure>
       </div>
       <div class="column col-11">
