@@ -95,8 +95,12 @@ const bookmarkstmpl = `
 <div class="rc-list">
   {{ range .Bookmarks }}
     <div class="rc-bookmark columns">
-      <div class="column col-1">
-        <img width="20" height="20" src="{{ .Icon | base64 }}">
+      <div class="text-center column col-1">
+				{{ if .Icon }}
+					<img width="20" height="20" src="{{ .Icon | base64 }}">
+				{{ else }}
+					<img width="20" height="20" src="" onerror="this.src = '/public/placeholder_favicon.png'">
+				{{ end }}
       </div>
       <div class="column col-11">
         <div class="rc-bm-title">
