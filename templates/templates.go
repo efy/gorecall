@@ -108,6 +108,17 @@ const bookmarkstmpl = `
     </div>
   {{ end }}
 </div>
+<div class="rc-pagination-container">
+	<ul class="pagination">
+		<li class="page-item disabled"><a href="#">Previous</a></li>
+		<li class="page-item active"><a href="#">1</a></li>
+		<li class="page-item"><a href="#">2</a></li>
+		<li class="page-item"><a href="#">3</a></li>
+		<li class="page-item"><a href="#">4</a></li>
+		<li class="page-item"><a href="#">5</a></li>
+		<li class="page-item"><a href="#">Next</a></li>
+	</ul>
+</div>
 {{ end }}
 
 {{ end }}

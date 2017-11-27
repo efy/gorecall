@@ -45,3 +45,8 @@ body { font-size: 16px;
 .rc-bm-title a:hover {
   opacity: .9;
 }
+
+.rc-pagination-container {
+  display: flex;
+  justify-content: space-around;
+}
