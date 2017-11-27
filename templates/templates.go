@@ -56,7 +56,7 @@ const layouttmpl = `
 					</div>
 				</div>
 				<div class="column col-10">
-					<div class="content-area container">
+					<div class="content-area">
 						{{ block "content" . }} {{ end }}
 					</div>
 				</div>
@@ -92,13 +92,6 @@ const indextmpl = `
 
 const bookmarkstmpl = `
 {{ define "content" }}
-
-<div class="rc-header">
-	<h2>Bookmarks</h2>
-	<div class="rc-header-actions">
-		<a href="/bookmarks/new" class="btn">New</a>
-	</div>
-</div>
 
 {{ if not .Bookmarks }}
 <div class="empty">
@@ -269,14 +262,8 @@ const bookmarksshowtmpl = `
 
 const bookmarksnewtmpl = `
 {{ define "content" }}
-<h2>New Bookmark</h2>
 
 <form action="/bookmarks/new" method="post">
-  <div class="form-group">
-    <label class="form-label" for="title">Title</label>
-    <input id="title" class="form-input" type="text" name="title">
-  </div>
-
   <div class="form-group">
     <label class="form-label" for="url">URL</label>
     <input id="url" class="form-input" type="text" name="url">
