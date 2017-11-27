@@ -11,6 +11,7 @@ import (
 	"github.com/efy/gorecall/router"
 	"github.com/efy/gorecall/server"
 	"github.com/efy/gorecall/subcmd"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
 )
@@ -59,6 +60,9 @@ var serve = subcmd.Command{
 		m.Get(router.Logout).Handler(app.LogoutHandler())
 		m.NotFoundHandler = app.NotFoundHandler()
 
+		// Static file handler
+		m.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+
 		api := router.Api()
 		api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.CreateBookmarkHandler()))
 		api.Get(router.Bookmarks).Handler(handler.TokenAuthMiddleware(app.ApiBookmarksHandler()))
@@ -66,14 +70,16 @@ var serve = subcmd.Command{
 		api.Get(router.Authenticate).Handler(handler.CORSMiddleware(app.CreateTokenHandler()))
 		api.Get(router.Preflight).Handler(app.PreflightHandler())
 
-		// Static file handler
-		m.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+		r := mux.NewRouter()
 
 		// Mount api router onto app
-		m.PathPrefix("/api/").Handler(http.StripPrefix("/api/", api))
+		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", api))
+
+		// Mount the web app
+		r.PathPrefix("/").Handler(m)
 
 		// Build middleware chain that is run for all requests
-		chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(m)
+		chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(r)
 
 		if *usefcgi {
 			err = server.FCGI(nil, chain)
