@@ -103,7 +103,7 @@ const bookmarkstmpl = `
 				{{ end }}
       </div>
       <div class="column col-11">
-        <div class="rc-bm-title">
+        <div class="rc-bm-title text-ellipsis">
           <a href="{{ .URL }}" target="_blank" rel="noopener">
             {{ .Title }}
           </a>
@@ -114,7 +114,7 @@ const bookmarkstmpl = `
 </div>
 <div class="rc-pagination-container">
 	<ul class="pagination">
-		{{ if lt .Pagination.Prev 1 }}
+		{{ if lt .Pagination.Prev 0 }}
 			<li class="page-item disabled"><a href="#">Previous</a></li>
 		{{ else }}
 			<li class="page-item"><a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Prev }}">Previous</a></li>
