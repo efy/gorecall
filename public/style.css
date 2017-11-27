@@ -2,20 +2,29 @@
 @import url(/public/spectre-icons.min.css);
 @import url(/public/spectre-exp.min.css);
 
-body { font-size: 16px;
+body, html {
+  height: 100%;
+}
+
+body {
+  font-size: 16px;
   background-color: #fbfbfb;
 }
 
 .wrapper {
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 40px;
+  max-width: 1400px;
+  padding: 10px;
   background-color: white;
-  min-height: 600px;
+  height: 100%;
+}
+
+.vh {
+  height: 100%;
 }
 
 .content-area {
-  margin-top: 40px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .logo {
@@ -27,6 +36,23 @@ body { font-size: 16px;
 
 * {
   box-sizing: border-box;
+}
+
+.rc-sidebar {
+  border-right: 1px solid #eaeaea;
+  height: 100%;
+}
+
+.rc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rc-bm-list {
+  max-height: 86%;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .rc-bookmark {
@@ -51,8 +77,7 @@ body { font-size: 16px;
 }
 
 .rc-pagination-container {
-  display: flex;
-  justify-content: space-around;
+  background: white;
 }
 
 .rc-bm-favicon {

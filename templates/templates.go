@@ -21,34 +21,40 @@ const layouttmpl = `
   </head>
   <body>
     <div class="wrapper">
-      <div class="container">
-        <header class="navbar">
-          <nav class="navbar-section">
-            <img src="/public/logo.svg" class="logo">
-            {{ if .Authenticated }}
-              <a href="/bookmarks" class="btn btn-link">Bookmarks</a>
-              <a href="/import" class="btn btn-link">Import</a>
-            {{ end }}
-          </nav>
-          <nav class="navbar-section">
-            {{ if .Authenticated }}
-              <a href="/logout" class="btn btn-link">Logout</a>
-              <a href="/account" class="btn btn-link">
-                {{ .Username }}
-                <figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
-                  <img>
-                </figure>
-              </a>
-            {{ else }}
-              <a href="/login" class="btn btn-link">Login</a>
-            {{ end }}
-          </nav>
-        </header>
-      </div>
-
-      <div class="content-area container">
-        {{ block "content" . }} {{ end }}
-      </div>
+			<div class="columns vh">
+				<div class="column col-2 vh">
+					<div class="rc-sidebar">
+						<img src="/public/logo.svg" class="logo">
+						<ul class="nav">
+							{{ if .Authenticated }}
+								<li class="nav-item">
+									<a href="/bookmarks" class="btn btn-link">Bookmarks</a>
+								</li>
+								<li class="nav-item">
+									<a href="/import" class="btn btn-link">Import</a>
+								</li>
+								<li class="divider"></li>
+								<li class="nav-item">
+									<a href="/logout" class="btn btn-link">Logout</a>
+								</li>
+								<li class="nav-item">
+									<a href="/account" class="btn btn-link">
+										{{ .Username }}
+										<figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
+											<img>
+										</figure>
+									</a>
+								</li>
+							{{ end }}
+						</ul>
+					</div>
+				</div>
+				<div class="column col-10">
+					<div class="content-area container">
+						{{ block "content" . }} {{ end }}
+					</div>
+				</div>
+			</div>
     </div>
   </body>
 </html>
@@ -73,7 +79,7 @@ const notfoundtmpl = `
 const indextmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Home</h2>
+<h2>Dashboard</h2>
 
 {{ end }}
 `
@@ -81,7 +87,12 @@ const indextmpl = `
 const bookmarkstmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Bookmarks</h2>
+<div class="rc-header">
+	<h2>Bookmarks</h2>
+	<div class="rc-header-actions">
+		<a href="/bookmarks/new" class="btn">New</a>
+	</div>
+</div>
 
 {{ if not .Bookmarks }}
 <div class="empty">
@@ -96,7 +107,7 @@ const bookmarkstmpl = `
   </div>
 </div>
 {{ else }}
-<div class="rc-list">
+<div class="rc-bm-list">
   {{ range .Bookmarks }}
     <div class="rc-bookmark columns">
       <div class="text-center rc-bm-favicon column col-1">
@@ -109,7 +120,7 @@ const bookmarkstmpl = `
       <div class="column col-11">
         <div class="rc-bm-title text-ellipsis">
           <a href="{{ .URL }}" target="_blank" rel="noopener">
-            {{ .Title }}
+            {{ .Title | html }}
           </a>
         </div>
 				<div class="rc-bm-details">
@@ -222,7 +233,7 @@ const accountedittmpl = `
 const bookmarksshowtmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Show bookmark</h2>
+<h2>Show bookmark</h2>
 
 <dl>
   <dt>ID</dt>
@@ -238,7 +249,7 @@ const bookmarksshowtmpl = `
 
 const bookmarksnewtmpl = `
 {{ define "content" }}
-<h2 class="text-center">New Bookmark</h2>
+<h2>New Bookmark</h2>
 
 <form action="/bookmarks/new" method="post">
   <div class="form-group">
@@ -263,10 +274,10 @@ const bookmarksnewtmpl = `
 const importsuccesstmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Import</h2>
+<h2>Import</h2>
 
 <div>
-  <p class="text-center">
+  <p>
     Successfully imported {{ len .Bookmarks }} bookmarks.
   </p>
 </div>
@@ -276,7 +287,7 @@ const importsuccesstmpl = `
 const importtmpl = `
 {{ define "content" }}
 
-<h2 class="text-center">Import</h2>
+<h2>Import</h2>
 
 <form enctype="multipart/form-data" method="post" action="/import">
   <div class="form-group">
@@ -346,6 +357,9 @@ var funcMap = template.FuncMap{
 	},
 	"timeago": func(t time.Time) string {
 		return humanize.Time(t)
+	},
+	"html": func(s string) template.HTML {
+		return template.HTML(s)
 	},
 }
 
