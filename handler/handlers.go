@@ -15,9 +15,12 @@ import (
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
 )
+
+var decoder = schema.NewDecoder()
 
 // AppCtx that can be built and passed to templates
 type AppCtx struct {
@@ -182,7 +185,14 @@ func (app *App) AccountEditHandler() http.Handler {
 func (app *App) BookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
-		bookmarks, err := app.br.GetAll()
+
+		opts := datastore.DefaultListOptions
+		err := decoder.Decode(&opts, r.URL.Query())
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		bookmarks, err := app.br.List(opts)
 		if err != nil {
 			renderError(w, err)
 			return
