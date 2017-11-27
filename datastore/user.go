@@ -2,14 +2,16 @@ package datastore
 
 import (
 	"errors"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type User struct {
-	ID       int64  `db:"id"`
-	Username string `db:"username"`
-	Password string `db:"password"`
+	ID       int64     `db:"id"`
+	Username string    `db:"username"`
+	Password string    `db:"password"`
+	Created  time.Time `db:"created"`
 }
 
 const (

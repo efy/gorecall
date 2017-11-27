@@ -29,6 +29,10 @@ const (
   `
 
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
+
+	bookmarkCount = `
+		SELECT COUNT(*) as count FROM bookmarks
+	`
 )
 
 type BookmarkRepo interface {
@@ -36,6 +40,7 @@ type BookmarkRepo interface {
 	GetByID(id int64) (*Bookmark, error)
 	GetAll() ([]Bookmark, error)
 	List(opts ListOptions) ([]Bookmark, error)
+	Count() (int, error)
 }
 
 type bookmarkRepo struct {
@@ -66,6 +71,14 @@ func (b *bookmarkRepo) GetAll() ([]Bookmark, error) {
 		return nil, err
 	}
 	return bms, nil
+}
+
+func (b *bookmarkRepo) Count() (int, error) {
+	var count int
+	if err := b.db.Get(&count, bookmarkCount); err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func (b *bookmarkRepo) List(opts ListOptions) ([]Bookmark, error) {

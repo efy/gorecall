@@ -202,18 +202,26 @@ func (app *App) BookmarksHandler() http.Handler {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+
 		bookmarks, err := app.br.List(opts)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
+
+		count, err := app.br.Count()
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
 		ctx.Bookmarks = bookmarks
 
 		p := Pagination{
 			Current: opts.Page,
 			Next:    opts.Page + 1,
 			Prev:    opts.Page - 1,
-			Last:    200,
+			Last:    count / opts.PerPage,
 			List: []int{
 				opts.Page + 1,
 				opts.Page + 2,
@@ -345,7 +353,7 @@ func (app *App) ApiBookmarksHandler() http.Handler {
 func renderError(w http.ResponseWriter, err error) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		templates.RenderTemplate(w, "servererror.html", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
