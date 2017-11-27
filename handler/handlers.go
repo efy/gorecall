@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -57,7 +56,6 @@ func (h App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) CreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("CreateBookmarkHandler")
 		decoder := json.NewDecoder(r.Body)
 		var b datastore.Bookmark
 		err := decoder.Decode(&b)
@@ -92,8 +90,6 @@ func (app *App) LoginHandler() http.Handler {
 		if name != "" && pass != "" {
 			check := app.authenticate(name, pass)
 
-			fmt.Println(check)
-
 			if !check {
 				templates.RenderTemplate(w, "login.html", ctx)
 				return
@@ -101,7 +97,7 @@ func (app *App) LoginHandler() http.Handler {
 
 			session, err := app.store.Get(r, "sesh")
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 			session.Values["username"] = name
 			session.Values["authenticated"] = true
@@ -119,7 +115,7 @@ func (app *App) LogoutHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := app.store.Get(r, "sesh")
 		if err != nil {
-			fmt.Println("error retrieving session")
+			log.Println("error retrieving session")
 		}
 		session.Options.MaxAge = -1
 		err = session.Save(r, w)
@@ -184,7 +180,7 @@ func (app *App) AccountEditHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
 		if r.Method == "POST" {
-			fmt.Println("Account update not implemented")
+			log.Println("Account update not implemented")
 			templates.RenderTemplate(w, "accountedit.html", ctx)
 		} else {
 			templates.RenderTemplate(w, "accountedit.html", ctx)
@@ -330,10 +326,9 @@ func (app *App) CreateTokenHandler() http.Handler {
 			claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 			tokenString, err := token.SignedString([]byte("secret"))
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 			w.Write([]byte(tokenString))
-			fmt.Println(tokenString)
 			return
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -378,7 +373,7 @@ func (app *App) initAppCtx(r *http.Request) *AppCtx {
 	ctx := NewAppCtx()
 	session, err := app.store.Get(r, "sesh")
 	if err != nil {
-		fmt.Println("error retrieving session")
+		log.Println("error retrieving session")
 	}
 
 	auth, ok := session.Values["authenticated"].(bool)
@@ -393,7 +388,7 @@ func (app *App) initAppCtx(r *http.Request) *AppCtx {
 
 	user, err := app.ur.GetByUsername(username)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	ctx.User = user
