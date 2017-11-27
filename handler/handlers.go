@@ -152,9 +152,10 @@ func (app *App) ImportHandler() http.Handler {
 		// Convert from bookmark.Bookmark to datastore.Bookmark and populate ctx.Bookmarks
 		for _, v := range parsed {
 			ctx.Bookmarks = append(ctx.Bookmarks, datastore.Bookmark{
-				Title: v.Title,
-				URL:   v.Url,
-				Icon:  v.Icon,
+				Title:   v.Title,
+				URL:     v.Url,
+				Icon:    v.Icon,
+				Created: v.Created,
 			})
 		}
 
