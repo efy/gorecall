@@ -110,13 +110,39 @@ const bookmarkstmpl = `
 </div>
 <div class="rc-pagination-container">
 	<ul class="pagination">
-		<li class="page-item disabled"><a href="#">Previous</a></li>
-		<li class="page-item active"><a href="#">1</a></li>
-		<li class="page-item"><a href="#">2</a></li>
-		<li class="page-item"><a href="#">3</a></li>
-		<li class="page-item"><a href="#">4</a></li>
-		<li class="page-item"><a href="#">5</a></li>
-		<li class="page-item"><a href="#">Next</a></li>
+		{{ if lt .Pagination.Prev 1 }}
+			<li class="page-item disabled"><a href="#">Previous</a></li>
+		{{ else }}
+			<li class="page-item"><a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Prev }}">Previous</a></li>
+		{{ end }}
+
+		<li class="page-item active">
+			<a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Current }}">{{ .Pagination.Current }}</a>
+		</li>
+
+		{{ $save := .Pagination }}
+		{{ range $page := .Pagination.List }}
+			{{ if lt $page $save.Last }}
+				<li class="page-item">
+					<a href="/bookmarks?per_page={{ $save.PerPage }}&page={{ $page}}">{{ $page }}</a>
+				</li>
+			{{ end }}
+		{{ end }}
+	
+		{{ if ne .Pagination.Last .Pagination.Current }}
+			<li class="page-item">
+				<span>...</span>
+			</li>
+			<li class="page-item">
+				<a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Last }}">{{ .Pagination.Last }}</a>
+			</li>
+		{{ end }}
+
+		{{ if gt .Pagination.Next .Pagination.Last }}
+			<li class="page-item disabled"><a href="#">Next</a></li>
+		{{ else }}
+			<li class="page-item"><a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Next }}">Next</a></li>
+		{{ end }}
 	</ul>
 </div>
 {{ end }}

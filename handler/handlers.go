@@ -29,10 +29,20 @@ type AppCtx struct {
 	User          *datastore.User
 	Bookmarks     []datastore.Bookmark
 	Bookmark      *datastore.Bookmark
+	Pagination    Pagination
 }
 
 func NewAppCtx() *AppCtx {
 	return &AppCtx{}
+}
+
+type Pagination struct {
+	Current int
+	Next    int
+	Prev    int
+	Last    int
+	List    []int
+	PerPage int
 }
 
 type App struct {
@@ -198,6 +208,23 @@ func (app *App) BookmarksHandler() http.Handler {
 			return
 		}
 		ctx.Bookmarks = bookmarks
+
+		p := Pagination{
+			Current: opts.Page,
+			Next:    opts.Page + 1,
+			Prev:    opts.Page - 1,
+			Last:    200,
+			List: []int{
+				opts.Page + 1,
+				opts.Page + 2,
+				opts.Page + 3,
+				opts.Page + 4,
+				opts.Page + 5,
+			},
+			PerPage: opts.PerPage,
+		}
+
+		ctx.Pagination = p
 
 		templates.RenderTemplate(w, "bookmarks.html", ctx)
 	})
