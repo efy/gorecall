@@ -43,11 +43,19 @@ body {
   height: 100%;
 }
 
+.rc-sidebar .nav {
+  margin-top: 2rem;
+}
+
 .rc-sidebar .nav-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-right: .5rem;
+}
+
+.rc-sidebar .nav-item.active > a {
+  border-left: 2px solid #eaeaea;
 }
 
 .rc-sidebar .nav-item .icon {
