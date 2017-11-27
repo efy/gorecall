@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"net/url"
 	"time"
 
 	humanize "github.com/dustin/go-humanize"
@@ -98,7 +99,7 @@ const bookmarkstmpl = `
 <div class="rc-list">
   {{ range .Bookmarks }}
     <div class="rc-bookmark columns">
-      <div class="text-center column col-1">
+      <div class="text-center rc-bm-favicon column col-1">
 				{{ if .Icon }}
 					<img width="20" height="20" src="{{ .Icon | base64 }}">
 				{{ else }}
@@ -115,6 +116,14 @@ const bookmarkstmpl = `
 					<time>
 						{{ .Created | timeago }}
 					</time>
+					•
+					<a href="/bookmarks/{{ .ID }}">
+						show
+					</a>
+					•
+					<a href="{{ .URL | website }}" rel="noopener" target="_blank">
+						{{ .URL | domain }}
+					</a>
 				</div>
       </div>
     </div>
@@ -320,6 +329,20 @@ const logintmpl = `
 var funcMap = template.FuncMap{
 	"base64": func(s string) template.URL {
 		return template.URL(s)
+	},
+	"website": func(s string) template.URL {
+		u, err := url.Parse(s)
+		if err != nil {
+			return ""
+		}
+		return template.URL(u.Scheme + "://" + u.Host)
+	},
+	"domain": func(s string) string {
+		u, err := url.Parse(s)
+		if err != nil {
+			return ""
+		}
+		return u.Host
 	},
 	"timeago": func(t time.Time) string {
 		return humanize.Time(t)

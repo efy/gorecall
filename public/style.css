@@ -54,3 +54,9 @@ body { font-size: 16px;
   display: flex;
   justify-content: space-around;
 }
+
+.rc-bm-favicon {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
