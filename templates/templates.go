@@ -28,22 +28,28 @@ const layouttmpl = `
 						<ul class="nav">
 							{{ if .Authenticated }}
 								<li class="nav-item">
-									<a href="/bookmarks" class="btn btn-link">Bookmarks</a>
+									<a href="/bookmarks">All</a>
 								</li>
 								<li class="nav-item">
-									<a href="/import" class="btn btn-link">Import</a>
+									<a href="/bookmarks/new">Add Link</a>
+									<i class="icon icon-plus"></i>
+								</li>
+								<li class="divider" data-content="Tags"></li>
+								<li class="nav-item">
+									<a href="/bookmarks">Untagged</a>
+								</li>
+								<li class="nav-item">
+									<a href="/bookmarks">Add Tag</a>
+									<i class="icon icon-plus"></i>
 								</li>
 								<li class="divider"></li>
 								<li class="nav-item">
-									<a href="/logout" class="btn btn-link">Logout</a>
+									<a href="/settings/account">
+										Settings
+									</a>
 								</li>
 								<li class="nav-item">
-									<a href="/account" class="btn btn-link">
-										{{ .Username }}
-										<figure class="avatar avatar-sm" data-initial="X" style="background-color: #5755d;">
-											<img>
-										</figure>
-									</a>
+									<a href="/logout">Logout</a>
 								</li>
 							{{ end }}
 						</ul>
@@ -185,14 +191,28 @@ const bookmarkstmpl = `
 const accountshowtmpl = `
 {{ define "content" }}
 
-<header class="navbar">
-  <div class="navbar-section">
-    <h2>Account</h2>
-  </div>
-  <div class="navbar-section">
-    <a class="btn btn-default" href="/account/edit">Update Account</a>
-  <div>
-</header>
+<ul class="tab">
+	<li class="tab-item active">
+		<a href="/settings/account">
+			Account
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/preferences">
+			Preferences
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/import">
+			Import
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/export">
+			Export
+		</a>
+	</li>
+</ul>
 
 <dl>
   <dt>ID</dt>
@@ -284,12 +304,97 @@ const importsuccesstmpl = `
 {{ end }}
 `
 
+const preferencestmpl = `
+{{ define "content" }}
+
+<ul class="tab">
+	<li class="tab-item">
+		<a href="/settings/account">
+			Account
+		</a>
+	</li>
+	<li class="tab-item active">
+		<a href="/settings/preferences">
+			Preferences
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/import">
+			Import
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/export">
+			Export
+		</a>
+	</li>
+</ul>
+
+<form enctype="multipart/form-data" method="post" action="/settings/preferences">
+</form>
+
+{{ end }}
+`
+
+const exporttmpl = `
+{{ define "content" }}
+
+<ul class="tab">
+	<li class="tab-item">
+		<a href="/settings/account">
+			Account
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/preferences">
+			Preferences
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/import">
+			Import
+		</a>
+	</li>
+	<li class="tab-item active">
+		<a href="/settings/export">
+			Export
+		</a>
+	</li>
+</ul>
+
+<form enctype="multipart/form-data" method="post" action="/settings/export">
+</form>
+
+{{ end }}
+`
+
 const importtmpl = `
 {{ define "content" }}
 
-<h2>Import</h2>
+<ul class="tab">
+	<li class="tab-item">
+		<a href="/settings/account">
+			Account
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/preferences">
+			Preferences
+		</a>
+	</li>
+	<li class="tab-item active">
+		<a href="/settings/import">
+			Import
+		</a>
+	</li>
+	<li class="tab-item">
+		<a href="/settings/export">
+			Export
+		</a>
+	</li>
+</ul>
 
-<form enctype="multipart/form-data" method="post" action="/import">
+<form enctype="multipart/form-data" method="post" action="/settings/import">
   <div class="form-group">
     <label class="form-label" for="bookmarks">File</label>
     <input id="bookmarks_file" class="form-input" type="file" name="bookmarks">
@@ -369,9 +474,11 @@ func init() {
 	registerTemplate("bookmarksnew.html", bookmarksnewtmpl)
 	registerTemplate("bookmarksshow.html", bookmarksshowtmpl)
 	registerTemplate("import.html", importtmpl)
+	registerTemplate("export.html", exporttmpl)
 	registerTemplate("importsuccess.html", importsuccesstmpl)
 	registerTemplate("accountshow.html", accountshowtmpl)
 	registerTemplate("accountedit.html", accountedittmpl)
+	registerTemplate("preferences.html", preferencestmpl)
 	registerTemplate("servererror.html", servererrortmpl)
 	registerTemplate("notfound.html", notfoundtmpl)
 	registerTemplate("login.html", logintmpl)

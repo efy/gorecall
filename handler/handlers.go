@@ -127,6 +127,20 @@ func (app *App) LogoutHandler() http.Handler {
 	})
 }
 
+func (app *App) PreferencesHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := app.initAppCtx(r)
+		templates.RenderTemplate(w, "preferences.html", ctx)
+	})
+}
+
+func (app *App) ExportHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := app.initAppCtx(r)
+		templates.RenderTemplate(w, "export.html", ctx)
+	})
+}
+
 func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)

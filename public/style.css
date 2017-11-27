@@ -43,6 +43,18 @@ body {
   height: 100%;
 }
 
+.rc-sidebar .nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: .5rem;
+}
+
+.rc-sidebar .nav-item .icon {
+  width: .75em;
+  height: .75em;
+}
+
 .rc-header {
   display: flex;
   justify-content: space-between;

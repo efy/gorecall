@@ -12,11 +12,13 @@ const (
 	// Webapp only
 	Dashboard   = "dashboard:index"
 	Import      = "import"
+	Export      = "export"
 	Account     = "account"
 	EditAccount = "account:edit"
 	Login       = "login"
 	Logout      = "logout"
 	NewBookmark = "bookmarks:new"
+	Preferences = "preferences"
 
 	// Api only
 	Ping         = "ping"
@@ -32,9 +34,11 @@ func App() *mux.Router {
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/new").Methods("GET").Name(NewBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
-	m.Path("/import").Methods("GET", "POST").Name(Import)
-	m.Path("/account").Methods("GET").Name(Account)
-	m.Path("/account/edit").Methods("GET").Name(EditAccount)
+	m.Path("/settings/preferences").Methods("GET").Name(Preferences)
+	m.Path("/settings/account").Methods("GET").Name(Account)
+	m.Path("/settings/account/edit").Methods("GET").Name(EditAccount)
+	m.Path("/settings/import").Methods("GET", "POST").Name(Import)
+	m.Path("/settings/export").Methods("GET").Name(Export)
 	m.Path("/login").Methods("GET", "POST").Name(Login)
 	m.Path("/logout").Methods("GET", "POST").Name(Logout)
 
