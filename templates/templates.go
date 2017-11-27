@@ -44,12 +44,12 @@ const layouttmpl = `
 								</li>
 								<li class="divider"></li>
 								<li class="nav-item">
-									<a href="/settings/account">
-										Settings
-									</a>
+									<a href="/settings/account">Settings</a>
+									<i class="icon icon-forward"></i>
 								</li>
 								<li class="nav-item">
 									<a href="/logout">Logout</a>
+									<i class="icon icon-shutdown"></i>
 								</li>
 							{{ end }}
 						</ul>
