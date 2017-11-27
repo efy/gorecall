@@ -46,6 +46,10 @@ body { font-size: 16px;
   opacity: .9;
 }
 
+.rc-bm-details {
+  font-size: 12px;
+}
+
 .rc-pagination-container {
   display: flex;
   justify-content: space-around;

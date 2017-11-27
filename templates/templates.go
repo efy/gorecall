@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"time"
+
+	humanize "github.com/dustin/go-humanize"
 )
 
 var templates map[string]*template.Template = make(map[string]*template.Template)
@@ -108,6 +111,11 @@ const bookmarkstmpl = `
             {{ .Title }}
           </a>
         </div>
+				<div class="rc-bm-details">
+					<time>
+						{{ .Created | timeago }}
+					</time>
+				</div>
       </div>
     </div>
   {{ end }}
@@ -312,6 +320,9 @@ const logintmpl = `
 var funcMap = template.FuncMap{
 	"base64": func(s string) template.URL {
 		return template.URL(s)
+	},
+	"timeago": func(t time.Time) string {
+		return humanize.Time(t)
 	},
 }
 
