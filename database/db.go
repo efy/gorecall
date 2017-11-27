@@ -13,7 +13,8 @@ const (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT,
       url TEXT,
-      icon TEXT
+      icon TEXT,
+			created DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `
 
@@ -21,7 +22,8 @@ const (
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username VARCHAR(50),
-      password CHAR(60)
+      password CHAR(60),
+			created DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `
 )

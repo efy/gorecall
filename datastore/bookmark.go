@@ -2,15 +2,18 @@ package datastore
 
 import (
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Bookmark struct {
-	ID    int64  `db:"id"`
-	Title string `db:"title"`
-	URL   string `db:"url"`
-	Icon  string `db:"icon"`
+	ID     int64     `db:"id"`
+	Title  string    `db:"title"`
+	URL    string    `db:"url"`
+	Icon   string    `db:"icon"`
+	Create time.Time `db:"created"`
 }
 
 const (
@@ -22,7 +25,7 @@ const (
     SELECT * FROM bookmarks
   `
 	bookmarkListBase = `
-    SELECT * FROM bookmarks LIMIT ? OFFSET ?
+    SELECT * FROM bookmarks ORDER BY %s %s LIMIT ? OFFSET ?
   `
 
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
@@ -67,8 +70,10 @@ func (b *bookmarkRepo) GetAll() ([]Bookmark, error) {
 
 func (b *bookmarkRepo) List(opts ListOptions) ([]Bookmark, error) {
 	var bms []Bookmark
+	// Potentially unsafe
+	query := fmt.Sprintf(bookmarkListBase, opts.OrderBy, opts.Order)
 	offset := opts.PerPage * opts.Page
-	if err := b.db.Select(&bms, bookmarkListBase, opts.PerPage, offset); err != nil {
+	if err := b.db.Select(&bms, query, opts.PerPage, offset); err != nil {
 		return bms, err
 	}
 	return bms, nil
