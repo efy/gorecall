@@ -40,6 +40,69 @@ const importtmpl = `
   </div>
 </form>
 
+<div class="divider" data-content="Help"></div>
+<div class="columns">
+	<div class="column col-6">
+		<div class="rc-import-help-block">
+			<h4>Exporting from Google Chrome</h4>
+			<p>
+				<ol>
+					<li>Go to your bookmarks manager (CTRL+SHIFT+O)</li>
+					<li>Open "Organize" dropdown</li>
+					<li>Click "Export bookmarks to HTML file..."</li>
+				</ol>
+			</p>
+		</div>
+	</div>
+	<div class="column col-6">
+		<div class="rc-import-help-block">
+			<h4>Exporting from Mozilla Firefox</h4>
+			<p>
+				<ol>
+					<li>Go to your bookmarks library (CTRL+SHIFT+B)</li>
+					<li>Open "Import and Backup" dropdown</li>
+					<li>Click "Export bookmarks to HTML..."</li>
+				</ol>
+			</p>
+		</div>
+	</div>
+	<div class="column col-6">
+		<div class="rc-import-help-block">
+			<h4>Exporting from Safari</h4>
+			<p>
+				<ol>
+					<li>Open your "File" menu</li>
+					<li>Click "Export Bookmarks..."</li>
+				</ol>
+			</p>
+		</div>
+		<div class="rc-import-help-block">
+			<h4>Note about Microsoft Edge & Opera</h4>
+			<p>
+				Unfortunately these browsers do not support exporting bookmarks natively - although in the case of Opera there's a possibility to use 3rd party browser plugin.
+			</p>
+		</div>
+	</div>
+	<div class="column col-6">
+		<div class="rc-import-help-block">
+			<h4>Exporting from Internet Explorer 11</h4>
+			<p>
+				<ol>
+					<li>Open your favorites (button with star icon)</li>
+					<li>Open dropdown right next to "Add to favorites"</li>
+					<li>Click "Import and export"</li>
+					<li>Select "Export to a file"</li>
+					<li>In next step select "Favorites"</li>
+					<li>In next step select which bookmarks folders you want to export</li>
+					<li>In final step choose folder where you want your file and click on "Export"</li>
+				</ol>
+			</p>
+		</div>
+	</div>
+	<div class="column col-6">
+	</div>
+</div>
+
 {{ end }}
 `
 

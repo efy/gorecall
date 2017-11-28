@@ -131,3 +131,11 @@ body {
 .rc-flex-center .columns {
   width: 100%;
 }
+
+.rc-import-help-block {
+  padding: 1rem;
+  border: 1px solid #eaeaea;
+  margin-bottom: .8rem;
+  font-size: 14px;
+  line-height: 1.3;
+}
