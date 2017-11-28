@@ -26,6 +26,20 @@ const (
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `
+
+	tagsMigration = `
+    CREATE TABLE tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      label VARCHAR(50),
+			created DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+		CREATE TABLE bookmarks_tags (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			tag_id INTEGER,
+			bookmark_id INTEGER
+		);
+  `
 )
 
 func InitDatabase(file string) (*sqlx.DB, error) {
@@ -47,14 +61,21 @@ func MigrateDatabase(db *sqlx.DB) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println("created table bookmarks")
+		fmt.Println("success: bookmarks migration")
 	}
 
 	_, err = db.Exec(usersMigration)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println("created table user")
+		fmt.Println("success: users migration")
+	}
+
+	_, err = db.Exec(tagsMigration)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("success: tags migration")
 	}
 
 	fmt.Println("migration complete")
