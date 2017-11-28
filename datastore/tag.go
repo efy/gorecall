@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -25,13 +26,13 @@ type TagRepo interface {
 
 const (
 	tagInsert = `
-		INSERT INTO tags (label, description, color, created)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO tags (label, description, color)
+		VALUES (?, ?, ?)
 	`
 	tagSelectBase  = `SELECT * FROM tags`
 	tagSelectCount = `SELECT COUNT(*) FROM tags`
-	tagSelectByID  = tagSelectBase + `WHERE id = $1`
-	tagListBase    = tagSelectBase + `ORDER BY %s %s LIMIT ? OFFSET ?`
+	tagSelectByID  = tagSelectBase + ` WHERE id = $1 LIMIT 1`
+	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT ? OFFSET ?`
 )
 
 type tagRepo struct {
@@ -39,7 +40,7 @@ type tagRepo struct {
 }
 
 func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
-	result, err := t.db.Exec(tagInsert, tag.Label, tag.Description, tag.Color, tag.Created)
+	result, err := t.db.Exec(tagInsert, tag.Label, tag.Description, tag.Color)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +52,7 @@ func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
 func (t *tagRepo) GetByID(id int64) (*Tag, error) {
 	tag := Tag{}
 	if err := t.db.Get(&tag, tagSelectByID, id); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	return &tag, nil

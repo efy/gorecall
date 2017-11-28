@@ -6,6 +6,7 @@ import (
 
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
+	"github.com/gorilla/mux"
 )
 
 func (app *App) NewTagHandler() http.Handler {
@@ -40,7 +41,7 @@ func (app *App) CreateTagHandler() http.Handler {
 
 		id := strconv.FormatInt(tag.ID, 10)
 
-		http.Redirect(w, r, "/tag/"+id, 302)
+		http.Redirect(w, r, "/tags/"+id, 302)
 		return
 	})
 }
@@ -48,6 +49,20 @@ func (app *App) CreateTagHandler() http.Handler {
 func (app *App) TagHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
+		vars := mux.Vars(r)
+		id, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		tag, err := app.tr.GetByID(id)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+		ctx.Tag = tag
+
 		templates.RenderTemplate(w, "tag.html", ctx)
 	})
 }
