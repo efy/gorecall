@@ -4,16 +4,18 @@ const bookmarkstmpl = `
 {{ define "content" }}
 
 {{ if not .Bookmarks }}
-<div class="empty">
-  <div class="empty-icon">
-    <i class="icon icon-bookmark"></i>
-  </div>
-  <p class="empty-title h5">You have no Bookmarks</p>
-  <p class="empty-subtitle">Choose from the actions below to get started</p>
-  <div class="empty-action">
-    <a href="/import" class="btn btn-primary">Import</a>
-    <a href="/bookmarks/new" class="btn btn-primary">Add</a>
-  </div>
+<div class="rc-empty">
+	<div class="empty">
+		<div class="empty-icon">
+			<i class="icon icon-bookmark"></i>
+		</div>
+		<p class="empty-title h5">Your library is empty</p>
+		<p class="empty-subtitle">Choose from the actions below to get started</p>
+		<div class="empty-action">
+			<a href="/settings/import" class="btn btn-primary">Import</a>
+			<a href="/bookmarks/new" class="btn btn-primary">Add</a>
+		</div>
+	</div>
 </div>
 {{ else }}
 <div class="rc-bm-list">

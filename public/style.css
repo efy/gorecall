@@ -112,3 +112,22 @@ body {
   align-items: center;
   justify-content: space-around;
 }
+
+.rc-empty {
+  background: #f8f9fa;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.rc-flex-center {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.rc-flex-center .columns {
+  width: 100%;
+}
