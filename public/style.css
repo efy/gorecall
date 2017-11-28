@@ -1,3 +1,7 @@
+/**
+ * TODO: dont use import
+ */
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,700');
 @import url(/public/spectre.min.css);
 @import url(/public/spectre-icons.min.css);
 @import url(/public/spectre-exp.min.css);
@@ -7,6 +11,7 @@ body, html {
 }
 
 body {
+  font-family: 'Work Sans', sans-serif;
   font-size: 16px;
   background-color: #fbfbfb;
 }
@@ -70,7 +75,7 @@ body {
 }
 
 .rc-bm-list {
-  max-height: 86%;
+  height: calc(100% - 48px);
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -98,6 +103,8 @@ body {
 
 .rc-pagination-container {
   background: white;
+  height: 48px;
+  overflow: hidden;
 }
 
 .rc-bm-favicon {
