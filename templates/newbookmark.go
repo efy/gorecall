@@ -8,13 +8,11 @@ const newbookmarktmpl = `
 		<div class="column col-6 col-mx-auto">
 			<form action="/bookmarks/new" method="post">
 				<div class="form-group">
-					<label class="form-label" for="url">URL</label>
-					<input id="url" class="form-input" type="text" name="url">
-				</div>
-
-				<div class="form-group">
-					<button type="submit" class="btn btn-primary">Create</button>
-					<button type="reset" class="btn">Reset</button>
+					<div class="input-group">
+						<span class="input-group-addon addon-lg">URL</span>
+						<input id="url" class="form-input input-lg" type="text" name="url">
+						<button type="submit" disabled class="btn btn-primary btn-lg input-group-btn">Create</button>
+					</div>
 				</div>
 			</form>
 		</div>
