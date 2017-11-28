@@ -18,6 +18,11 @@ const newtagtmpl = `
 				</div>
 
 				<div class="form-group">
+					<label class="form-label" for="description">Description</label>
+					<textarea id="description" class="form-input" name="description"></textarea>
+				</div>
+
+				<div class="form-group">
 					<button type="submit" class="btn btn-primary">Create</button>
 					<button type="reset" class="btn">Reset</button>
 				</div>

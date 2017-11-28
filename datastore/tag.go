@@ -8,11 +8,11 @@ import (
 )
 
 type Tag struct {
-	ID          int64     `db:"id"`
-	Label       string    `db:"label"`
-	Description string    `db:"description"`
-	Color       string    `db:"color"`
-	Created     time.Time `db:"created"`
+	ID          int64     `db:"id" schema:"-"`
+	Label       string    `db:"label" schema:"label"`
+	Description string    `db:"description" schema:"description"`
+	Color       string    `db:"color" schema:"color"`
+	Created     time.Time `db:"created" schema:"-"`
 }
 
 type TagRepo interface {

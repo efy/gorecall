@@ -31,13 +31,16 @@ const (
     CREATE TABLE tags (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       label VARCHAR(50),
+			color VARCHAR(16),
+			description TEXT,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
 		CREATE TABLE bookmarks_tags (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			tag_id INTEGER,
-			bookmark_id INTEGER
+			bookmark_id INTEGER,
+			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
   `
 )

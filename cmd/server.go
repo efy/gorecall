@@ -44,9 +44,15 @@ var serve = subcmd.Command{
 			os.Exit(1)
 		}
 
+		trRepo, err := datastore.NewTagRepo(db)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		store := sessions.NewCookieStore([]byte("something-very-secret"))
 
-		app := handler.NewApp(db, uRepo, bmRepo, store)
+		app := handler.NewApp(db, uRepo, bmRepo, trRepo, store)
 
 		m := router.App()
 		m.Get(router.Dashboard).Handler(app.AuthMiddleware(app.HomeHandler()))

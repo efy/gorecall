@@ -44,6 +44,7 @@ type App struct {
 	db    *sqlx.DB
 	ur    datastore.UserRepo
 	br    datastore.BookmarkRepo
+	tr    datastore.TagRepo
 	store *sessions.CookieStore
 }
 
@@ -115,11 +116,12 @@ func (app *App) initAppCtx(r *http.Request) *AppCtx {
 	return ctx
 }
 
-func NewApp(db *sqlx.DB, ur datastore.UserRepo, br datastore.BookmarkRepo, store *sessions.CookieStore) App {
+func NewApp(db *sqlx.DB, ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo, store *sessions.CookieStore) App {
 	return App{
 		db,
 		ur,
 		br,
+		tr,
 		store,
 	}
 }
