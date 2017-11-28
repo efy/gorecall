@@ -8,6 +8,9 @@ const (
 	Bookmarks      = "bookmarks:index"
 	CreateBookmark = "bookmarks:create"
 	Bookmark       = "bookmark"
+	Tags           = "tags"
+	CreateTag      = "tags:create"
+	Tag            = "tag"
 
 	// Webapp only
 	Dashboard   = "dashboard:index"
@@ -34,6 +37,10 @@ func App() *mux.Router {
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/new").Methods("GET").Name(NewBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
+	m.Path("/tags").Methods("GET").Name(Tags)
+	m.Path("/tags").Methods("POST").Name(CreateTag)
+	m.Path("/tags/new").Methods("GET").Name(NewTag)
+	m.Path("/tags/{id:[0-9]+}").Methods("GET").Name(Tag)
 	m.Path("/settings/preferences").Methods("GET").Name(Preferences)
 	m.Path("/settings/account").Methods("GET").Name(Account)
 	m.Path("/settings/account/edit").Methods("GET").Name(EditAccount)
@@ -50,6 +57,10 @@ func Api() *mux.Router {
 	m.Path("/bookmarks").Methods("GET").Name(Bookmarks)
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
+	m.Path("/tags").Methods("GET").Name(Tags)
+	m.Path("/tags").Methods("POST").Name(CreateTag)
+	m.Path("/tags/new").Methods("GET").Name(NewTag)
+	m.Path("/tags/{id:[0-9]+}").Methods("GET").Name(Tag)
 	m.Path("/ping").Methods("GET").Name(Ping)
 	m.Path("/auth").Methods("POST").Name(Authenticate)
 
