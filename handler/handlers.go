@@ -187,7 +187,7 @@ func (app *App) ImportHandler() http.Handler {
 func (app *App) AccountShowHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
-		templates.RenderTemplate(w, "accountshow.html", ctx)
+		templates.RenderTemplate(w, "account.html", ctx)
 	})
 }
 
@@ -196,9 +196,9 @@ func (app *App) AccountEditHandler() http.Handler {
 		ctx := app.initAppCtx(r)
 		if r.Method == "POST" {
 			log.Println("Account update not implemented")
-			templates.RenderTemplate(w, "accountedit.html", ctx)
+			templates.RenderTemplate(w, "account.html", ctx)
 		} else {
-			templates.RenderTemplate(w, "accountedit.html", ctx)
+			templates.RenderTemplate(w, "account.html", ctx)
 		}
 	})
 }
@@ -270,7 +270,7 @@ func (app *App) BookmarksShowHandler() http.Handler {
 		}
 		ctx.Bookmark = bookmark
 
-		templates.RenderTemplate(w, "bookmarksshow.html", ctx)
+		templates.RenderTemplate(w, "bookmark.html", ctx)
 	})
 }
 
@@ -278,7 +278,7 @@ func (app *App) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
 		if r.Method == "GET" {
-			templates.RenderTemplate(w, "bookmarksnew.html", ctx)
+			templates.RenderTemplate(w, "newbookmark.html", ctx)
 		}
 
 		if r.Method == "POST" {
