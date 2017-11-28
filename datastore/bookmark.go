@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -94,7 +93,7 @@ func (b *bookmarkRepo) List(opts ListOptions) ([]Bookmark, error) {
 
 func NewBookmarkRepo(database *sqlx.DB) (*bookmarkRepo, error) {
 	if database == nil {
-		return nil, errors.New("must use valid database connection")
+		return nil, ErrInvalidDB
 	}
 	bmr := bookmarkRepo{
 		db: database,

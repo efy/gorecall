@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"errors"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -73,7 +72,7 @@ func (ur *userRepo) GetByUsername(username string) (*User, error) {
 
 func NewUserRepo(database *sqlx.DB) (*userRepo, error) {
 	if database == nil {
-		return nil, errors.New("must use valid database connection")
+		return nil, ErrInvalidDB
 	}
 	ur := userRepo{
 		db: database,

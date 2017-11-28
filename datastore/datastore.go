@@ -1,5 +1,11 @@
 package datastore
 
+import "fmt"
+
+var (
+	ErrInvalidDB = fmt.Errorf("invalid database")
+)
+
 // Provide default options with sensible values
 var DefaultListOptions = ListOptions{
 	PerPage: 20,

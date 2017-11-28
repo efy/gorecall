@@ -1,7 +1,6 @@
 package datastore
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -86,7 +85,7 @@ func (t *tagRepo) Count() (int, error) {
 
 func NewTagRepo(database *sqlx.DB) (*tagRepo, error) {
 	if database == nil {
-		return nil, errors.New("must use valid database connection")
+		return nil, ErrInvalidDB
 	}
 	tr := tagRepo{
 		db: database,
