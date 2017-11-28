@@ -21,6 +21,7 @@ const (
 	Login       = "login"
 	Logout      = "logout"
 	NewBookmark = "bookmarks:new"
+	NewTag      = "tag:new"
 	Preferences = "preferences"
 
 	// Api only
