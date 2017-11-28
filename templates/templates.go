@@ -57,17 +57,25 @@ var funcMap = template.FuncMap{
 
 func init() {
 	registerTemplate("index.html", indextmpl)
+
 	registerTemplate("bookmarks.html", bookmarkstmpl)
 	registerTemplate("newbookmark.html", newbookmarktmpl)
 	registerTemplate("bookmark.html", bookmarktmpl)
+
+	registerTemplate("tags.html", tagstmpl)
+	registerTemplate("newtag.html", newtagtmpl)
+	registerTemplate("tag.html", tagtmpl)
+
 	registerTemplate("import.html", importtmpl)
 	registerTemplate("export.html", exporttmpl)
 	registerTemplate("importsuccess.html", importsuccesstmpl)
 	registerTemplate("account.html", accounttmpl)
 	registerTemplate("preferences.html", preferencestmpl)
+
+	registerTemplate("login.html", logintmpl)
+
 	registerTemplate("servererror.html", servererrortmpl)
 	registerTemplate("notfound.html", notfoundtmpl)
-	registerTemplate("login.html", logintmpl)
 }
 
 // Helper to compile template within a layout context with funcs

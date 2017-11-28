@@ -50,9 +50,16 @@ var serve = subcmd.Command{
 
 		m := router.App()
 		m.Get(router.Dashboard).Handler(app.AuthMiddleware(app.HomeHandler()))
+
 		m.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
 		m.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
 		m.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
+
+		m.Get(router.Tags).Handler(app.AuthMiddleware(app.TagsHandler()))
+		m.Get(router.NewTag).Handler(app.AuthMiddleware(app.NewTagHandler()))
+		m.Get(router.Tag).Handler(app.AuthMiddleware(app.TagHandler()))
+		m.Get(router.CreateTag).Handler(app.AuthMiddleware(app.CreateTagHandler()))
+
 		m.Get(router.Import).Handler(app.AuthMiddleware(app.ImportHandler()))
 		m.Get(router.Export).Handler(app.AuthMiddleware(app.ExportHandler()))
 		m.Get(router.Account).Handler(app.AuthMiddleware(app.AccountShowHandler()))
@@ -60,6 +67,7 @@ var serve = subcmd.Command{
 		m.Get(router.EditAccount).Handler(app.AuthMiddleware(app.AccountEditHandler()))
 		m.Get(router.Login).Handler(app.LoginHandler())
 		m.Get(router.Logout).Handler(app.LogoutHandler())
+
 		m.NotFoundHandler = app.NotFoundHandler()
 
 		// Static file handler

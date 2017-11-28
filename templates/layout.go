@@ -15,6 +15,7 @@ const layouttmpl = `
 						<img src="/public/logo.svg" class="logo">
 						<ul class="nav">
 							{{ if .Authenticated }}
+								<li class="divider" data-content="Links"></li>
 								<li class="nav-item">
 									<a href="/bookmarks">All</a>
 								</li>
@@ -24,10 +25,13 @@ const layouttmpl = `
 								</li>
 								<li class="divider" data-content="Tags"></li>
 								<li class="nav-item">
+									<a href="/tags">All</a>
+								</li>
+								<li class="nav-item">
 									<a href="/bookmarks">Untagged</a>
 								</li>
 								<li class="nav-item">
-									<a href="/bookmarks">Add Tag</a>
+									<a href="/tags/new">Add Tag</a>
 									<i class="icon icon-plus"></i>
 								</li>
 								<li class="divider"></li>
