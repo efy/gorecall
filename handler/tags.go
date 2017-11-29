@@ -11,8 +11,11 @@ import (
 
 func (app *App) NewTagHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
-		templates.RenderTemplate(w, "newtag.html", ctx)
+		templates.RenderTemplate(w, "newtag.html", struct {
+			Authenticated bool
+		}{
+			true,
+		})
 	})
 }
 
@@ -113,13 +116,18 @@ func (app *App) TagHandler() http.Handler {
 
 func (app *App) TagsHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
 		tags, err := app.tr.GetAll()
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		ctx.Tags = tags
-		templates.RenderTemplate(w, "tags.html", ctx)
+
+		templates.RenderTemplate(w, "tags.html", struct {
+			Authenticated bool
+			Tags          []datastore.Tag
+		}{
+			true,
+			tags,
+		})
 	})
 }
