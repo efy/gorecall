@@ -55,12 +55,21 @@ func (b *bookmarkRepo) GetByID(id int64) (*Bookmark, error) {
 }
 
 func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
+	if bm.Created.IsZero() {
+		bm.Created = time.Now()
+	}
 	result, err := b.db.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.Created)
 	if err != nil {
 		return nil, err
 	}
 	id, err := result.LastInsertId()
-	bm.ID = id
+	if err != nil {
+		return nil, err
+	}
+	bm, err = b.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
 	return bm, nil
 }
 

@@ -4,9 +4,6 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/efy/gorecall/database"
-	"github.com/jmoiron/sqlx"
 )
 
 func TestNewTagRepo(t *testing.T) {
@@ -59,7 +56,7 @@ func TestTagValidate(t *testing.T) {
 }
 
 func TestTagRepoCreate(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	defer db.Close()
 
 	tag := &Tag{
@@ -81,7 +78,7 @@ func TestTagRepoCreate(t *testing.T) {
 }
 
 func TestTagRepoGetByID(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -97,7 +94,7 @@ func TestTagRepoGetByID(t *testing.T) {
 }
 
 func TestTagRepoCount(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -114,7 +111,7 @@ func TestTagRepoCount(t *testing.T) {
 }
 
 func TestTagRepoList(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -131,7 +128,7 @@ func TestTagRepoList(t *testing.T) {
 }
 
 func TestTagRepoGetAll(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -147,7 +144,7 @@ func TestTagRepoGetAll(t *testing.T) {
 }
 
 func TestTagRepoListBookmarks(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -171,7 +168,7 @@ func TestTagRepoListBookmarks(t *testing.T) {
 }
 
 func TestTagRepoBookmarksCount(t *testing.T) {
-	db, tagRepo := testDeps()
+	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
@@ -185,54 +182,4 @@ func TestTagRepoBookmarksCount(t *testing.T) {
 		t.Error("expected", 3)
 		t.Error("got     ", count)
 	}
-}
-
-// Fill the database with test data
-func loadDefaultFixture(db *sqlx.DB) {
-	tx := db.MustBegin()
-	tx.MustExec(tx.Rebind("INSERT INTO tags (label, color, description) VALUES(?, ? ,?)"), "tag1", "#000", "")
-	tx.MustExec(tx.Rebind("INSERT INTO tags (label, color, description) VALUES(?, ? ,?)"), "tag2", "#000", "")
-	tx.MustExec(tx.Rebind("INSERT INTO tags (label, color, description) VALUES(?, ? ,?)"), "tag3", "#000", "")
-
-	tx.MustExec(tx.Rebind("INSERT INTO bookmarks (title, url) VALUES(?, ?)"), "bm1", "bmurl1")
-	tx.MustExec(tx.Rebind("INSERT INTO bookmarks (title, url) VALUES(?, ?)"), "bm2", "bmurl2")
-	tx.MustExec(tx.Rebind("INSERT INTO bookmarks (title, url) VALUES(?, ?)"), "bm3", "bmurl3")
-	tx.MustExec(tx.Rebind("INSERT INTO bookmarks (title, url) VALUES(?, ?)"), "bm4", "bmurl4")
-	tx.MustExec(tx.Rebind("INSERT INTO bookmarks (title, url) VALUES(?, ?)"), "bm5", "bmurl5")
-
-	// Populate join table
-	// bm1 tags: 1, 2, 3
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 2, 1)
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 1, 2)
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 1, 3)
-
-	// bm2 tags: 1, 3
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 2, 1)
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 2, 3)
-
-	// bm3 tags: 1
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 3, 1)
-	tx.Commit()
-}
-
-// Returns dependencies required for test
-// panicing
-func testDeps() (*sqlx.DB, *tagRepo) {
-	db := testDB()
-	tagRepo, err := NewTagRepo(db)
-	if err != nil {
-		panic(err)
-	}
-	return db, tagRepo
-}
-
-// Returns in memory database that has been migrated
-func testDB() *sqlx.DB {
-	db, err := sqlx.Open("sqlite3", ":memory:")
-	if err != nil {
-		panic(err)
-	}
-	database.Setup(db)
-
-	return db
 }
