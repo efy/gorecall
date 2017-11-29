@@ -3,6 +3,7 @@ package templates
 const tagstmpl = `
 {{ define "content" }}
 
+{{ if not .Tags }}
 <div class="rc-empty">
 	<div class="empty">
 		<div class="empty-icon">
@@ -15,6 +16,28 @@ const tagstmpl = `
 		</div>
 	</div>
 </div>
+{{ else }}
+	<div class="rc-filter-bar">
+		<ul class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="/tags">Tags</a>
+			</li>
+		</ul>
+	</div>
+	<div class="rc-tags columns">
+	{{ range .Tags }}
+		<div class="column col-3">
+			<div class="rc-tag">
+				<a href="/tags/{{ .ID }}">
+					{{ .Label }}
+				</a>
+				<div class="rc-tag-marker" style="background-color: {{ .Color }};">
+				</div>
+			</div>
+		</div>
+	{{ end }}
+	</div>
+{{ end }}
 
 {{ end }}
 `

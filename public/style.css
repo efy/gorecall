@@ -75,7 +75,7 @@ body {
 }
 
 .rc-bm-list {
-  height: calc(100% - 48px);
+  height: calc(100% - 48px - 61px);
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -138,4 +138,29 @@ body {
   margin-bottom: .8rem;
   font-size: 14px;
   line-height: 1.3;
+}
+
+.rc-tag {
+  border: 1px solid #eaeaea;
+  padding: .4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .8rem;
+}
+
+.rc-tag a {
+  font-weight: bold;
+}
+
+.rc-tag .rc-tag-marker {
+  border-radius: 100%;
+  width: .8rem;
+  height: .8rem;
+}
+
+.rc-filter-bar {
+  padding: 0;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: .8rem;
 }

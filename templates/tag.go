@@ -3,9 +3,17 @@ package templates
 const tagtmpl = `
 {{ define "content" }}
 
-<h2>Show tag</h2>
-
 {{ if .Tag }}
+<div class="rc-filter-bar">
+	<ul class="breadcrumb">
+		<li class="breadcrumb-item">
+			<a href="/tags">Tags</a>
+		</li>
+		<li class="breadcrumb-item">
+			<a href="/tags/{{ .Tag.ID }}">{{ .Tag.Label }}</a>
+		</li>
+	</ul>
+</div>
 <dl>
   <dt>ID</dt>
   <dd>{{ .Tag.ID }}</dd>

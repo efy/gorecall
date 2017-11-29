@@ -18,6 +18,13 @@ const bookmarkstmpl = `
 	</div>
 </div>
 {{ else }}
+<div class="rc-filter-bar">
+	<ul class="breadcrumb">
+		<li class="breadcrumb-item">
+			<a href="/bookmarks">Bookmarks</a>
+		</li>
+	</ul>
+</div>
 <div class="rc-bm-list">
   {{ range .Bookmarks }}
     <div class="rc-bookmark columns">
