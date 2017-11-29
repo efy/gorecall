@@ -44,6 +44,7 @@ type TagRepo interface {
 	GetAll() ([]Tag, error)
 	List(opts ListOptions) ([]Tag, error)
 	Count() (int, error)
+	ListBookmarks(tid int64, opts ListOptions) ([]Bookmark, error)
 }
 
 const (
@@ -105,6 +106,10 @@ func (t *tagRepo) Count() (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (t *tagRepo) ListBookmarks(id int64, opts ListOptions) ([]Bookmark, error) {
+	panic("not implemented")
 }
 
 func NewTagRepo(database *sqlx.DB) (*tagRepo, error) {
