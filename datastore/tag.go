@@ -45,7 +45,7 @@ type TagRepo interface {
 	List(opts ListOptions) ([]Tag, error)
 	Count() (int, error)
 	ListBookmarks(tid int64, opts ListOptions) ([]Bookmark, error)
-	BookmarksCount(tid int64) (int, error)
+	CountBookmarks(tid int64) (int, error)
 }
 
 const (
@@ -146,7 +146,7 @@ func (t *tagRepo) ListBookmarks(id int64, opts ListOptions) ([]Bookmark, error) 
 	return bms, nil
 }
 
-func (t *tagRepo) BookmarksCount(tid int64) (int, error) {
+func (t *tagRepo) CountBookmarks(tid int64) (int, error) {
 	var count int
 	if err := t.db.Get(&count, tagBookmarksCount, tid); err != nil {
 		return 0, err

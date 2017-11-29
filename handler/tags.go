@@ -68,7 +68,7 @@ func (app *App) TagHandler() http.Handler {
 			return
 		}
 
-		count, err := app.tr.BookmarksCount(id)
+		count, err := app.tr.CountBookmarks(id)
 		if err != nil {
 			renderError(w, err)
 			return

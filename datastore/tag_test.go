@@ -167,12 +167,12 @@ func TestTagRepoListBookmarks(t *testing.T) {
 	}
 }
 
-func TestTagRepoBookmarksCount(t *testing.T) {
+func TestTagRepoCountBookmarks(t *testing.T) {
 	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
 	defer db.Close()
 
-	count, err := tagRepo.BookmarksCount(1)
+	count, err := tagRepo.CountBookmarks(1)
 	if err != nil {
 		t.Error("expected", "no error")
 		t.Error("got     ", err)
