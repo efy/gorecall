@@ -56,6 +56,19 @@ const (
 	tagSelectCount = `SELECT COUNT(*) FROM tags`
 	tagSelectByID  = tagSelectBase + ` WHERE id = $1 LIMIT 1`
 	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT ? OFFSET ?`
+
+	tagListBookmarks = `
+		SELECT
+		bookmarks.id,
+		bookmarks.title,
+		bookmarks.url,
+		bookmarks.created
+		FROM bookmarks
+		INNER JOIN bookmark_tags
+		ON bookmarks.id = bookmark_tags.bookmark_id
+		WHERE bookmark_tags.tag_id = ?
+		LIMIT ? OFFSET ?
+	`
 )
 
 type tagRepo struct {
@@ -68,7 +81,15 @@ func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
 		return nil, err
 	}
 	id, err := result.LastInsertId()
-	tag.ID = id
+	if err != nil {
+		return nil, err
+	}
+
+	tag, err = t.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
 	return tag, nil
 }
 
@@ -109,7 +130,12 @@ func (t *tagRepo) Count() (int, error) {
 }
 
 func (t *tagRepo) ListBookmarks(id int64, opts ListOptions) ([]Bookmark, error) {
-	panic("not implemented")
+	var bms []Bookmark
+	offset := opts.PerPage * opts.Page
+	if err := t.db.Select(&bms, tagListBookmarks, id, opts.PerPage, offset); err != nil {
+		return bms, err
+	}
+	return bms, nil
 }
 
 func NewTagRepo(database *sqlx.DB) (*tagRepo, error) {

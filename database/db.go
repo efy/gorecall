@@ -36,7 +36,7 @@ const (
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
-		CREATE TABLE bookmarks_tags (
+		CREATE TABLE bookmark_tags (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			tag_id INTEGER,
 			bookmark_id INTEGER,
