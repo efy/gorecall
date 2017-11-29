@@ -16,29 +16,31 @@ func TestNewTagRepo(t *testing.T) {
 }
 
 func TestTagValidate(t *testing.T) {
-	tt := []struct {
+	tt := map[string]struct {
 		tag   Tag
 		errs  []error
 		valid bool
 	}{
-		{
+		"empty label": {
 			Tag{},
 			[]error{ErrEmptyLabel},
 			false,
 		},
-		{
+		"valid label": {
 			Tag{Label: "not empty"},
 			[]error{},
 			true,
 		},
-		{
+		"long label": {
 			Tag{Label: strings.Repeat("X", 51)},
 			[]error{ErrLongLabel},
 			false,
 		},
 	}
 
-	for _, tr := range tt {
+	for k, tr := range tt {
+		t.Log("running test case:", k)
+
 		valid, errs := tr.tag.Validate()
 		if valid != tr.valid {
 			t.Error("expected", tr.valid, "got", valid)
