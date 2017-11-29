@@ -14,14 +14,26 @@ const bookmarktmpl = `
 		</li>
 	</ul>
 </div>
-<dl>
-  <dt>ID</dt>
-  <dd>{{ .Bookmark.ID }}</dd>
-  <dt>Title</dt>
-  <dd>{{ .Bookmark.Title }}</dd>
-  <dt>URL</dt>
-  <dd>{{ .Bookmark.URL }}</dd>
-</dl>
+<table class="table">
+	<tbody>
+		<tr>
+			<th>ID</th>
+			<td> {{ .Bookmark.ID }}</td>
+		</tr>
+		<tr>
+			<th>Title</th>
+			<td> {{ .Bookmark.Title }}</td>
+		</tr>
+		<tr>
+			<th>URL</th>
+			<td> {{ .Bookmark.URL }}</td>
+		</tr>
+		<tr>
+			<th>Created</th>
+			<td> {{ .Bookmark.Created}}</td>
+		</tr>
+	</tbody>
+</table>
 {{ end }}
 
 {{ end }}
