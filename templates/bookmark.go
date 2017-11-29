@@ -30,7 +30,19 @@ const bookmarktmpl = `
 		</tr>
 		<tr>
 			<th>Created</th>
-			<td> {{ .Bookmark.Created}}</td>
+			<td>{{ .Bookmark.Created}}</td>
+		</tr>
+		<tr>
+			<th>Tags</th>
+			<td>
+				{{ range .Tags }}
+					<span class="chip">
+						<a href="/tags/{{.ID}}">
+							{{ .Label }}
+						</a>
+					</span>
+				{{ end }}
+			</td>
 		</tr>
 	</tbody>
 </table>

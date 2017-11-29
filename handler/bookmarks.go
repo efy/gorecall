@@ -42,16 +42,27 @@ func (app *App) BookmarksShowHandler() http.Handler {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 
-		ctx := app.initAppCtx(r)
-
 		bookmark, err := app.br.GetByID(id)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
-		ctx.Bookmark = bookmark
 
-		templates.RenderTemplate(w, "bookmark.html", ctx)
+		tags, err := app.br.ListTags(id)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		templates.RenderTemplate(w, "bookmark.html", struct {
+			Authenticated bool
+			Bookmark      *datastore.Bookmark
+			Tags          []datastore.Tag
+		}{
+			true,
+			bookmark,
+			tags,
+		})
 	})
 }
 
