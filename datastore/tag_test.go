@@ -14,7 +14,8 @@ func TestNewTagRepo(t *testing.T) {
 	_, err := NewTagRepo(nil)
 
 	if err != expect {
-		t.Error("expected", expect, "got", err)
+		t.Error("expected", expect)
+		t.Error("got     ", err)
 	}
 }
 
@@ -46,7 +47,8 @@ func TestTagValidate(t *testing.T) {
 
 		valid, errs := tr.tag.Validate()
 		if valid != tr.valid {
-			t.Error("expected", tr.valid, "got", valid)
+			t.Error("expected", tr.valid)
+			t.Error("got     ", valid)
 		}
 
 		if !reflect.DeepEqual(errs, tr.errs) {
@@ -106,7 +108,8 @@ func TestTagRepoCount(t *testing.T) {
 	}
 
 	if count != 3 {
-		t.Error("expected", 3, "got", count)
+		t.Error("expected", 3)
+		t.Error("got     ", count)
 	}
 }
 
@@ -122,7 +125,8 @@ func TestTagRepoList(t *testing.T) {
 	}
 
 	if len(tags) != 3 {
-		t.Error("expected", 3, "got", len(tags))
+		t.Error("expected", 3)
+		t.Error("got     ", len(tags))
 	}
 }
 
