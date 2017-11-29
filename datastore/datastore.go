@@ -6,6 +6,12 @@ var (
 	ErrInvalidDB = fmt.Errorf("invalid database")
 )
 
+// Validator specifies the method Validate
+// for perfoming validation and returning errors
+type Validator interface {
+	Validate() (bool, []error)
+}
+
 // Provide default options with sensible values
 var DefaultListOptions = ListOptions{
 	PerPage: 20,

@@ -8,12 +8,34 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var (
+	ErrEmptyLabel = fmt.Errorf("tag label cannot be empty")
+	ErrLongLabel  = fmt.Errorf("tag label cannot be longer than 50 characters")
+)
+
 type Tag struct {
 	ID          int64     `db:"id" schema:"-"`
 	Label       string    `db:"label" schema:"label"`
 	Description string    `db:"description" schema:"description"`
 	Color       string    `db:"color" schema:"color"`
 	Created     time.Time `db:"created" schema:"-"`
+}
+
+func (t *Tag) Validate() (bool, []error) {
+	valid := true
+	errs := make([]error, 0)
+
+	if t.Label == "" {
+		errs = append(errs, ErrEmptyLabel)
+		valid = false
+	}
+
+	if len(t.Label) > 50 {
+		errs = append(errs, ErrLongLabel)
+		valid = false
+	}
+
+	return valid, errs
 }
 
 type TagRepo interface {
