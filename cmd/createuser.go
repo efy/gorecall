@@ -19,7 +19,7 @@ var createuser = subcmd.Command{
 		dbname := cmd.Flag.String("dbname", "gorecall.db", "path to database file")
 		cmd.ParseFlags(args)
 
-		db, err := database.InitDatabase(*dbname)
+		db, err := database.Init(*dbname)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -216,7 +216,7 @@ func testDB() *sqlx.DB {
 	if err != nil {
 		panic(err)
 	}
-	database.MigrateDatabase(db)
+	database.Setup(db)
 
 	return db
 }

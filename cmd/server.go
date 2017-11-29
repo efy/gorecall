@@ -26,7 +26,7 @@ var serve = subcmd.Command{
 		usefcgi := cmd.Flag.Bool("fcgi", false, "Serve app using fastcgi")
 		cmd.ParseFlags(args)
 
-		db, err := database.InitDatabase(*dbname)
+		db, err := database.Init(*dbname)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
