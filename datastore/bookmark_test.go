@@ -98,6 +98,7 @@ func TestBookmarkRepoList(t *testing.T) {
 func TestBookmarkCount(t *testing.T) {
 	db, bookmarkRepo := bookmarkRepoTestDeps()
 	loadDefaultFixture(db)
+	defer db.Close()
 
 	count, err := bookmarkRepo.Count()
 	if err != nil {
@@ -107,6 +108,42 @@ func TestBookmarkCount(t *testing.T) {
 
 	if count != 5 {
 		t.Error("expected", "5")
+		t.Error("got     ", count)
+	}
+}
+
+func TestBookmarkListTags(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	tags, err := bookmarkRepo.ListTags(1)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+	if len(tags) != 3 {
+		t.Error("expected", "bookmark to have 3 tags")
+		t.Error("got     ", len(tags))
+	}
+	if tags[0].Label != "tag1" {
+		t.Error("expected", "first tag to have label tag1")
+		t.Error("got     ", tags[0].Label)
+	}
+}
+
+func testBookmarkCountTags(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	count, err := bookmarkRepo.CountTags(2)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+	if count != 2 {
+		t.Error("expected", "count = 2")
 		t.Error("got     ", count)
 	}
 }

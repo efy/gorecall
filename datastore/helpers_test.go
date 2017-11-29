@@ -64,7 +64,7 @@ func loadDefaultFixture(db *sqlx.DB) {
 
 	// Populate join table
 	// bm1 tags: 1, 2, 3
-	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 2, 1)
+	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 1, 1)
 	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 1, 2)
 	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 1, 3)
 

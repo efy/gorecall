@@ -32,6 +32,20 @@ const (
 	bookmarkCount = `
 		SELECT COUNT(*) as count FROM bookmarks
 	`
+
+	tagList = `
+		SELECT tags.* FROM tags
+		INNER JOIN bookmark_tags
+		ON tags.id = bookmark_tags.tag_id
+		WHERE bookmark_tags.bookmark_id = ?
+	`
+
+	tagCount = `
+		SELECT COUNT(*) FROM tags
+		INNER JOIN bookmark_tags
+		ON tags.id = bookmark_tags.tag_id
+		WHERE bookmark_tags.bookmark_id = ?
+	`
 )
 
 type BookmarkRepo interface {
@@ -40,6 +54,8 @@ type BookmarkRepo interface {
 	GetAll() ([]Bookmark, error)
 	List(opts ListOptions) ([]Bookmark, error)
 	Count() (int, error)
+	ListTags(bid int64) ([]Tag, error)
+	CountTags(bid int64) (int, error)
 }
 
 type bookmarkRepo struct {
@@ -98,6 +114,22 @@ func (b *bookmarkRepo) List(opts ListOptions) ([]Bookmark, error) {
 		return bms, err
 	}
 	return bms, nil
+}
+
+func (b *bookmarkRepo) ListTags(id int64) ([]Tag, error) {
+	var tags []Tag
+	if err := b.db.Select(&tags, tagList, id); err != nil {
+		return tags, err
+	}
+	return tags, nil
+}
+
+func (b *bookmarkRepo) CountTags(id int64) (int, error) {
+	var count int
+	if err := b.db.Get(&count, tagCount, id); err != nil {
+		return count, err
+	}
+	return count, nil
 }
 
 func NewBookmarkRepo(database *sqlx.DB) (*bookmarkRepo, error) {
