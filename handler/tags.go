@@ -48,9 +48,15 @@ func (app *App) CreateTagHandler() http.Handler {
 
 func (app *App) TagHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		opts := datastore.DefaultListOptions
+		err = decoder.Decode(&opts, r.URL.Query())
 		if err != nil {
 			renderError(w, err)
 			return
@@ -61,9 +67,47 @@ func (app *App) TagHandler() http.Handler {
 			renderError(w, err)
 			return
 		}
-		ctx.Tag = tag
 
-		templates.RenderTemplate(w, "tag.html", ctx)
+		count, err := app.tr.BookmarksCount(id)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		bookmarks, err := app.tr.ListBookmarks(id, opts)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		pagination := Pagination{
+			Current: opts.Page,
+			Next:    opts.Page + 1,
+			Prev:    opts.Page - 1,
+			Last:    count / opts.PerPage,
+			List: []int{
+				opts.Page + 1,
+				opts.Page + 2,
+				opts.Page + 3,
+				opts.Page + 4,
+				opts.Page + 5,
+			},
+			PerPage: opts.PerPage,
+		}
+
+		templates.RenderTemplate(w, "tag.html", struct {
+			Authenticated bool
+			Tag           *datastore.Tag
+			Count         int
+			Bookmarks     []datastore.Bookmark
+			Pagination    Pagination
+		}{
+			true,
+			tag,
+			count,
+			bookmarks,
+			pagination,
+		})
 	})
 }
 
