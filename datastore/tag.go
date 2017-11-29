@@ -45,6 +45,7 @@ type TagRepo interface {
 	List(opts ListOptions) ([]Tag, error)
 	Count() (int, error)
 	ListBookmarks(tid int64, opts ListOptions) ([]Bookmark, error)
+	BookmarksCount(tid int64) (int, error)
 }
 
 const (
@@ -68,6 +69,13 @@ const (
 		ON bookmarks.id = bookmark_tags.bookmark_id
 		WHERE bookmark_tags.tag_id = ?
 		LIMIT ? OFFSET ?
+	`
+
+	tagBookmarksCount = `
+		SELECT COUNT(*) FROM bookmarks
+		INNER JOIN bookmark_tags
+		ON bookmarks.id = bookmark_tags.bookmark_id
+		WHERE bookmark_tags.tag_id = ?
 	`
 )
 
@@ -136,6 +144,14 @@ func (t *tagRepo) ListBookmarks(id int64, opts ListOptions) ([]Bookmark, error) 
 		return bms, err
 	}
 	return bms, nil
+}
+
+func (t *tagRepo) BookmarksCount(tid int64) (int, error) {
+	var count int
+	if err := t.db.Get(&count, tagBookmarksCount, tid); err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func NewTagRepo(database *sqlx.DB) (*tagRepo, error) {

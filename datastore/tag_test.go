@@ -168,7 +168,23 @@ func TestTagRepoListBookmarks(t *testing.T) {
 		t.Error("expected", "bm3")
 		t.Error("got     ", last.Title)
 	}
+}
 
+func TestTagRepoBookmarksCount(t *testing.T) {
+	db, tagRepo := testDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	count, err := tagRepo.BookmarksCount(1)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+
+	if count != 3 {
+		t.Error("expected", 3)
+		t.Error("got     ", count)
+	}
 }
 
 // Fill the database with test data
