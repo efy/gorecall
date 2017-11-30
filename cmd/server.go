@@ -88,7 +88,7 @@ var serve = subcmd.Command{
 		api.Get(router.Ping).Handler(handler.CORSMiddleware(app.ApiPingHandler()))
 		api.Get(router.Authenticate).Handler(handler.CORSMiddleware(app.CreateTokenHandler()))
 		api.Get(router.Preflight).Handler(app.PreflightHandler())
-		api.Get(router.WebInfo).Handler(app.WebInfoHandler())
+		api.Get(router.WebInfo).Handler(handler.CORSMiddleware(app.WebInfoHandler()))
 
 		r := mux.NewRouter()
 
