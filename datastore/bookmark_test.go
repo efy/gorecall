@@ -147,3 +147,36 @@ func testBookmarkCountTags(t *testing.T) {
 		t.Error("got     ", count)
 	}
 }
+
+func testBookmarkAddTag(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	err := bookmarkRepo.AddTag(5, 3)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+}
+
+func testBookmarkRemoveTag(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	err := bookmarkRepo.RemoveTag(1, 3)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+
+	count, err := bookmarkRepo.CountTags(1)
+	if err != nil {
+		t.Error(err)
+	}
+	if count != 2 {
+		t.Error("expected", "1 less tag")
+		t.Error("got     ", count)
+	}
+}

@@ -40,8 +40,29 @@ const bookmarktmpl = `
 						<a href="/tags/{{.ID}}">
 							{{ .Label }}
 						</a>
+						<form action="/bookmarks/{{ $.Bookmark.ID }}/removetag" method="post">
+							<input type="hidden" value="{{ .ID }}" name="tag_id">
+							<button type="submit" class="btn btn-clear"></button>
+						</form>
 					</span>
 				{{ end }}
+			</td>
+		</tr>
+		<tr>
+			<th>Add tag</th>
+			<td>
+				<form action="/bookmarks/{{ .Bookmark.ID }}/addtag" method="post">
+					<div class="form-group">
+						<div class="input-group">
+							<select class="form-select" name="tag_id">
+								{{ range .AllTags }}
+									<option value="{{ .ID }}">{{ .Label }}</option>
+								{{ end }}
+							</select>
+							<button type="submit" class="btn input-group-btn btn-primary">Add</button>
+						</div>
+					</div>
+				</form>
 			</td>
 		</tr>
 	</tbody>

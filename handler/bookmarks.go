@@ -54,14 +54,22 @@ func (app *App) BookmarksShowHandler() http.Handler {
 			return
 		}
 
+		allTags, err := app.tr.GetAll()
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
 		templates.RenderTemplate(w, "bookmark.html", struct {
 			Authenticated bool
 			Bookmark      *datastore.Bookmark
 			Tags          []datastore.Tag
+			AllTags       []datastore.Tag
 		}{
 			true,
 			bookmark,
 			tags,
+			allTags,
 		})
 	})
 }
@@ -128,5 +136,53 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 		}
 
 		w.Write([]byte("bookmark created"))
+	})
+}
+
+func (app *App) BookmarkAddTagHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		bid, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			renderError(w, err)
+		}
+
+		tid, err := strconv.ParseInt(r.FormValue("tag_id"), 10, 64)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		err = app.br.AddTag(bid, tid)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, "/bookmarks/"+vars["id"], 302)
+	})
+}
+
+func (app *App) BookmarkRemoveTagHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		bid, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			renderError(w, err)
+		}
+
+		tid, err := strconv.ParseInt(r.FormValue("tag_id"), 10, 64)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		err = app.br.RemoveTag(bid, tid)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, "/bookmarks/"+vars["id"], 302)
 	})
 }

@@ -46,6 +46,14 @@ const (
 		ON tags.id = bookmark_tags.tag_id
 		WHERE bookmark_tags.bookmark_id = ?
 	`
+
+	addTag = `
+		INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES (?, ?)
+	`
+
+	removeTag = `
+		DELETE FROM bookmark_tags WHERE bookmark_id = ? AND tag_id = ?
+	`
 )
 
 type BookmarkRepo interface {
@@ -56,6 +64,8 @@ type BookmarkRepo interface {
 	Count() (int, error)
 	ListTags(bid int64) ([]Tag, error)
 	CountTags(bid int64) (int, error)
+	AddTag(bid int64, tid int64) error
+	RemoveTag(bid int64, tid int64) error
 }
 
 type bookmarkRepo struct {
@@ -130,6 +140,22 @@ func (b *bookmarkRepo) CountTags(id int64) (int, error) {
 		return count, err
 	}
 	return count, nil
+}
+
+func (b *bookmarkRepo) AddTag(bid int64, tid int64) error {
+	_, err := b.db.Exec(addTag, bid, tid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *bookmarkRepo) RemoveTag(bid int64, tid int64) error {
+	_, err := b.db.Exec(removeTag, bid, tid)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewBookmarkRepo(database *sqlx.DB) (*bookmarkRepo, error) {

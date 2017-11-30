@@ -5,12 +5,14 @@ import "github.com/gorilla/mux"
 // Route Names
 const (
 	// Shared
-	Bookmarks      = "bookmarks:index"
-	CreateBookmark = "bookmarks:create"
-	Bookmark       = "bookmark"
-	Tags           = "tags"
-	CreateTag      = "tags:create"
-	Tag            = "tag"
+	Bookmarks         = "bookmarks:index"
+	CreateBookmark    = "bookmarks:create"
+	Bookmark          = "bookmark"
+	Tags              = "tags"
+	CreateTag         = "tags:create"
+	Tag               = "tag"
+	BookmarkAddTag    = "bookmark:addtag"
+	BookmarkRemoveTag = "bookmark:removetag"
 
 	// Webapp only
 	Dashboard   = "dashboard:index"
@@ -38,6 +40,8 @@ func App() *mux.Router {
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/new").Methods("GET").Name(NewBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
+	m.Path("/bookmarks/{id:[0-9]+}/addtag").Methods("POST").Name(BookmarkAddTag)
+	m.Path("/bookmarks/{id:[0-9]+}/removetag").Methods("POST").Name(BookmarkRemoveTag)
 	m.Path("/tags").Methods("GET").Name(Tags)
 	m.Path("/tags").Methods("POST").Name(CreateTag)
 	m.Path("/tags/new").Methods("GET").Name(NewTag)

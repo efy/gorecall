@@ -60,6 +60,8 @@ var serve = subcmd.Command{
 		m.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
 		m.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
 		m.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
+		m.Get(router.BookmarkAddTag).Handler(app.AuthMiddleware(app.BookmarkAddTagHandler()))
+		m.Get(router.BookmarkRemoveTag).Handler(app.AuthMiddleware(app.BookmarkRemoveTagHandler()))
 
 		m.Get(router.Tags).Handler(app.AuthMiddleware(app.TagsHandler()))
 		m.Get(router.NewTag).Handler(app.AuthMiddleware(app.NewTagHandler()))
