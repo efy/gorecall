@@ -30,6 +30,7 @@ const (
 	Ping         = "ping"
 	Authenticate = "auth"
 	Preflight    = "preflight"
+	WebInfo      = "webinfo"
 )
 
 func App() *mux.Router {
@@ -68,6 +69,7 @@ func Api() *mux.Router {
 	m.Path("/tags/{id:[0-9]+}").Methods("GET").Name(Tag)
 	m.Path("/ping").Methods("GET").Name(Ping)
 	m.Path("/auth").Methods("POST").Name(Authenticate)
+	m.Path("/webinfo").Methods("GET").Name(WebInfo)
 
 	// Should be an api middleware
 	m.Path("/auth").Methods("OPTIONS").Name(Preflight)
