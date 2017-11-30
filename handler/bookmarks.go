@@ -18,22 +18,6 @@ func (app *App) BookmarksNewHandler() http.Handler {
 			templates.RenderTemplate(w, "newbookmark.html", ctx)
 		}
 
-		if r.Method == "POST" {
-			r.ParseForm()
-
-			bm := datastore.Bookmark{
-				Title: strings.Join(r.Form["title"], ""),
-				URL:   strings.Join(r.Form["url"], ""),
-			}
-
-			_, err := app.br.Create(&bm)
-			if err != nil {
-				renderError(w, err)
-				return
-			}
-
-			http.Redirect(w, r, "/bookmarks", 302)
-		}
 	})
 }
 
@@ -121,6 +105,27 @@ func (app *App) BookmarksHandler() http.Handler {
 }
 
 func (app *App) CreateBookmarkHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+
+		bm := &datastore.Bookmark{
+			Title: strings.Join(r.Form["title"], ""),
+			URL:   strings.Join(r.Form["url"], ""),
+		}
+
+		bm, err := app.br.Create(bm)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		id := strconv.FormatInt(bm.ID, 10)
+
+		http.Redirect(w, r, "/bookmarks/"+id, 302)
+	})
+}
+
+func (app *App) ApiCreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var b datastore.Bookmark

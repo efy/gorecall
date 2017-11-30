@@ -18,10 +18,13 @@
       })
       .then(function(json) {
         webinfo.innerHTML = webinfo_tmpl(json)
+
+        d.querySelector('input[name="url"]').value = url
+        d.querySelector('input[name="title"]').value = json.title
+
         button.disabled = false
       })
       .catch(function(error){
-        console.log(error)
         webinfo.innerHTML = webinfo_error_tmpl(error)
         button.disabled = true
       })

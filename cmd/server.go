@@ -59,6 +59,7 @@ var serve = subcmd.Command{
 
 		m.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
 		m.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
+		m.Get(router.CreateBookmark).Handler(app.AuthMiddleware(app.CreateBookmarkHandler()))
 		m.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
 		m.Get(router.BookmarkAddTag).Handler(app.AuthMiddleware(app.BookmarkAddTagHandler()))
 		m.Get(router.BookmarkRemoveTag).Handler(app.AuthMiddleware(app.BookmarkRemoveTagHandler()))
@@ -82,7 +83,7 @@ var serve = subcmd.Command{
 		m.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 
 		api := router.Api()
-		api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.CreateBookmarkHandler()))
+		api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.ApiCreateBookmarkHandler()))
 		api.Get(router.Bookmarks).Handler(handler.TokenAuthMiddleware(app.ApiBookmarksHandler()))
 		api.Get(router.Ping).Handler(handler.CORSMiddleware(app.ApiPingHandler()))
 		api.Get(router.Authenticate).Handler(handler.CORSMiddleware(app.CreateTokenHandler()))
