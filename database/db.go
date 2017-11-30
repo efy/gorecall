@@ -36,6 +36,9 @@ const (
 			bookmark_id INTEGER,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
+
+		CREATE UNIQUE INDEX tagging
+		ON bookmark_tags (bookmark_id, tag_id);
 	`
 )
 
