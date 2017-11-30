@@ -6,6 +6,7 @@ const layouttmpl = `
   <head>
     <title>Home</title>
     <link rel="stylesheet" href="/public/style.css">
+		<script async src="/public/app.js"></script>
   </head>
   <body>
     <div class="wrapper">

@@ -10,8 +10,10 @@ const newbookmarktmpl = `
 				<div class="form-group">
 					<div class="input-group">
 						<span class="input-group-addon addon-lg">URL</span>
-						<input id="url" class="form-input input-lg" type="text" name="url">
-						<button type="submit" disabled class="btn btn-primary btn-lg input-group-btn">Create</button>
+						<input autocomplete="off" id="url" class="form-input input-lg" type="text" name="url">
+						<button id="create" type="submit" disabled class="btn btn-primary btn-lg input-group-btn">Create</button>
+					</div>
+					<div id="webinfo" class="webinfo-container">
 					</div>
 				</div>
 			</form>

@@ -164,3 +164,37 @@ body {
   border-bottom: 1px solid #eaeaea;
   margin-bottom: .8rem;
 }
+
+.webinfo-container {
+  border: 1px solid #eaeaea;
+  margin: 1rem 0;
+  min-height: 100px;
+}
+
+.rc-link-preview {
+  display: flex;
+  height: 100%;
+  min-height: 100px;
+}
+
+.rc-link-preview__info{
+  padding: .5rem;
+  overflow: hidden;
+}
+
+.rc-link-preview__image{
+  outline: 1px solid #eaeaea;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  background-image: url('/public/placeholder_favicon.png');
+  background-size: 50px auto;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+
+.rc-link-preview__error {
+  align-self: center;
+  width: 100%;
+  text-align: center;
+}
