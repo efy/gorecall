@@ -11,9 +11,12 @@ import (
 
 func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
 		if r.Method != "POST" {
-			templates.RenderTemplate(w, "import.html", ctx)
+			templates.RenderTemplate(w, "import.html", struct {
+				Authenticated bool
+			}{
+				true,
+			})
 			return
 		}
 		r.ParseMultipartForm(32 << 20)
@@ -31,9 +34,11 @@ func (app *App) ImportHandler() http.Handler {
 			return
 		}
 
+		bookmarks := make([]datastore.Bookmark, 0)
+
 		// Convert from bookmark.Bookmark to datastore.Bookmark and populate ctx.Bookmarks
 		for _, v := range parsed {
-			ctx.Bookmarks = append(ctx.Bookmarks, datastore.Bookmark{
+			bookmarks = append(bookmarks, datastore.Bookmark{
 				Title:   v.Title,
 				URL:     v.Url,
 				Icon:    v.Icon,
@@ -41,13 +46,17 @@ func (app *App) ImportHandler() http.Handler {
 			})
 		}
 
-		for _, bm := range ctx.Bookmarks {
+		for _, bm := range bookmarks {
 			_, err := app.br.Create(&bm)
 			if err != nil {
 				log.Println(err)
 			}
 		}
 
-		templates.RenderTemplate(w, "importsuccess.html", ctx)
+		templates.RenderTemplate(w, "importsuccess.html", struct {
+			Authenticated bool
+		}{
+			true,
+		})
 	})
 }

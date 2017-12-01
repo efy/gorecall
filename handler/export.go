@@ -8,7 +8,10 @@ import (
 
 func (app *App) ExportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
-		templates.RenderTemplate(w, "export.html", ctx)
+		templates.RenderTemplate(w, "export.html", struct {
+			Authenticated bool
+		}{
+			true,
+		})
 	})
 }

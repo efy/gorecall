@@ -11,14 +11,11 @@ import (
 
 func (app *App) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			templates.RenderTemplate(w, "newbookmark.html", struct {
-				Authenticated bool
-			}{
-				true,
-			})
-		}
-
+		templates.RenderTemplate(w, "newbookmark.html", struct {
+			Authenticated bool
+		}{
+			true,
+		})
 	})
 }
 

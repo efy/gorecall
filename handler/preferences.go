@@ -8,7 +8,10 @@ import (
 
 func (app *App) PreferencesHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
-		templates.RenderTemplate(w, "preferences.html", ctx)
+		templates.RenderTemplate(w, "preferences.html", struct {
+			Authenticated bool
+		}{
+			true,
+		})
 	})
 }
