@@ -8,11 +8,11 @@ import (
 )
 
 type Bookmark struct {
-	ID      int64     `db:"id"`
-	Title   string    `db:"title"`
-	URL     string    `db:"url"`
-	Icon    string    `db:"icon"`
-	Created time.Time `db:"created"`
+	ID      int64     `db:"id" schema:"-"`
+	Title   string    `db:"title" schema:"title"`
+	URL     string    `db:"url" schema:"url"`
+	Icon    string    `db:"icon" schema:"icon"`
+	Created time.Time `db:"created" schema:"-"`
 }
 
 const (

@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
@@ -12,9 +11,12 @@ import (
 
 func (app *App) BookmarksNewHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
 		if r.Method == "GET" {
-			templates.RenderTemplate(w, "newbookmark.html", ctx)
+			templates.RenderTemplate(w, "newbookmark.html", struct {
+				Authenticated bool
+			}{
+				true,
+			})
 		}
 
 	})
@@ -59,8 +61,6 @@ func (app *App) BookmarksShowHandler() http.Handler {
 
 func (app *App) BookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := app.initAppCtx(r)
-
 		opts := datastore.DefaultListOptions
 		err := decoder.Decode(&opts, r.URL.Query())
 		if err != nil {
@@ -80,9 +80,7 @@ func (app *App) BookmarksHandler() http.Handler {
 			return
 		}
 
-		ctx.Bookmarks = bookmarks
-
-		p := Pagination{
+		pagination := Pagination{
 			Current: opts.Page,
 			Next:    opts.Page + 1,
 			Prev:    opts.Page - 1,
@@ -97,9 +95,17 @@ func (app *App) BookmarksHandler() http.Handler {
 			PerPage: opts.PerPage,
 		}
 
-		ctx.Pagination = p
-
-		templates.RenderTemplate(w, "bookmarks.html", ctx)
+		templates.RenderTemplate(w, "bookmarks.html", struct {
+			Authenticated bool
+			Bookmarks     []datastore.Bookmark
+			Count         int
+			Pagination    Pagination
+		}{
+			true,
+			bookmarks,
+			count,
+			pagination,
+		})
 	})
 }
 
@@ -107,12 +113,14 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 
-		bm := &datastore.Bookmark{
-			Title: strings.Join(r.Form["title"], ""),
-			URL:   strings.Join(r.Form["url"], ""),
+		bm := &datastore.Bookmark{}
+
+		err := decoder.Decode(bm, r.PostForm)
+		if err != nil {
+			renderError(w, err)
 		}
 
-		bm, err := app.br.Create(bm)
+		bm, err = app.br.Create(bm)
 		if err != nil {
 			renderError(w, err)
 			return
