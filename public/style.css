@@ -177,12 +177,12 @@ body {
   min-height: 100px;
 }
 
-.rc-link-preview__info{
+.rc-link-preview__info {
   padding: .5rem;
   overflow: hidden;
 }
 
-.rc-link-preview__image{
+.rc-link-preview__image {
   outline: 1px solid #eaeaea;
   width: 100px;
   height: 100px;
@@ -191,6 +191,14 @@ body {
   background-size: 50px auto;
   background-position: 50%;
   background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.rc-link-preview__image img {
+  display: block;
+  width: auto;
+  height: 100%;
+  margin: 0 auto;
 }
 
 .rc-link-preview__error {

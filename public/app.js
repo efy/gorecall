@@ -44,6 +44,7 @@
     return `
     <div class="rc-link-preview">
       <div class="rc-link-preview__image">
+        <img src="${obj.cover}">
       </div>
       <div class="rc-link-preview__info">
         <div class="text-bold text-ellipsis">${obj.title}</div>
