@@ -41,6 +41,18 @@ func TokenAuthMiddleware(h http.Handler) http.Handler {
 	return mw.Handler(h)
 }
 
+func PreflightMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Date, Username, Password, Authorization")
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
 func (app *App) AuthMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, _ := app.store.Get(r, "sesh")

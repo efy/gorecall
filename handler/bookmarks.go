@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -122,25 +121,6 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 		id := strconv.FormatInt(bm.ID, 10)
 
 		http.Redirect(w, r, "/bookmarks/"+id, 302)
-	})
-}
-
-func (app *App) ApiCreateBookmarkHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		decoder := json.NewDecoder(r.Body)
-		var b datastore.Bookmark
-		err := decoder.Decode(&b)
-		if err != nil {
-			renderError(w, err)
-		}
-
-		_, err = app.br.Create(&b)
-		if err != nil {
-			renderError(w, err)
-			return
-		}
-
-		w.Write([]byte("bookmark created"))
 	})
 }
 

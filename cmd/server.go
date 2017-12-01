@@ -85,30 +85,32 @@ var serve = subcmd.Command{
 		api := router.Api()
 		api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.ApiCreateBookmarkHandler()))
 		api.Get(router.Bookmarks).Handler(handler.TokenAuthMiddleware(app.ApiBookmarksHandler()))
-		api.Get(router.Ping).Handler(handler.CORSMiddleware(app.ApiPingHandler()))
-		api.Get(router.Authenticate).Handler(handler.CORSMiddleware(app.CreateTokenHandler()))
-		api.Get(router.Preflight).Handler(app.PreflightHandler())
-		api.Get(router.WebInfo).Handler(handler.CORSMiddleware(app.WebInfoHandler()))
+		api.Get(router.Ping).Handler(app.ApiPingHandler())
+		api.Get(router.Authenticate).Handler(app.CreateTokenHandler())
+		api.Get(router.WebInfo).Handler(app.WebInfoHandler())
 
 		r := mux.NewRouter()
 
+		// Build middleware chain for app requests
+		appchain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(m)
+
+		// Build middleware chaun for api requests
+		apichain := alice.New(handler.CORSMiddleware, handler.PreflightMiddleware).Then(api)
+
 		// Mount api router onto app
-		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", api))
+		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", apichain))
 
 		// Mount the web app
-		r.PathPrefix("/").Handler(m)
-
-		// Build middleware chain that is run for all requests
-		chain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(r)
+		r.PathPrefix("/").Handler(appchain)
 
 		if *usefcgi {
-			err = server.FCGI(nil, chain)
+			err = server.FCGI(nil, r)
 		} else if *usecgi {
-			err = server.CGI(chain)
+			err = server.CGI(r)
 		} else {
 			srv := server.HTTP
 			srv.Addr = *addr
-			srv.Handler = chain
+			srv.Handler = r
 			err = srv.ListenAndServe()
 		}
 
