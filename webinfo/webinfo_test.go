@@ -86,3 +86,11 @@ func TestWebInfoGetHtmlCoverImage(t *testing.T) {
 		t.Error("got     ", info.Cover)
 	}
 }
+
+func TestInvalidUrl(t *testing.T) {
+	_, err := Get("not a url")
+	if err != ErrInvalidURL {
+		t.Error("expected", ErrInvalidURL)
+		t.Error("got     ", err)
+	}
+}

@@ -1,9 +1,11 @@
 package webinfo
 
 import (
+	"fmt"
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -11,6 +13,10 @@ import (
 var client = http.Client{
 	Timeout: time.Second * 5,
 }
+
+var (
+	ErrInvalidURL = fmt.Errorf("invalid url")
+)
 
 var handlers = map[string]func(*Info, io.Reader) error{
 	"text/html": func(i *Info, r io.Reader) error {
@@ -47,9 +53,15 @@ type Info struct {
 }
 
 // Get takes a URL and returns the releted information
-func Get(url string) (*Info, error) {
+func Get(uri string) (*Info, error) {
 	info := Info{}
-	resp, err := client.Get(url)
+
+	_, err := url.ParseRequestURI(uri)
+	if err != nil {
+		return nil, ErrInvalidURL
+	}
+
+	resp, err := client.Get(uri)
 	if err != nil {
 		return nil, err
 	}
