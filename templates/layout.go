@@ -2,7 +2,7 @@ package templates
 
 const layouttmpl = `
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Home</title>
     <link rel="stylesheet" href="/public/style.css">
