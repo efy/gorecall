@@ -8,12 +8,10 @@ import (
 	"github.com/efy/gorecall/database"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/handler"
-	"github.com/efy/gorecall/router"
 	"github.com/efy/gorecall/server"
 	"github.com/efy/gorecall/subcmd"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/justinas/alice"
 )
 
 var serve = subcmd.Command{
@@ -52,56 +50,12 @@ var serve = subcmd.Command{
 
 		store := sessions.NewCookieStore([]byte("something-very-secret"))
 
-		app := handler.NewApp(db, uRepo, bmRepo, trRepo, store)
-
-		m := router.App()
-		m.Get(router.Dashboard).Handler(app.AuthMiddleware(app.HomeHandler()))
-
-		m.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
-		m.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
-		m.Get(router.CreateBookmark).Handler(app.AuthMiddleware(app.CreateBookmarkHandler()))
-		m.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
-		m.Get(router.BookmarkAddTag).Handler(app.AuthMiddleware(app.BookmarkAddTagHandler()))
-		m.Get(router.BookmarkRemoveTag).Handler(app.AuthMiddleware(app.BookmarkRemoveTagHandler()))
-
-		m.Get(router.Tags).Handler(app.AuthMiddleware(app.TagsHandler()))
-		m.Get(router.NewTag).Handler(app.AuthMiddleware(app.NewTagHandler()))
-		m.Get(router.Tag).Handler(app.AuthMiddleware(app.TagHandler()))
-		m.Get(router.CreateTag).Handler(app.AuthMiddleware(app.CreateTagHandler()))
-
-		m.Get(router.Import).Handler(app.AuthMiddleware(app.ImportHandler()))
-		m.Get(router.Export).Handler(app.AuthMiddleware(app.ExportHandler()))
-		m.Get(router.Account).Handler(app.AuthMiddleware(app.AccountShowHandler()))
-		m.Get(router.Preferences).Handler(app.AuthMiddleware(app.PreferencesHandler()))
-		m.Get(router.EditAccount).Handler(app.AuthMiddleware(app.AccountEditHandler()))
-		m.Get(router.Login).Handler(app.LoginHandler())
-		m.Get(router.Logout).Handler(app.LogoutHandler())
-
-		m.NotFoundHandler = app.NotFoundHandler()
-
-		// Static file handler
-		m.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
-
-		api := router.Api()
-		api.Get(router.CreateBookmark).Handler(handler.TokenAuthMiddleware(app.ApiCreateBookmarkHandler()))
-		api.Get(router.Bookmarks).Handler(handler.TokenAuthMiddleware(app.ApiBookmarksHandler()))
-		api.Get(router.Ping).Handler(app.ApiPingHandler())
-		api.Get(router.Authenticate).Handler(app.CreateTokenHandler())
-		api.Get(router.WebInfo).Handler(app.WebInfoHandler())
-
+		app := handler.NewApp(uRepo, bmRepo, trRepo, store)
+		api := handler.NewApi(uRepo, bmRepo, trRepo)
 		r := mux.NewRouter()
 
-		// Build middleware chain for app requests
-		appchain := alice.New(handler.LoggingMiddleware, handler.TimeoutMiddleware).Then(m)
-
-		// Build middleware chaun for api requests
-		apichain := alice.New(handler.CORSMiddleware, handler.PreflightMiddleware).Then(api)
-
-		// Mount api router onto app
-		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", apichain))
-
-		// Mount the web app
-		r.PathPrefix("/").Handler(appchain)
+		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", api.Handler()))
+		r.PathPrefix("/").Handler(app.Handler())
 
 		if *usefcgi {
 			err = server.FCGI(nil, r)

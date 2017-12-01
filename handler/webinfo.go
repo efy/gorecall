@@ -8,7 +8,7 @@ import (
 	"github.com/efy/gorecall/webinfo"
 )
 
-func (app *App) WebInfoHandler() http.Handler {
+func (app *Api) WebInfoHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Query().Get("url")
 		if url == "" {

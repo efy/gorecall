@@ -8,8 +8,6 @@ import (
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
 	"github.com/gorilla/schema"
-	"github.com/gorilla/sessions"
-	"github.com/jmoiron/sqlx"
 )
 
 var decoder = schema.NewDecoder()
@@ -40,17 +38,6 @@ type Pagination struct {
 	PerPage int
 }
 
-type App struct {
-	db    *sqlx.DB
-	ur    datastore.UserRepo
-	br    datastore.BookmarkRepo
-	tr    datastore.TagRepo
-	store *sessions.CookieStore
-}
-
-func (h App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-}
-
 func (app *App) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := app.initAppCtx(r)
@@ -73,6 +60,21 @@ func renderError(w http.ResponseWriter, err error) {
 }
 
 func (app *App) authenticate(username string, password string) bool {
+	u, err := app.ur.GetByUsername(username)
+
+	if err != nil {
+		return false
+	}
+
+	match := auth.CheckPasswordHash(password, u.Password)
+	if !match {
+		return false
+	}
+
+	return true
+}
+
+func (app *Api) authenticate(username string, password string) bool {
 	u, err := app.ur.GetByUsername(username)
 
 	if err != nil {
@@ -114,14 +116,4 @@ func (app *App) initAppCtx(r *http.Request) *AppCtx {
 	ctx.User = user
 
 	return ctx
-}
-
-func NewApp(db *sqlx.DB, ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo, store *sessions.CookieStore) App {
-	return App{
-		db,
-		ur,
-		br,
-		tr,
-		store,
-	}
 }

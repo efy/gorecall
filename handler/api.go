@@ -8,21 +8,13 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-func (app *App) ApiPingHandler() http.Handler {
+func (app *Api) ApiPingHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"version": "v0", "status": "ok"}`))
 	})
 }
 
-func (app *App) PreflightHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Date, Username, Password")
-	})
-}
-
-func (app *App) CreateTokenHandler() http.Handler {
+func (app *Api) CreateTokenHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username := r.Header.Get("Username")
 		password := r.Header.Get("Password")
