@@ -29,7 +29,7 @@ func (app *App) ApiCreateBookmarkHandler() http.Handler {
 			renderError(w, err)
 			return
 		}
-
-		w.Write([]byte("bookmark created"))
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(`{"message": "Success"}`))
 	})
 }
