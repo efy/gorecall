@@ -10,21 +10,21 @@ const (
 		CREATE TABLE bookmarks (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT,
-			url TEXT,
+			url TEXT UNIQUE,
 			icon TEXT,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 
 		CREATE TABLE users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username VARCHAR(50),
+			username VARCHAR(50) UNIQUE,
 			password CHAR(60),
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 
     CREATE TABLE tags (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      label VARCHAR(50),
+      label VARCHAR(50) UNIQUE,
 			color VARCHAR(16),
 			description TEXT,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
