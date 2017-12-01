@@ -55,8 +55,10 @@ func (app *App) ImportHandler() http.Handler {
 
 		templates.RenderTemplate(w, "importsuccess.html", struct {
 			Authenticated bool
+			Bookmarks     []datastore.Bookmark
 		}{
 			true,
+			bookmarks,
 		})
 	})
 }
