@@ -25,6 +25,7 @@ func (app *Api) WebInfoHandler() http.Handler {
 		payload, err := json.Marshal(info)
 		if err != nil {
 			renderError(w, err)
+			return
 		}
 
 		w.Write(payload)

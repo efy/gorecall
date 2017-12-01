@@ -56,6 +56,7 @@ func renderError(w http.ResponseWriter, err error) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 

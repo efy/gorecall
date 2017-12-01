@@ -75,7 +75,7 @@ func (api *Api) Handler() http.Handler {
 	r.Get(router.WebInfo).Handler(api.WebInfoHandler())
 
 	// Build middleware chaun for api requests
-	apichain := alice.New(CORSMiddleware, PreflightMiddleware).Then(r)
+	apichain := alice.New(LoggingMiddleware, TimeoutMiddleware, CORSMiddleware, PreflightMiddleware).Then(r)
 
 	return apichain
 }
