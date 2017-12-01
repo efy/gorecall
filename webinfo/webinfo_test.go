@@ -47,7 +47,7 @@ func TestWebInfoGet(t *testing.T) {
 	}
 }
 
-func TestWebInfoGetHtml(t *testing.T) {
+func TestWebInfoGetHtmlTitle(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "text/html")
 		w.Write([]byte("<title>Test Title</title>"))
@@ -64,5 +64,25 @@ func TestWebInfoGetHtml(t *testing.T) {
 	if info.Title != "Test Title" {
 		t.Error("expected", ".Title to be 'Test Title'")
 		t.Error("got     ", info.Title)
+	}
+}
+
+func TestWebInfoGetHtmlCoverImage(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "text/html")
+		w.Write([]byte(`<meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg" />`))
+	}))
+	defer ts.Close()
+
+	testurl := ts.URL
+
+	info, err := Get(testurl)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+	if info.Cover == "" {
+		t.Error("expected", ".Cover to not be blank")
+		t.Error("got     ", info.Cover)
 	}
 }

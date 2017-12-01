@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  name = "github.com/PuerkitoBio/goquery"
+  packages = ["."]
+  revision = "e1271ee34c6a305e38566ecd27ae374944907ee9"
+  version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/andybalholm/cascadia"
+  packages = ["."]
+  revision = "349dd0209470eabd9514242c688c403c0926d266"
+
+[[projects]]
   branch = "master"
   name = "github.com/auth0/go-jwt-middleware"
   packages = ["."]
@@ -88,12 +100,12 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = ["context","html","html/atom"]
   revision = "fc492d2e106922eb3aa4bca863d55e882c087ae3"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "69de01086af981e1b38d96043f2e11abd6cbf5cbeb8bca70e38a8e0f4ac7308e"
+  inputs-digest = "19c1fd9306fd30d03043682b85318ee0eea52edf0fa30a299463cbba7ef3aeca"
   solver-name = "gps-cdcl"
   solver-version = 1

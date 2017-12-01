@@ -1,31 +1,35 @@
 package webinfo
 
 import (
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
-
-	"golang.org/x/net/html"
 )
 
 var client = http.Client{
 	Timeout: time.Second * 5,
 }
 
-var (
-	ErrNoTitle = fmt.Errorf("could not extract title")
-)
-
 var handlers = map[string]func(*Info, io.Reader) error{
 	"text/html": func(i *Info, r io.Reader) error {
-		title, err := extractHtmlTitle(r)
+		// Create a doc from reader
+		doc, err := createDoc(r)
+		if err != nil {
+			return err
+		}
+
+		title, err := extractHtmlTitle(doc)
 		if err == nil {
 			i.Title = title
 		}
+
+		image, err := extractOpenGraphImage(doc)
+		if err == nil {
+			i.Cover = image
+		}
+
 		return nil
 	},
 	"text/plain": func(i *Info, r io.Reader) error {
@@ -39,6 +43,7 @@ type Info struct {
 	Size       int    `json:"size"`
 	StatusCode int    `json:"status_code"`
 	Ext        string `json:"ext"`
+	Cover      string `json:"cover"`
 }
 
 // Get takes a URL and returns the releted information
@@ -86,35 +91,4 @@ func extractHeaders(i *Info, h http.Header) {
 	if err == nil {
 		i.Size = int(size)
 	}
-}
-
-func extractHtmlTitle(body io.Reader) (string, error) {
-	doc, err := html.Parse(body)
-	if err != nil {
-		return "", err
-	}
-
-	s, ok := traverse(doc)
-	if !ok {
-		return "", ErrNoTitle
-	}
-
-	s = strings.Trim(s, " \t\n")
-
-	return s, nil
-}
-
-func traverse(n *html.Node) (string, bool) {
-	if n.Type == html.ElementNode && n.Data == "title" {
-		return n.FirstChild.Data, true
-	}
-
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		result, ok := traverse(c)
-		if ok {
-			return result, ok
-		}
-	}
-
-	return "", false
 }
