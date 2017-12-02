@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	ID       int64     `db:"id"`
-	Username string    `db:"username"`
-	Password string    `db:"password"`
-	Created  time.Time `db:"created"`
+	ID       int64     `db:"id" schema:"id"`
+	Username string    `db:"username" schema:"username"`
+	Password string    `db:"password" schema:"-"`
+	Created  time.Time `db:"created" schema:"created"`
 }
 
 const (
@@ -19,7 +19,7 @@ const (
     VALUES (?, ?)
   `
 	userSelectBase = `
-    SELECT username, password FROM users
+    SELECT * FROM users
   `
 	userSelectByID       = userSelectBase + `WHERE id = ? LIMIT 1`
 	userSelectByUsername = userSelectBase + `WHERE username = ? LIMIT 1`
@@ -37,11 +37,11 @@ type userRepo struct {
 }
 
 func (ur *userRepo) GetByID(id int64) (*User, error) {
-	u := User{}
-	if err := ur.db.Get(&u, userSelectByID, id); err != nil {
+	u := &User{}
+	if err := ur.db.Get(u, userSelectByID, id); err != nil {
 		return nil, err
 	}
-	return &u, nil
+	return u, nil
 }
 
 func (ur *userRepo) Create(u *User) (*User, error) {
@@ -50,7 +50,13 @@ func (ur *userRepo) Create(u *User) (*User, error) {
 		return nil, err
 	}
 	id, err := result.LastInsertId()
-	u.ID = id
+	if err != nil {
+		return nil, err
+	}
+	u, err = ur.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
 	return u, nil
 }
 

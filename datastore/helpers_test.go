@@ -74,5 +74,10 @@ func loadDefaultFixture(db *sqlx.DB) {
 
 	// bm3 tags: 1
 	tx.MustExec(tx.Rebind("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES(?, ?)"), 3, 1)
+
+	// users
+	tx.MustExec(tx.Rebind("INSERT INTO users (username, password) VALUES(?, ?)"), "testuser1", "testpw")
+	tx.MustExec(tx.Rebind("INSERT INTO users (username, password) VALUES(?, ?)"), "testuser2", "testpw")
+
 	tx.Commit()
 }
