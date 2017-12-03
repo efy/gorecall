@@ -26,11 +26,6 @@ func TestWebInfoGet(t *testing.T) {
 		t.Error("got     ", info.StatusCode)
 	}
 
-	if info.StatusCode != 200 {
-		t.Error("expected", "200 OK")
-		t.Error("got     ", info.StatusCode)
-	}
-
 	if info.MediaType != "text/plain" {
 		t.Error("expected", "text/plain")
 		t.Error("got     ", info.MediaType)
@@ -92,5 +87,48 @@ func TestInvalidUrl(t *testing.T) {
 	if err != ErrInvalidURL {
 		t.Error("expected", ErrInvalidURL)
 		t.Error("got     ", err)
+	}
+}
+
+func TestOpenGraphParsing(t *testing.T) {
+	html := `
+		<title>The Rock (2006)</title>
+		<meta property="og:title" content="The Rock" />
+		<meta property="og:type" content="video.movie" />
+		<meta property="og:url" content="http://www.imdb.com/title/tt0117500/" />
+		<meta property="og:image" content="http://ia.media-imdb.com/images/rock.jpg" />
+	`
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(html))
+	}))
+	defer ts.Close()
+
+	info, err := Get(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.OpenGraph == nil {
+		t.Error("expected open graph tags to be parsed")
+	}
+}
+
+func TestPartialOpenGraphFails(t *testing.T) {
+	html := `
+		<title>The Rock (2006)</title>
+		<meta property="og:title" content="The Rock" />
+	`
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(html))
+	}))
+	defer ts.Close()
+
+	info, err := Get(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.OpenGraph != nil {
+		t.Error("expected open graph field to be nil when required attributes are missing")
 	}
 }

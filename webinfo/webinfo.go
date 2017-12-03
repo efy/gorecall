@@ -20,7 +20,7 @@ var (
 
 var handlers = map[string]func(*Info, io.Reader) error{
 	"text/html": func(i *Info, r io.Reader) error {
-		// Create a doc from reader
+		// Create a goquery doc from reader
 		doc, err := createDoc(r)
 		if err != nil {
 			return err
@@ -29,6 +29,11 @@ var handlers = map[string]func(*Info, io.Reader) error{
 		title, err := extractHtmlTitle(doc)
 		if err == nil {
 			i.Title = title
+		}
+
+		og, err := parseOpenGraph(doc)
+		if err == nil {
+			i.OpenGraph = og
 		}
 
 		image, err := extractOpenGraphImage(doc)
@@ -49,7 +54,11 @@ type Info struct {
 	Size       int    `json:"size"`
 	StatusCode int    `json:"status_code"`
 	Ext        string `json:"ext"`
-	Cover      string `json:"cover"`
+
+	// HTML specific
+	OpenGraph *OG    `json:"opengraph"`
+	Keywords  string `json:"keywords"`
+	Cover     string `json:"cover"`
 }
 
 // Get takes a URL and returns the releted information
