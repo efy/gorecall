@@ -13,7 +13,7 @@ import (
 
 var store = sessions.NewCookieStore([]byte("test"))
 
-var mockApp = App{store: store, br: bookmarkRepo{}, ur: userRepo, tr: tagRepo}
+var mockApp = App{store: store, br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
 
 var bookmarks = []datastore.Bookmark{
 	{
@@ -117,11 +117,11 @@ func (t *tagRepo) Count() (int, error) {
 }
 
 func (t *tagRepo) ListBookmarks(tid int64, opts datastore.ListOptions) ([]datastore.Bookmark, error) {
-	panic("not implemented")
+	return bookmarks, nil
 }
 
 func (t *tagRepo) CountBookmarks(tid int64) (int, error) {
-	panic("not implemented")
+	return len(bookmarks), nil
 }
 
 type bookmarkRepo struct{}
