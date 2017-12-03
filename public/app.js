@@ -41,6 +41,13 @@
   }
 
   function webinfo_tmpl(obj) {
+    if(obj.opengraph) {
+      return og_tmpl(obj.opengraph)
+    }
+    return default_tmpl(obj)
+  }
+
+  function default_tmpl(obj) {
     return `
     <div class="rc-link-preview">
       <div class="rc-link-preview__image">
@@ -48,6 +55,22 @@
       </div>
       <div class="rc-link-preview__info">
         <div class="text-bold text-ellipsis">${obj.title}</div>
+      </div>
+    </div>
+    `
+  }
+
+  function og_tmpl(obj) {
+    return `
+    <div class="rc-link-preview">
+      <div class="rc-link-preview__image">
+        <img src="${obj.image.source}">
+      </div>
+      <div class="rc-link-preview__info">
+        <div class="text-bold text-ellipsis">${obj.title}</div>
+        <p>
+          ${obj.description}
+        </p>
       </div>
     </div>
     `
