@@ -33,6 +33,10 @@ const (
 		SELECT COUNT(*) as count FROM bookmarks
 	`
 
+	bookmarkDelete = `
+		DELETE FROM bookmarks WHERE id = ?
+	`
+
 	tagList = `
 		SELECT tags.* FROM tags
 		INNER JOIN bookmark_tags
@@ -62,6 +66,7 @@ type BookmarkRepo interface {
 	GetAll() ([]Bookmark, error)
 	List(opts ListOptions) ([]Bookmark, error)
 	Count() (int, error)
+	Delete(id int64) error
 	ListTags(bid int64) ([]Tag, error)
 	CountTags(bid int64) (int, error)
 	AddTag(bid int64, tid int64) error
@@ -105,6 +110,21 @@ func (b *bookmarkRepo) GetAll() ([]Bookmark, error) {
 		return nil, err
 	}
 	return bms, nil
+}
+
+func (b *bookmarkRepo) Delete(id int64) error {
+	res, err := b.db.Exec(bookmarkDelete, id)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count < 1 {
+		return fmt.Errorf("no rows affected")
+	}
+	return nil
 }
 
 func (b *bookmarkRepo) Count() (int, error) {

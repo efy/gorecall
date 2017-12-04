@@ -180,3 +180,19 @@ func testBookmarkRemoveTag(t *testing.T) {
 		t.Error("got     ", count)
 	}
 }
+
+func TestBookmarkDelete(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	err := bookmarkRepo.Delete(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = bookmarkRepo.Delete(1000)
+	if err == nil {
+		t.Error("expected error got nil")
+	}
+}

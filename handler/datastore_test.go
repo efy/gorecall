@@ -150,6 +150,10 @@ func (b *bookmarkRepo) List(opts datastore.ListOptions) ([]datastore.Bookmark, e
 	return bookmarks, nil
 }
 
+func (b *bookmarkRepo) Delete(id int64) error {
+	return nil
+}
+
 func (b *bookmarkRepo) Count() (int, error) {
 	return len(bookmarks), nil
 }
