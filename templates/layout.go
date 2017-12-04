@@ -21,6 +21,10 @@ const layouttmpl = `
 									<a href="/bookmarks">All</a>
 								</li>
 								<li class="nav-item">
+									<a href="/bookmarks/search">Search</a>
+									<i class="icon icon-search"></i>
+								</li>
+								<li class="nav-item">
 									<a href="/bookmarks/new">Add Link</a>
 									<i class="icon icon-plus"></i>
 								</li>

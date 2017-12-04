@@ -24,6 +24,17 @@ const bookmarkstmpl = `
 			<a href="/bookmarks">Bookmarks</a>
 		</li>
 	</ul>
+
+	<div>
+		<form action="/bookmarks/search" method="get">
+			<div class="form-group">
+				<div class="input-group">
+					<input type="text" value="" class="form-input input-sm" name="q">
+					<button type="submit" class="btn btn-sm input-group-btn btn-primary">Search</button>
+				</div>
+			</div>
+		</form>
+	</div>
 </div>
 <div class="rc-bm-list">
   {{ range .Bookmarks }}

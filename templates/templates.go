@@ -40,6 +40,9 @@ var funcMap = template.FuncMap{
 		}
 		return template.URL(u.Scheme + "://" + u.Host)
 	},
+	"seconds": func(t time.Duration) string {
+		return fmt.Sprintf("%f", t.Seconds())
+	},
 	"domain": func(s string) string {
 		u, err := url.Parse(s)
 		if err != nil {

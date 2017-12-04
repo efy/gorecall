@@ -163,6 +163,9 @@ body {
   padding: 0;
   border-bottom: 1px solid #eaeaea;
   margin-bottom: .8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .webinfo-container {

@@ -31,7 +31,7 @@ const searchbookmarkstmpl = `
 </div>
 
 <div>
-	<p>{{ .SearchResult.Total }} results</p>
+	<p class="mt-2">{{ .SearchResult.Total }} results ({{ .SearchResult.Took | seconds }} seconds)</p>
 </div>
 
 <div class="rc-bm-list">
