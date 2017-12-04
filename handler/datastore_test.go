@@ -135,7 +135,10 @@ func (b *bookmarkRepo) Create(bookmark *datastore.Bookmark) (*datastore.Bookmark
 }
 
 func (b *bookmarkRepo) GetByID(id int64) (*datastore.Bookmark, error) {
-	return &bookmarks[id], nil
+	if int64(len(bookmarks)) > id {
+		return &bookmarks[id], nil
+	}
+	return nil, fmt.Errorf("bookmark not found")
 }
 
 func (b *bookmarkRepo) GetAll() ([]datastore.Bookmark, error) {
@@ -151,11 +154,11 @@ func (b *bookmarkRepo) Count() (int, error) {
 }
 
 func (b *bookmarkRepo) ListTags(bid int64) ([]datastore.Tag, error) {
-	panic("not implemented")
+	return tags, nil
 }
 
 func (b *bookmarkRepo) CountTags(bid int64) (int, error) {
-	panic("not implemented")
+	return len(tags), nil
 }
 
 func (b *bookmarkRepo) AddTag(bid int64, tid int64) error {

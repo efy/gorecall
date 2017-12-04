@@ -26,7 +26,7 @@ func (app *App) BookmarksShowHandler() http.Handler {
 
 		bookmark, err := app.br.GetByID(id)
 		if err != nil {
-			renderError(w, err)
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
