@@ -93,3 +93,36 @@
 
 })(document, window);
 
+
+// Delete request handling.
+// Requests with the data-delete attribute will prompt the 
+// user and send a delete request to the supplied endpoint.
+// If a data-redirect is supplied and the response code of
+// the delete request 2xx the url will be replaced with the
+// given redirect.
+(function(d, w) {
+
+  var actions = d.querySelectorAll("[data-delete]")
+
+  for(var i = 0; i < actions.length; i++) {
+    (function(action) {
+      action.addEventListener("click", function(e){
+        if(confirm("Are you sure you want to delete this item")) {
+          var endpoint = e.target.dataset.delete
+          var redirect = e.target.dataset.redirect || "/"
+
+          fetch(endpoint, {
+            credentials: 'same-origin',
+            method: 'delete'
+          }).then(function(res) {
+            if(res.status >= 200 && res.status <= 299) {
+              window.location = redirect
+            }
+          })
+        }
+      })
+    })(actions[i]);
+  }
+
+})(document, window);
+

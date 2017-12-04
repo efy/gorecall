@@ -35,7 +35,7 @@ const bookmarkstmpl = `
 					<img width="20" height="20" src="" onerror="this.src = '/public/placeholder_favicon.png'">
 				{{ end }}
       </div>
-      <div class="column col-11">
+      <div class="column col-9">
         <div class="rc-bm-title text-ellipsis">
           <a href="{{ .URL }}" target="_blank" rel="noopener">
             {{ .Title | html }}
@@ -55,6 +55,9 @@ const bookmarkstmpl = `
 					</a>
 				</div>
       </div>
+			<div class="column col-2 text-right">
+				<button data-delete="/bookmarks/{{ .ID }}" data-redirect="/bookmarks" class="btn btn-sm btn-default">Delete</button>
+			</div>
     </div>
   {{ end }}
 </div>

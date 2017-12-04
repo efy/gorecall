@@ -30,7 +30,7 @@ func (app *App) DeleteBookmarkHandler() http.Handler {
 			return
 		}
 
-		http.Redirect(w, r, "/bookmarks", 302)
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
