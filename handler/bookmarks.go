@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
 	"github.com/gorilla/mux"
@@ -148,11 +149,39 @@ func (app *App) SearchBookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query().Get("q")
 
+		q := bleve.NewMatchQuery(query)
+		s := bleve.NewSearchRequest(q)
+		s.Highlight = bleve.NewHighlight()
+		s.Highlight.AddField("Title")
+
+		result, err := app.index.Search(s)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var bookmarks []datastore.Bookmark
+		for _, i := range result.Hits {
+			id, err := strconv.ParseInt(i.ID, 10, 64)
+			if err != nil {
+				continue
+			}
+			bm, err := app.br.GetByID(id)
+			if err != nil {
+				continue
+			}
+			bookmarks = append(bookmarks, *bm)
+		}
+
 		templates.RenderTemplate(w, "searchbookmarks.html", struct {
 			SearchQuery   string
+			SearchResult  *bleve.SearchResult
+			Bookmarks     []datastore.Bookmark
 			Authenticated bool
 		}{
 			query,
+			result,
+			bookmarks,
 			true,
 		})
 	})
