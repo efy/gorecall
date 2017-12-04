@@ -3,8 +3,31 @@ package handler
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 )
+
+func TestCreateBookmarkHandler(t *testing.T) {
+	form := url.Values{}
+
+	form.Add("title", "test create bookmark handler")
+	form.Add("url", "http://testcreatebookmarkhandler.com")
+
+	req, err := http.NewRequest("POST", "/bookmarks", strings.NewReader(form.Encode()))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	h := mockApp.CreateBookmarkHandler()
+
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusFound {
+		t.Errorf("expected %d response got %d", http.StatusFound, rr.Code)
+	}
+}
 
 func TestNewBookmarkHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/bookmarks/new", nil)

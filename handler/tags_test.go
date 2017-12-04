@@ -13,8 +13,8 @@ import (
 func TestCreateTagHandler(t *testing.T) {
 	form := url.Values{}
 
-	form.Add("title", "test create handler")
-	form.Add("url", "http://testcreatehandler.com")
+	form.Add("label", "test create tag handler")
+	form.Add("url", "http://testcreatetaghandler.com")
 
 	req, err := http.NewRequest("POST", "/tags", strings.NewReader(form.Encode()))
 	if err != nil {
