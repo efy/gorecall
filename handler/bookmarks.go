@@ -19,40 +19,18 @@ func (app *App) NewBookmarkHandler() http.Handler {
 	})
 }
 
-func (app *App) BookmarkHandler() http.Handler {
+func (app *App) DeleteBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 
-		bookmark, err := app.br.GetByID(id)
+		err = app.br.Delete(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
-		tags, err := app.br.ListTags(id)
-		if err != nil {
-			renderError(w, err)
-			return
-		}
-
-		allTags, err := app.tr.GetAll()
-		if err != nil {
-			renderError(w, err)
-			return
-		}
-
-		templates.RenderTemplate(w, "bookmark.html", struct {
-			Authenticated bool
-			Bookmark      *datastore.Bookmark
-			Tags          []datastore.Tag
-			AllTags       []datastore.Tag
-		}{
-			true,
-			bookmark,
-			tags,
-			allTags,
-		})
+		http.Redirect(w, r, "/bookmarks", 302)
 	})
 }
 
@@ -102,6 +80,43 @@ func (app *App) BookmarksHandler() http.Handler {
 			bookmarks,
 			count,
 			pagination,
+		})
+	})
+}
+
+func (app *App) BookmarkHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, err := strconv.ParseInt(vars["id"], 10, 64)
+
+		bookmark, err := app.br.GetByID(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		tags, err := app.br.ListTags(id)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		allTags, err := app.tr.GetAll()
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		templates.RenderTemplate(w, "bookmark.html", struct {
+			Authenticated bool
+			Bookmark      *datastore.Bookmark
+			Tags          []datastore.Tag
+			AllTags       []datastore.Tag
+		}{
+			true,
+			bookmark,
+			tags,
+			allTags,
 		})
 	})
 }

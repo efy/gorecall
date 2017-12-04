@@ -44,6 +44,34 @@ func TestNewBookmarkHandler(t *testing.T) {
 	}
 }
 
+func TestDeleteBookmarkHandler(t *testing.T) {
+	h := muxWrapper("/bookmarks/{id}", mockApp.DeleteBookmarkHandler())
+
+	req, err := http.NewRequest("DELETE", "/bookmarks/1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != 302 {
+		t.Errorf("expected 302 response got %d", rr.Code)
+	}
+
+	req, err = http.NewRequest("DELETE", "/bookmarks/1000", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr = httptest.NewRecorder()
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != 404 {
+		t.Errorf("expected 404 response got %d", rr.Code)
+	}
+}
+
 func TestBookmarksHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/bookmarks", nil)
 	if err != nil {

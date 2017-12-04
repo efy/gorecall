@@ -151,7 +151,10 @@ func (b *bookmarkRepo) List(opts datastore.ListOptions) ([]datastore.Bookmark, e
 }
 
 func (b *bookmarkRepo) Delete(id int64) error {
-	return nil
+	if id < int64(len(bookmarks)) {
+		return nil
+	}
+	return fmt.Errorf("cannot delete bookmark %d", id)
 }
 
 func (b *bookmarkRepo) Count() (int, error) {
