@@ -59,6 +59,7 @@ func init() {
 	registerTemplate("index.html", indextmpl)
 
 	registerTemplate("bookmarks.html", bookmarkstmpl)
+	registerTemplate("searchbookmarks.html", searchbookmarkstmpl)
 	registerTemplate("newbookmark.html", newbookmarktmpl)
 	registerTemplate("bookmark.html", bookmarktmpl)
 

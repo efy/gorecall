@@ -14,6 +14,7 @@ const (
 	Tag               = "tag"
 	BookmarkAddTag    = "bookmark:addtag"
 	BookmarkRemoveTag = "bookmark:removetag"
+	SearchBookmarks   = "bookmarks:search"
 
 	// Webapp only
 	Dashboard   = "dashboard:index"
@@ -40,6 +41,7 @@ func App() *mux.Router {
 	m.Path("/").Methods("GET").Name(Dashboard)
 	m.Path("/bookmarks").Methods("GET").Name(Bookmarks)
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
+	m.Path("/bookmarks/search").Methods("GET").Name(SearchBookmarks)
 	m.Path("/bookmarks/new").Methods("GET").Name(NewBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("DELETE").Name(DeleteBookmark)

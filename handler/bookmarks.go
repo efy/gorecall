@@ -144,6 +144,20 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 	})
 }
 
+func (app *App) SearchBookmarksHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+
+		templates.RenderTemplate(w, "searchbookmarks.html", struct {
+			SearchQuery   string
+			Authenticated bool
+		}{
+			query,
+			true,
+		})
+	})
+}
+
 func (app *App) BookmarkAddTagHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
