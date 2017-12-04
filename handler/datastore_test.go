@@ -14,6 +14,7 @@ import (
 var store = sessions.NewCookieStore([]byte("test"))
 
 var mockApp = App{store: store, br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
+var mockApi = Api{br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
 
 var bookmarks = []datastore.Bookmark{
 	{

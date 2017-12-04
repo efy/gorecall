@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/efy/gorecall/webinfo"
@@ -12,7 +11,7 @@ func (app *Api) WebInfoHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Query().Get("url")
 		if url == "" {
-			renderError(w, fmt.Errorf("no url provided"))
+			http.Error(w, "must provide url", http.StatusBadRequest)
 			return
 		}
 
