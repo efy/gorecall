@@ -10,10 +10,12 @@ const searchbookmarkstmpl = `
 		<li class="breadcrumb-item">
 			<a href="/bookmarks/search">Search</a>
 		</li>
+		{{ if .SearchQuery }}
 		<li class="breadcrumb-item">
 			query:
 			<a href="/bookmarks/search?q={{ .SearchQuery }}">{{ .SearchQuery }}</a>
 		</li>
+		{{ end }}
 	</ul>
 </div>
 

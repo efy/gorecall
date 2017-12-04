@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/router"
 	"github.com/gorilla/sessions"
@@ -14,6 +15,7 @@ type App struct {
 	br    datastore.BookmarkRepo
 	tr    datastore.TagRepo
 	store *sessions.CookieStore
+	index bleve.Index
 }
 
 func (app *App) Handler() http.Handler {
@@ -53,12 +55,13 @@ func (app *App) Handler() http.Handler {
 	return appchain
 }
 
-func NewApp(ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo, store *sessions.CookieStore) App {
+func NewApp(ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo, store *sessions.CookieStore, index bleve.Index) App {
 	return App{
 		ur,
 		br,
 		tr,
 		store,
+		index,
 	}
 }
 

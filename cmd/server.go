@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/database"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/handler"
@@ -20,11 +21,18 @@ var serve = subcmd.Command{
 	Run: func(cmd *subcmd.Command, args []string) {
 		addr := cmd.Flag.String("addr", ":8080", "the address to bind to when using the http server")
 		dbname := cmd.Flag.String("dbname", "gorecall.db", "path to database file")
+		indexname := cmd.Flag.String("indexname", "gorecall.idx", "path to index directory")
 		usecgi := cmd.Flag.Bool("cgi", false, "Serve app using cgi")
 		usefcgi := cmd.Flag.Bool("fcgi", false, "Serve app using fastcgi")
 		cmd.ParseFlags(args)
 
 		db, err := database.Init(*dbname)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		index, err := bleve.Open(*indexname)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -50,7 +58,7 @@ var serve = subcmd.Command{
 
 		store := sessions.NewCookieStore([]byte("something-very-secret"))
 
-		app := handler.NewApp(uRepo, bmRepo, trRepo, store)
+		app := handler.NewApp(uRepo, bmRepo, trRepo, store, index)
 		api := handler.NewApi(uRepo, bmRepo, trRepo)
 		r := mux.NewRouter()
 
