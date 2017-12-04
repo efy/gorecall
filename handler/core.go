@@ -21,9 +21,9 @@ func (app *App) Handler() http.Handler {
 	r.Get(router.Dashboard).Handler(app.AuthMiddleware(app.HomeHandler()))
 
 	r.Get(router.Bookmarks).Handler(app.AuthMiddleware(app.BookmarksHandler()))
-	r.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.BookmarksNewHandler()))
+	r.Get(router.NewBookmark).Handler(app.AuthMiddleware(app.NewBookmarkHandler()))
 	r.Get(router.CreateBookmark).Handler(app.AuthMiddleware(app.CreateBookmarkHandler()))
-	r.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarksShowHandler()))
+	r.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarkHandler()))
 	r.Get(router.BookmarkAddTag).Handler(app.AuthMiddleware(app.BookmarkAddTagHandler()))
 	r.Get(router.BookmarkRemoveTag).Handler(app.AuthMiddleware(app.BookmarkRemoveTagHandler()))
 

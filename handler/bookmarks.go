@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (app *App) BookmarksNewHandler() http.Handler {
+func (app *App) NewBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templates.RenderTemplate(w, "newbookmark.html", struct {
 			Authenticated bool
@@ -19,7 +19,7 @@ func (app *App) BookmarksNewHandler() http.Handler {
 	})
 }
 
-func (app *App) BookmarksShowHandler() http.Handler {
+func (app *App) BookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id, err := strconv.ParseInt(vars["id"], 10, 64)

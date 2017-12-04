@@ -6,14 +6,14 @@ import (
 	"testing"
 )
 
-func TestBookmarksNewHandler(t *testing.T) {
+func TestNewBookmarkHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/bookmarks/new", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	h := mockApp.BookmarksNewHandler()
+	h := mockApp.NewBookmarkHandler()
 	h.ServeHTTP(rr, req)
 
 	if rr.Code != 200 {
@@ -37,7 +37,7 @@ func TestBookmarksHandler(t *testing.T) {
 }
 
 func TestBookmarkHandler(t *testing.T) {
-	h := muxWrapper("/bookmarks/{id}", mockApp.BookmarksShowHandler())
+	h := muxWrapper("/bookmarks/{id}", mockApp.BookmarkHandler())
 
 	req, err := http.NewRequest("GET", "/bookmarks/1", nil)
 	if err != nil {
