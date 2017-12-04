@@ -1,3 +1,4 @@
 *.db
 gorecall
 vendor
+gorecall.idx

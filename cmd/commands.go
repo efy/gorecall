@@ -6,4 +6,6 @@ var Commands = []subcmd.Command{
 	serve,
 	createuser,
 	migrate,
+	index,
+	search,
 }
