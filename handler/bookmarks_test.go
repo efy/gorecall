@@ -55,8 +55,8 @@ func TestDeleteBookmarkHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 
-	if rr.Code != 302 {
-		t.Errorf("expected 302 response got %d", rr.Code)
+	if rr.Code != http.StatusNoContent {
+		t.Errorf("expected 204 response got %d", rr.Code)
 	}
 
 	req, err = http.NewRequest("DELETE", "/bookmarks/1000", nil)
@@ -67,8 +67,8 @@ func TestDeleteBookmarkHandler(t *testing.T) {
 	rr = httptest.NewRecorder()
 	h.ServeHTTP(rr, req)
 
-	if rr.Code != http.StatusNoContent {
-		t.Errorf("expected 204 response got %d", rr.Code)
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404 response got %d", rr.Code)
 	}
 }
 
