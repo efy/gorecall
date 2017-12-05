@@ -16,48 +16,27 @@ type Bookmark struct {
 }
 
 const (
-	bookmarkInsert = `
-    INSERT INTO bookmarks (title, url, icon, created)
-    VALUES (?, ?, ?, ?)
-  `
-	bookmarkSelectBase = `
-    SELECT * FROM bookmarks
-  `
-	bookmarkListBase = `
-    SELECT * FROM bookmarks ORDER BY %s %s LIMIT ? OFFSET ?
-  `
-
+	bookmarkInsert     = `INSERT INTO bookmarks (title, url, icon, created) VALUES ($1, $2, $3, $4)`
+	bookmarkSelectBase = `SELECT * FROM bookmarks `
+	bookmarkListBase   = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
-
-	bookmarkCount = `
-		SELECT COUNT(*) as count FROM bookmarks
-	`
-
-	bookmarkDelete = `
-		DELETE FROM bookmarks WHERE id = ?
-	`
+	bookmarkCount      = `SELECT COUNT(*) as count FROM bookmarks`
+	bookmarkDelete     = `DELETE FROM bookmarks WHERE id = $1`
 
 	tagList = `
 		SELECT tags.* FROM tags
 		INNER JOIN bookmark_tags
 		ON tags.id = bookmark_tags.tag_id
-		WHERE bookmark_tags.bookmark_id = ?
+		WHERE bookmark_tags.bookmark_id = $1
 	`
-
 	tagCount = `
 		SELECT COUNT(*) FROM tags
 		INNER JOIN bookmark_tags
 		ON tags.id = bookmark_tags.tag_id
-		WHERE bookmark_tags.bookmark_id = ?
+		WHERE bookmark_tags.bookmark_id = $1
 	`
-
-	addTag = `
-		INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES (?, ?)
-	`
-
-	removeTag = `
-		DELETE FROM bookmark_tags WHERE bookmark_id = ? AND tag_id = ?
-	`
+	addTag    = `INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES ($1, $2)`
+	removeTag = `DELETE FROM bookmark_tags WHERE bookmark_id = $1 AND tag_id = $2`
 )
 
 type BookmarkRepo interface {

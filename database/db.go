@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	schema = `
+	schemasqlite = `
 		CREATE TABLE bookmarks (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT,
@@ -38,6 +38,41 @@ const (
 			tag_id INTEGER,
 			bookmark_id INTEGER,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+
+		CREATE UNIQUE INDEX tagging
+		ON bookmark_tags (bookmark_id, tag_id);
+	`
+
+	schemapostgres = `
+		CREATE TABLE bookmarks (
+			id SERIAL PRIMARY KEY,
+			title TEXT,
+			url TEXT UNIQUE,
+			icon TEXT,
+			created DATE DEFAULT CURRENT_DATE
+		);
+
+		CREATE TABLE users (
+			id SERIAL PRIMARY KEY,
+			username VARCHAR(50) UNIQUE,
+			password CHAR(60),
+			created DATE DEFAULT CURRENT_DATE
+		);
+
+    CREATE TABLE tags (
+      id SERIAL PRIMARY KEY,
+      label VARCHAR(50) UNIQUE,
+			color VARCHAR(16),
+			description TEXT,
+			created DATE DEFAULT CURRENT_DATE
+    );
+
+		CREATE TABLE bookmark_tags (
+			id SERIAL PRIMARY KEY,
+			tag_id INTEGER,
+			bookmark_id INTEGER,
+			created DATE DEFAULT CURRENT_DATE
 		);
 
 		CREATE UNIQUE INDEX tagging
@@ -80,11 +115,21 @@ func Connect(opts Options) (*sqlx.DB, error) {
 	return db, nil
 }
 
-// Apply the database schema to a *sqlx.DB
-func Setup(db *sqlx.DB) error {
-	_, err := db.Exec(schema)
-	if err != nil {
-		return err
+// Apply the correct database schema based on options.Driver
+func Setup(opts Options, db *sqlx.DB) error {
+	switch opts.Driver {
+	case "sqlite3":
+		_, err := db.Exec(schemasqlite)
+		if err != nil {
+			return err
+		}
+	case "postgres":
+		_, err := db.Exec(schemapostgres)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("database: no schema for driver %s", opts.Driver)
 	}
 	return nil
 }

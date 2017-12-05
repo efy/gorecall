@@ -14,15 +14,10 @@ type User struct {
 }
 
 const (
-	userInsert = `
-    INSERT INTO users (username, password)
-    VALUES (?, ?)
-  `
-	userSelectBase = `
-    SELECT * FROM users
-  `
-	userSelectByID       = userSelectBase + `WHERE id = ? LIMIT 1`
-	userSelectByUsername = userSelectBase + `WHERE username = ? LIMIT 1`
+	userInsert           = `INSERT INTO users (username, password) VALUES ($1, $2)`
+	userSelectBase       = `SELECT * FROM users `
+	userSelectByID       = userSelectBase + `WHERE id = $1 LIMIT 1`
+	userSelectByUsername = userSelectBase + `WHERE username = $1 LIMIT 1`
 )
 
 type UserRepo interface {

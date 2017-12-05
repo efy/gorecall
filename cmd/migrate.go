@@ -16,16 +16,18 @@ var migrate = subcmd.Command{
 		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
 		cmd.ParseFlags(args)
 
-		db, err := database.Connect(database.Options{
+		dbopts := database.Options{
 			Driver: *dbdriver,
 			DSN:    *dbdsn,
-		})
+		}
+
+		db, err := database.Connect(dbopts)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		err = database.Setup(db)
+		err = database.Setup(dbopts, db)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -49,14 +49,11 @@ type TagRepo interface {
 }
 
 const (
-	tagInsert = `
-		INSERT INTO tags (label, description, color)
-		VALUES (?, ?, ?)
-	`
+	tagInsert      = `INSERT INTO tags (label, description, color) VALUES ($1, $2, $3)`
 	tagSelectBase  = `SELECT * FROM tags`
 	tagSelectCount = `SELECT COUNT(*) FROM tags`
 	tagSelectByID  = tagSelectBase + ` WHERE id = $1 LIMIT 1`
-	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT ? OFFSET ?`
+	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT $1 OFFSET $2 `
 
 	tagListBookmarks = `
 		SELECT
@@ -67,15 +64,15 @@ const (
 		FROM bookmarks
 		INNER JOIN bookmark_tags
 		ON bookmarks.id = bookmark_tags.bookmark_id
-		WHERE bookmark_tags.tag_id = ?
-		LIMIT ? OFFSET ?
+		WHERE bookmark_tags.tag_id = $1
+		LIMIT $2 OFFSET $3
 	`
 
 	tagBookmarksCount = `
 		SELECT COUNT(*) FROM bookmarks
 		INNER JOIN bookmark_tags
 		ON bookmarks.id = bookmark_tags.bookmark_id
-		WHERE bookmark_tags.tag_id = ?
+		WHERE bookmark_tags.tag_id = $1
 	`
 )
 

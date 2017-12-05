@@ -44,7 +44,7 @@ func testDB() *sqlx.DB {
 	if err != nil {
 		panic(err)
 	}
-	database.Setup(db)
+	database.Setup(database.Options{Driver: "sqlite3"}, db)
 
 	return db
 }
