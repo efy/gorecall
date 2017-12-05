@@ -1,10 +1,11 @@
 package subcmd
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/namsral/flag"
 )
 
 type Command struct {
