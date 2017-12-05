@@ -18,6 +18,7 @@ const (
 	userSelectBase       = `SELECT * FROM users `
 	userSelectByID       = userSelectBase + `WHERE id = $1 LIMIT 1`
 	userSelectByUsername = userSelectBase + `WHERE username = $1 LIMIT 1`
+	userLastInsert       = `SELECT id FROM users ORDER BY id DESC LIMIT 1`
 )
 
 type UserRepo interface {
@@ -40,14 +41,25 @@ func (ur *userRepo) GetByID(id int64) (*User, error) {
 }
 
 func (ur *userRepo) Create(u *User) (*User, error) {
-	result, err := ur.db.Exec(userInsert, u.Username, u.Password)
+	tx, err := ur.db.Beginx()
 	if err != nil {
 		return nil, err
 	}
-	id, err := result.LastInsertId()
+	_, err = tx.Exec(userInsert, u.Username, u.Password)
 	if err != nil {
 		return nil, err
 	}
+
+	var id int64
+	if err = tx.Get(&id, userLastInsert); err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
 	u, err = ur.GetByID(id)
 	if err != nil {
 		return nil, err

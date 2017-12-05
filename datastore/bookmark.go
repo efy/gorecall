@@ -22,6 +22,7 @@ const (
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
 	bookmarkCount      = `SELECT COUNT(*) as count FROM bookmarks`
 	bookmarkDelete     = `DELETE FROM bookmarks WHERE id = $1`
+	bookmarkLastInsert = `SELECT id FROM bookmarks ORDER BY id DESC LIMIT 1`
 
 	tagList = `
 		SELECT tags.* FROM tags
@@ -68,14 +69,26 @@ func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
 	if bm.Created.IsZero() {
 		bm.Created = time.Now()
 	}
-	result, err := b.db.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.Created)
+
+	tx, err := b.db.Beginx()
 	if err != nil {
 		return nil, err
 	}
-	id, err := result.LastInsertId()
+	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.Created)
 	if err != nil {
 		return nil, err
 	}
+
+	var id int64
+	if err = tx.Get(&id, bookmarkLastInsert); err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
 	bm, err = b.GetByID(id)
 	if err != nil {
 		return nil, err

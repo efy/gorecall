@@ -54,6 +54,7 @@ const (
 	tagSelectCount = `SELECT COUNT(*) FROM tags`
 	tagSelectByID  = tagSelectBase + ` WHERE id = $1 LIMIT 1`
 	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT $1 OFFSET $2 `
+	tagLastInsert  = `SELECT id FROM tags ORDER BY id DESC limit 1`
 
 	tagListBookmarks = `
 		SELECT
@@ -81,11 +82,22 @@ type tagRepo struct {
 }
 
 func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
-	result, err := t.db.Exec(tagInsert, tag.Label, tag.Description, tag.Color)
+	tx, err := t.db.Beginx()
 	if err != nil {
 		return nil, err
 	}
-	id, err := result.LastInsertId()
+
+	_, err = tx.Exec(tagInsert, tag.Label, tag.Description, tag.Color)
+	if err != nil {
+		return nil, err
+	}
+
+	var id int64
+	if err = tx.Get(&id, tagLastInsert); err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return nil, err
 	}
