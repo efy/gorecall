@@ -151,9 +151,6 @@ func (app *App) SearchBookmarksHandler() http.Handler {
 
 		q := bleve.NewMatchQuery(query)
 		s := bleve.NewSearchRequest(q)
-		s.Highlight = bleve.NewHighlight()
-		s.Highlight.AddField("Title")
-
 		result, err := app.index.Search(s)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
