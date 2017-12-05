@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dokku": {
+      "predeploy": "gorecall migrate && gorecall index",
+      "postdeploy": ""
+    }
+  }
+}
