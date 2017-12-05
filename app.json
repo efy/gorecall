@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dokku": {
-      "predeploy": "gorecall migrate && gorecall index",
+      "predeploy": "rm -rf ./gorecall.db && rm -rf ./gorecall.idx && gorecall migrate && gorecall index",
       "postdeploy": ""
     }
   }
