@@ -76,11 +76,13 @@ func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
 	}
 	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.Created)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
 	var id int64
 	if err = tx.Get(&id, bookmarkLastInsert); err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 

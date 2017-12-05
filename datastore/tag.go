@@ -89,11 +89,13 @@ func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
 
 	_, err = tx.Exec(tagInsert, tag.Label, tag.Description, tag.Color)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
 	var id int64
 	if err = tx.Get(&id, tagLastInsert); err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 

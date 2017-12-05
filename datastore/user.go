@@ -47,11 +47,13 @@ func (ur *userRepo) Create(u *User) (*User, error) {
 	}
 	_, err = tx.Exec(userInsert, u.Username, u.Password)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
 	var id int64
 	if err = tx.Get(&id, userLastInsert); err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
