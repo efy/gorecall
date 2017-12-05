@@ -59,7 +59,7 @@ var serve = subcmd.Command{
 		store := sessions.NewCookieStore([]byte("something-very-secret"))
 
 		app := handler.NewApp(uRepo, bmRepo, trRepo, store, index)
-		api := handler.NewApi(uRepo, bmRepo, trRepo)
+		api := handler.NewApi(uRepo, bmRepo, trRepo, index)
 		r := mux.NewRouter()
 
 		r.PathPrefix("/api/").Handler(http.StripPrefix("/api", api.Handler()))

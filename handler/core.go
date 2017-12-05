@@ -66,15 +66,17 @@ func NewApp(ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRe
 }
 
 type Api struct {
-	ur datastore.UserRepo
-	br datastore.BookmarkRepo
-	tr datastore.TagRepo
+	ur    datastore.UserRepo
+	br    datastore.BookmarkRepo
+	tr    datastore.TagRepo
+	index bleve.Index
 }
 
 func (api *Api) Handler() http.Handler {
 	r := router.Api()
 	r.Get(router.CreateBookmark).Handler(TokenAuthMiddleware(api.ApiCreateBookmarkHandler()))
 	r.Get(router.Bookmarks).Handler(TokenAuthMiddleware(api.ApiBookmarksHandler()))
+	r.Get(router.SearchBookmarks).Handler(TokenAuthMiddleware(api.ApiSearchBookmarksHandler()))
 	r.Get(router.Ping).Handler(api.ApiPingHandler())
 	r.Get(router.Authenticate).Handler(api.CreateTokenHandler())
 	r.Get(router.WebInfo).Handler(api.WebInfoHandler())
@@ -85,10 +87,11 @@ func (api *Api) Handler() http.Handler {
 	return apichain
 }
 
-func NewApi(ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo) Api {
+func NewApi(ur datastore.UserRepo, br datastore.BookmarkRepo, tr datastore.TagRepo, idx bleve.Index) Api {
 	return Api{
 		ur,
 		br,
 		tr,
+		idx,
 	}
 }

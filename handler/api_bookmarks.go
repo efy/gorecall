@@ -3,7 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 )
 
@@ -31,5 +33,40 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 		}
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(`{"message": "Success"}`))
+	})
+}
+
+func (app *Api) ApiSearchBookmarksHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+
+		q := bleve.NewMatchQuery(query)
+		s := bleve.NewSearchRequest(q)
+		result, err := app.index.Search(s)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var bookmarks []datastore.Bookmark
+		for _, i := range result.Hits {
+			id, err := strconv.ParseInt(i.ID, 10, 64)
+			if err != nil {
+				continue
+			}
+			bm, err := app.br.GetByID(id)
+			if err != nil {
+				continue
+			}
+			bookmarks = append(bookmarks, *bm)
+		}
+
+		payload, err := json.Marshal(bookmarks)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(payload)
 	})
 }

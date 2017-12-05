@@ -65,6 +65,7 @@ func App() *mux.Router {
 func Api() *mux.Router {
 	m := mux.NewRouter()
 	m.Path("/bookmarks").Methods("GET").Name(Bookmarks)
+	m.Path("/bookmarks/search").Methods("GET").Name(SearchBookmarks)
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
 	m.Path("/tags").Methods("GET").Name(Tags)
