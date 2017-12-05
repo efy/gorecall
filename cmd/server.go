@@ -20,13 +20,17 @@ var serve = subcmd.Command{
 	Short:     "serve the web app using one of the supported methods",
 	Run: func(cmd *subcmd.Command, args []string) {
 		addr := cmd.Flag.String("addr", ":8080", "the address to bind to when using the http server")
-		dbname := cmd.Flag.String("dbname", "gorecall.db", "path to database file")
+		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
+		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
 		indexname := cmd.Flag.String("indexname", "gorecall.idx", "path to index directory")
 		usecgi := cmd.Flag.Bool("cgi", false, "Serve app using cgi")
 		usefcgi := cmd.Flag.Bool("fcgi", false, "Serve app using fastcgi")
 		cmd.ParseFlags(args)
 
-		db, err := database.Init(*dbname)
+		db, err := database.Connect(database.Options{
+			Driver: *dbdriver,
+			DSN:    *dbdsn,
+		})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

@@ -16,10 +16,14 @@ var createuser = subcmd.Command{
 	UsageLine: "createuser",
 	Short:     "create a new user in the database",
 	Run: func(cmd *subcmd.Command, args []string) {
-		dbname := cmd.Flag.String("dbname", "gorecall.db", "path to database file")
+		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
+		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
 		cmd.ParseFlags(args)
 
-		db, err := database.Init(*dbname)
+		db, err := database.Connect(database.Options{
+			Driver: *dbdriver,
+			DSN:    *dbdsn,
+		})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

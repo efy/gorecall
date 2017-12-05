@@ -1,7 +1,10 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -42,16 +45,38 @@ const (
 	`
 )
 
-// Create a new database and ensure it is connected
-func Init(file string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("sqlite3", file)
-	if err != nil {
-		return nil, err
+type Options struct {
+	Driver string
+	DSN    string
+}
+
+// Connect returns a new database instance using the provided options
+// and ensures it is connected.
+func Connect(opts Options) (*sqlx.DB, error) {
+	var db *sqlx.DB
+	var err error
+
+	switch opts.Driver {
+	case "sqlite3":
+		db, err = sqlx.Open("sqlite3", opts.DSN)
+		if err != nil {
+			return nil, err
+		}
+	case "postgres":
+		db, err = sqlx.Open("postgres", opts.DSN)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("database: driver not supported %s", opts.Driver)
 	}
+
+	// Test connection
 	err = db.Ping()
 	if err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }
 
