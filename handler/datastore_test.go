@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 	"github.com/gorilla/sessions"
 )
@@ -11,10 +12,17 @@ import (
 // This file mocks out the datastore.* interfaces for testing handlers
 // and provides a mockapp
 
-var store = sessions.NewCookieStore([]byte("test"))
+// Uses an actual cookie store
+var (
+	store = sessions.NewCookieStore([]byte("test"))
 
-var mockApp = App{store: store, br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
-var mockApi = Api{br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
+	// Uses an in memory index
+	mapping  = bleve.NewIndexMapping()
+	index, _ = bleve.NewMemOnly(mapping)
+
+	mockApp = App{store: store, br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}, index: index}
+	mockApi = Api{br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
+)
 
 var bookmarks = []datastore.Bookmark{
 	{

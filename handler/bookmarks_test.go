@@ -115,6 +115,21 @@ func TestBookmarkHandler(t *testing.T) {
 	}
 }
 
+func TestSearchBookmarksHandler(t *testing.T) {
+	h := mockApp.SearchBookmarksHandler()
+	req, err := http.NewRequest("GET", "/bookmarks/search", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200 got %d", rr.Code)
+	}
+}
+
 func TestBookmarkAddTagHandler(t *testing.T) {
 	t.Log("Test not implemented")
 }
