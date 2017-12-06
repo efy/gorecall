@@ -21,21 +21,13 @@ type Pagination struct {
 
 func (app *App) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "index.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "index.html", nil)
 	})
 }
 
 func (app *App) NotFoundHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "notfound.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "notfound.html", nil)
 	})
 }
 

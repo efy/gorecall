@@ -11,11 +11,7 @@ import (
 
 func (app *App) NewTagHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "newtag.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "newtag.html", nil)
 	})
 }
 
@@ -99,13 +95,11 @@ func (app *App) TagHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "tag.html", struct {
-			Authenticated bool
-			Tag           *datastore.Tag
-			Count         int
-			Bookmarks     []datastore.Bookmark
-			Pagination    Pagination
+			Tag        *datastore.Tag
+			Count      int
+			Bookmarks  []datastore.Bookmark
+			Pagination Pagination
 		}{
-			true,
 			tag,
 			count,
 			bookmarks,
@@ -123,10 +117,8 @@ func (app *App) TagsHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "tags.html", struct {
-			Authenticated bool
-			Tags          []datastore.Tag
+			Tags []datastore.Tag
 		}{
-			true,
 			tags,
 		})
 	})

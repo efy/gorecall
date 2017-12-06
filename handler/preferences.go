@@ -8,10 +8,6 @@ import (
 
 func (app *App) PreferencesHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "preferences.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "preferences.html", nil)
 	})
 }

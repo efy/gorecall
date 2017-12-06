@@ -12,11 +12,7 @@ import (
 func (app *App) ImportHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
-			templates.RenderTemplate(w, "import.html", struct {
-				Authenticated bool
-			}{
-				true,
-			})
+			templates.RenderTemplate(w, "import.html", nil)
 			return
 		}
 		r.ParseMultipartForm(32 << 20)
@@ -54,10 +50,8 @@ func (app *App) ImportHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "importsuccess.html", struct {
-			Authenticated bool
-			Bookmarks     []datastore.Bookmark
+			Bookmarks []datastore.Bookmark
 		}{
-			true,
 			bookmarks,
 		})
 	})

@@ -25,10 +25,8 @@ func (app *App) AccountShowHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "account.html", struct {
-			Authenticated bool
-			User          *datastore.User
+			User *datastore.User
 		}{
-			true,
 			user,
 		})
 	})
@@ -36,10 +34,6 @@ func (app *App) AccountShowHandler() http.Handler {
 
 func (app *App) AccountEditHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "account.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "account.html", nil)
 	})
 }

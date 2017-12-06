@@ -12,11 +12,7 @@ import (
 
 func (app *App) NewBookmarkHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "newbookmark.html", struct {
-			Authenticated bool
-		}{
-			true,
-		})
+		templates.RenderTemplate(w, "newbookmark.html", nil)
 	})
 }
 
@@ -72,12 +68,10 @@ func (app *App) BookmarksHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "bookmarks.html", struct {
-			Authenticated bool
-			Bookmarks     []datastore.Bookmark
-			Count         int
-			Pagination    Pagination
+			Bookmarks  []datastore.Bookmark
+			Count      int
+			Pagination Pagination
 		}{
-			true,
 			bookmarks,
 			count,
 			pagination,
@@ -109,12 +103,10 @@ func (app *App) BookmarkHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "bookmark.html", struct {
-			Authenticated bool
-			Bookmark      *datastore.Bookmark
-			Tags          []datastore.Tag
-			AllTags       []datastore.Tag
+			Bookmark *datastore.Bookmark
+			Tags     []datastore.Tag
+			AllTags  []datastore.Tag
 		}{
-			true,
 			bookmark,
 			tags,
 			allTags,
@@ -171,15 +163,13 @@ func (app *App) SearchBookmarksHandler() http.Handler {
 		}
 
 		templates.RenderTemplate(w, "searchbookmarks.html", struct {
-			SearchQuery   string
-			SearchResult  *bleve.SearchResult
-			Bookmarks     []datastore.Bookmark
-			Authenticated bool
+			SearchQuery  string
+			SearchResult *bleve.SearchResult
+			Bookmarks    []datastore.Bookmark
 		}{
 			query,
 			result,
 			bookmarks,
-			true,
 		})
 	})
 }

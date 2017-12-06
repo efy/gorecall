@@ -27,7 +27,7 @@ func (app *App) LogoutHandler() http.Handler {
 func (app *App) LoginHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			templates.RenderTemplate(w, "login.html", struct{ Authenticated bool }{false})
+			templates.RenderTemplate(w, "login.html", nil)
 			return
 		}
 
@@ -40,7 +40,7 @@ func (app *App) LoginHandler() http.Handler {
 			check := app.authenticate(name, pass)
 
 			if !check {
-				templates.RenderTemplate(w, "login.html", struct{ Authenticated bool }{false})
+				templates.RenderTemplate(w, "login.html", nil)
 				return
 			}
 
@@ -55,7 +55,7 @@ func (app *App) LoginHandler() http.Handler {
 			http.Redirect(w, r, "/", 302)
 			return
 		}
-		templates.RenderTemplate(w, "login.html", struct{ Authenticated bool }{false})
+		templates.RenderTemplate(w, "login.html", nil)
 		return
 	})
 }
