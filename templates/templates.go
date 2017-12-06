@@ -76,16 +76,21 @@ func init() {
 	registerTemplate("account.html", accounttmpl)
 	registerTemplate("preferences.html", preferencestmpl)
 
-	registerTemplate("login.html", logintmpl)
-
 	registerTemplate("servererror.html", servererrortmpl)
 	registerTemplate("notfound.html", notfoundtmpl)
+
+	registerStandAloneTemplate("login.html", logintmpl)
 }
 
 // Helper to compile template within a layout context with funcs
 func registerTemplate(label string, tmpl string) {
 	templates[label] = template.Must(template.New("layout").Parse(layouttmpl))
 	template.Must(templates[label].Funcs(funcMap).Parse(tmpl))
+}
+
+// Helper to compile a stand alone template with funcs
+func registerStandAloneTemplate(label string, tmpl string) {
+	templates[label] = template.Must(template.New(label).Funcs(funcMap).Parse(tmpl))
 }
 
 func RenderTemplate(w io.Writer, t string, data interface{}) {
