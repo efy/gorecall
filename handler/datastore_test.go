@@ -109,6 +109,10 @@ func (t *tagRepo) Create(tag *datastore.Tag) (*datastore.Tag, error) {
 	return tag, nil
 }
 
+func (t *tagRepo) Delete(id int64) error {
+	return nil
+}
+
 func (t *tagRepo) GetByID(id int64) (*datastore.Tag, error) {
 	return &tags[id], nil
 }

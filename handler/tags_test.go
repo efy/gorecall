@@ -80,6 +80,34 @@ func TestTagsHandler(t *testing.T) {
 	}
 }
 
+func TestDeleteTagHandler(t *testing.T) {
+	h := muxWrapper("/tags/{id}", mockApp.DeleteBookmarkHandler())
+
+	req, err := http.NewRequest("DELETE", "/tags/1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNoContent {
+		t.Errorf("expected 204 response got %d", rr.Code)
+	}
+
+	req, err = http.NewRequest("DELETE", "/tags/1000", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr = httptest.NewRecorder()
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404 response got %d", rr.Code)
+	}
+}
+
 // Mux wrapper takes the path and handler and returns
 // a new mux router with the handler mounted. This is
 // a work around to test handlers that use url params.

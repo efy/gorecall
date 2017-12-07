@@ -35,6 +35,7 @@ func (app *App) Handler() http.Handler {
 	r.Get(router.NewTag).Handler(app.AuthMiddleware(app.NewTagHandler()))
 	r.Get(router.Tag).Handler(app.AuthMiddleware(app.TagHandler()))
 	r.Get(router.CreateTag).Handler(app.AuthMiddleware(app.CreateTagHandler()))
+	r.Get(router.DeleteTag).Handler(app.AuthMiddleware(app.DeleteTagHandler()))
 
 	r.Get(router.Import).Handler(app.AuthMiddleware(app.ImportHandler()))
 	r.Get(router.Export).Handler(app.AuthMiddleware(app.ExportHandler()))

@@ -108,6 +108,21 @@ func (app *App) TagHandler() http.Handler {
 	})
 }
 
+func (app *App) DeleteTagHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id, err := strconv.ParseInt(vars["id"], 10, 64)
+
+		err = app.tr.Delete(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 func (app *App) TagsHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tags, err := app.tr.GetAll()

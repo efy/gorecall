@@ -12,6 +12,7 @@ const (
 	Tags              = "tags"
 	CreateTag         = "tags:create"
 	Tag               = "tag"
+	DeleteTag         = "tag:delete"
 	BookmarkAddTag    = "bookmark:addtag"
 	BookmarkRemoveTag = "bookmark:removetag"
 	SearchBookmarks   = "bookmarks:search"
@@ -51,6 +52,7 @@ func App() *mux.Router {
 	m.Path("/tags").Methods("POST").Name(CreateTag)
 	m.Path("/tags/new").Methods("GET").Name(NewTag)
 	m.Path("/tags/{id:[0-9]+}").Methods("GET").Name(Tag)
+	m.Path("/tags/{id:[0-9]+}").Methods("DELETE").Name(DeleteTag)
 	m.Path("/settings/preferences").Methods("GET").Name(Preferences)
 	m.Path("/settings/account").Methods("GET").Name(Account)
 	m.Path("/settings/account/edit").Methods("GET").Name(EditAccount)
@@ -68,10 +70,13 @@ func Api() *mux.Router {
 	m.Path("/bookmarks/search").Methods("GET").Name(SearchBookmarks)
 	m.Path("/bookmarks").Methods("POST").Name(CreateBookmark)
 	m.Path("/bookmarks/{id:[0-9]+}").Methods("GET").Name(Bookmark)
+	m.Path("/bookmarks/{id:[0-9]+}").Methods("DELETE").Name(DeleteBookmark)
+	m.Path("/bookmarks/{id:[0-9]+}/addtag").Methods("POST").Name(BookmarkAddTag)
+	m.Path("/bookmarks/{id:[0-9]+}/removetag").Methods("DELETE").Name(BookmarkRemoveTag)
 	m.Path("/tags").Methods("GET").Name(Tags)
 	m.Path("/tags").Methods("POST").Name(CreateTag)
-	m.Path("/tags/new").Methods("GET").Name(NewTag)
 	m.Path("/tags/{id:[0-9]+}").Methods("GET").Name(Tag)
+	m.Path("/tags/{id:[0-9]+}").Methods("DELETE").Name(DeleteTag)
 	m.Path("/ping").Methods("GET").Name(Ping)
 	m.Path("/auth").Methods("POST").Name(Authenticate)
 	m.Path("/webinfo").Methods("GET").Name(WebInfo)

@@ -13,6 +13,9 @@ const tagtmpl = `
 			<a href="/tags/{{ .Tag.ID }}">{{ .Tag.Label }}</a>
 		</li>
 	</ul>
+	<div>
+		<button data-delete="/tags/{{ .Tag.ID }}" data-redirect="/tags" class="btn btn-sm btn-default">Delete</button>
+	</div>
 </div>
 {{ end }}
 
