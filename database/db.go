@@ -50,14 +50,14 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
-			created DATE DEFAULT CURRENT_DATE
+			created TIMESTAMP DEFAULT NOW()
 		);
 
 		CREATE TABLE users (
 			id SERIAL PRIMARY KEY,
 			username VARCHAR(50) UNIQUE,
 			password CHAR(60),
-			created DATE DEFAULT CURRENT_DATE
+			created TIMESTAMP DEFAULT NOW()
 		);
 
     CREATE TABLE tags (
@@ -65,14 +65,14 @@ const (
       label VARCHAR(50) UNIQUE,
 			color VARCHAR(16),
 			description TEXT,
-			created DATE DEFAULT CURRENT_DATE
+			created TIMESTAMP DEFAULT NOW()
     );
 
 		CREATE TABLE bookmark_tags (
 			id SERIAL PRIMARY KEY,
 			tag_id INTEGER,
 			bookmark_id INTEGER,
-			created DATE DEFAULT CURRENT_DATE
+			created TIMESTAMP DEFAULT NOW()
 		);
 
 		CREATE UNIQUE INDEX tagging
