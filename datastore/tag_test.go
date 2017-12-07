@@ -55,6 +55,17 @@ func TestTagValidate(t *testing.T) {
 	}
 }
 
+func TestTagRepoDelete(t *testing.T) {
+	db, tagRepo := tagRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	err := tagRepo.Delete(1)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestTagRepoCreate(t *testing.T) {
 	db, tagRepo := tagRepoTestDeps()
 	defer db.Close()

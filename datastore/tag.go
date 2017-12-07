@@ -44,17 +44,20 @@ type TagRepo interface {
 	GetAll() ([]Tag, error)
 	List(opts ListOptions) ([]Tag, error)
 	Count() (int, error)
+	Delete(id int64) error
 	ListBookmarks(tid int64, opts ListOptions) ([]Bookmark, error)
 	CountBookmarks(tid int64) (int, error)
 }
 
 const (
-	tagInsert      = `INSERT INTO tags (label, description, color) VALUES ($1, $2, $3)`
-	tagSelectBase  = `SELECT * FROM tags`
-	tagSelectCount = `SELECT COUNT(*) FROM tags`
-	tagSelectByID  = tagSelectBase + ` WHERE id = $1 LIMIT 1`
-	tagListBase    = tagSelectBase + ` ORDER BY %s %s LIMIT $1 OFFSET $2 `
-	tagLastInsert  = `SELECT id FROM tags ORDER BY id DESC limit 1`
+	tagInsert          = `INSERT INTO tags (label, description, color) VALUES ($1, $2, $3)`
+	tagSelectBase      = `SELECT * FROM tags`
+	tagSelectCount     = `SELECT COUNT(*) FROM tags`
+	tagSelectByID      = tagSelectBase + ` WHERE id = $1 LIMIT 1`
+	tagListBase        = tagSelectBase + ` ORDER BY %s %s LIMIT $1 OFFSET $2 `
+	tagLastInsert      = `SELECT id FROM tags ORDER BY id DESC limit 1`
+	tagDelete          = `DELETE FROM tags WHERE id = $1`
+	tagDeleteDependant = `DELETE FROM bookmark_tags WHERE tag_id = $1;`
 
 	tagListBookmarks = `
 		SELECT
@@ -146,6 +149,29 @@ func (t *tagRepo) Count() (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (t *tagRepo) Delete(id int64) error {
+	tx, err := t.db.Beginx()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(tagDelete, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	_, err = tx.Exec(tagDeleteDependant, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *tagRepo) ListBookmarks(id int64, opts ListOptions) ([]Bookmark, error) {
