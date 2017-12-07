@@ -16,10 +16,9 @@ func (app *Api) ApiPingHandler() http.Handler {
 
 func (app *Api) CreateTokenHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		username := r.Header.Get("Username")
-		password := r.Header.Get("Password")
+		username, password, ok := r.BasicAuth()
 
-		if username == "" || password == "" {
+		if !ok || username == "" || password == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Authentication failure, please check your credentails"))
 			return
