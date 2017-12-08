@@ -21,7 +21,7 @@ type Pagination struct {
 
 func (app *App) HomeHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templates.RenderTemplate(w, "index.html", nil)
+		http.Redirect(w, r, "/bookmarks", http.StatusFound)
 	})
 }
 
