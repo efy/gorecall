@@ -11,8 +11,26 @@ import (
 
 func (app *Api) ApiBookmarksHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Bookmarks listing not implemented"))
-		return
+		opts := datastore.DefaultListOptions
+		err := decoder.Decode(&opts, r.URL.Query())
+		if err != nil {
+			http.Error(w, "Failed to decode request parameters", http.StatusBadRequest)
+			return
+		}
+
+		bookmarks, err := app.br.List(opts)
+		if err != nil {
+			http.Error(w, "Error fetching bookmarks", http.StatusInternalServerError)
+			return
+		}
+
+		payload, err := json.Marshal(bookmarks)
+		if err != nil {
+			http.Error(w, "Could not marshal json", http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(payload)
 	})
 }
 
