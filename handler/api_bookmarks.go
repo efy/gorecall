@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -44,11 +45,18 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 			return
 		}
 
-		_, err = app.br.Create(b)
+		b, err = app.br.Create(b)
 		if err != nil {
 			renderError(w, err)
 			return
 		}
+
+		id := strconv.FormatInt(b.ID, 10)
+		err = app.index.Index(id, b)
+		if err != nil {
+			log.Printf("Error indexing bookmark %s", id)
+		}
+
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(`{"message": "Success"}`))
 	})

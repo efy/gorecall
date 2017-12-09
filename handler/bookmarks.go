@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -132,6 +133,10 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 		}
 
 		id := strconv.FormatInt(bm.ID, 10)
+		err = app.index.Index(id, bm)
+		if err != nil {
+			log.Printf("Error indexing bookmark %s", id)
+		}
 
 		http.Redirect(w, r, "/bookmarks/"+id, 302)
 	})
