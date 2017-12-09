@@ -15,19 +15,19 @@ func (app *Api) ApiBookmarksHandler() http.Handler {
 		opts := datastore.DefaultListOptions
 		err := decoder.Decode(&opts, r.URL.Query())
 		if err != nil {
-			http.Error(w, "Failed to decode request parameters", http.StatusBadRequest)
+			jsonResponse(w, http.StatusBadRequest, "Could not parse options")
 			return
 		}
 
 		bookmarks, err := app.br.List(opts)
 		if err != nil {
-			http.Error(w, "Error fetching bookmarks", http.StatusInternalServerError)
+			jsonResponse(w, http.StatusNotFound, "No bookmarks")
 			return
 		}
 
 		payload, err := json.Marshal(bookmarks)
 		if err != nil {
-			http.Error(w, "Could not marshal json", http.StatusInternalServerError)
+			jsonResponse(w, http.StatusInternalServerError, "Failed to marshal json")
 			return
 		}
 
@@ -41,13 +41,13 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 		b := &datastore.Bookmark{}
 		err := decoder.Decode(b)
 		if err != nil {
-			jsonResponse(w, 400, "Could not parse body")
+			jsonResponse(w, http.StatusBadRequest, "Could not parse options")
 			return
 		}
 
 		b, err = app.br.Create(b)
 		if err != nil {
-			jsonResponse(w, 409, "Bookmark exists")
+			jsonResponse(w, http.StatusConflict, "Bookmark exists")
 			return
 		}
 
@@ -57,8 +57,7 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 			log.Printf("Error indexing bookmark %s", id)
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"message": "Success"}`))
+		jsonResponse(w, http.StatusCreated, "Successfully created bookmark")
 	})
 }
 
@@ -70,7 +69,7 @@ func (app *Api) ApiSearchBookmarksHandler() http.Handler {
 		s := bleve.NewSearchRequest(q)
 		result, err := app.index.Search(s)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			jsonResponse(w, http.StatusInternalServerError, "Failed to execute search")
 			return
 		}
 
@@ -89,7 +88,7 @@ func (app *Api) ApiSearchBookmarksHandler() http.Handler {
 
 		payload, err := json.Marshal(bookmarks)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			jsonResponse(w, http.StatusInternalServerError, "Failed to encode bookmarks as json")
 			return
 		}
 

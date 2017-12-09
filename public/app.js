@@ -13,10 +13,13 @@
 
     fetch("/api/webinfo?url=" + url)
       .then(function(res){
-        console.log(res)
         return res.json()
       })
       .then(function(json) {
+        if(json.code && json.code !== 200) {
+          webinfo.innerHTML = webinfo_error_tmpl(json)
+          return
+        }
         webinfo.innerHTML = webinfo_tmpl(json)
 
         d.querySelector('input[name="url"]').value = url
@@ -34,7 +37,7 @@
     return `
       <div class="rc-link-preview">
         <div class="rc-link-preview__error">
-          ${obj}
+          ${obj.message}
         </div>
       </div>
     `
