@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/efy/gorecall/auth"
@@ -37,6 +38,25 @@ func renderError(w http.ResponseWriter, err error) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+type apiResponse struct {
+	code    int    `json:"code"`
+	message string `json:"message"`
+}
+
+// Helper function for rendering a standard api reponses
+func jsonResponse(w http.ResponseWriter, status int, message string) {
+	w.WriteHeader(status)
+	resp := &apiResponse{
+		status,
+		message,
+	}
+	payload, err := json.Marshal(resp)
+	if err != nil {
+		panic("cannot marshal apiResponse into json")
+	}
+	w.Write(payload)
 }
 
 func (app *App) authenticate(username string, password string) bool {

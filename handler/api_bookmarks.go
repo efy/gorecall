@@ -41,13 +41,13 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 		b := &datastore.Bookmark{}
 		err := decoder.Decode(b)
 		if err != nil {
-			renderError(w, err)
+			jsonResponse(w, 400, "Could not parse body")
 			return
 		}
 
 		b, err = app.br.Create(b)
 		if err != nil {
-			renderError(w, err)
+			jsonResponse(w, 409, "Bookmark exists")
 			return
 		}
 
