@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/efy/gorecall/auth"
@@ -77,7 +76,6 @@ func jsonResponse(w http.ResponseWriter, status int, message string) {
 	if err != nil {
 		panic("cannot marshal apiResponse into json")
 	}
-	log.Println(string(payload))
 	w.Write(payload)
 }
 

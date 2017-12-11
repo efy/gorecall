@@ -21,7 +21,7 @@ var (
 	index, _ = bleve.NewMemOnly(mapping)
 
 	mockApp = App{store: store, br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}, index: index}
-	mockApi = Api{br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}}
+	mockApi = Api{br: &bookmarkRepo{}, ur: &userRepo{}, tr: &tagRepo{}, index: index}
 )
 
 var bookmarks = []datastore.Bookmark{
