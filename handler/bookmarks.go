@@ -53,20 +53,7 @@ func (app *App) BookmarksHandler() http.Handler {
 			return
 		}
 
-		pagination := Pagination{
-			Current: opts.Page,
-			Next:    opts.Page + 1,
-			Prev:    opts.Page - 1,
-			Last:    count / opts.PerPage,
-			List: []int{
-				opts.Page + 1,
-				opts.Page + 2,
-				opts.Page + 3,
-				opts.Page + 4,
-				opts.Page + 5,
-			},
-			PerPage: opts.PerPage,
-		}
+		pagination := generatePagination(count, opts)
 
 		templates.RenderTemplate(w, "bookmarks.html", struct {
 			Bookmarks  []datastore.Bookmark

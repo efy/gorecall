@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/efy/gorecall/auth"
+	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
 	"github.com/gorilla/schema"
 )
@@ -19,6 +20,25 @@ type Pagination struct {
 	Last    int
 	List    []int
 	PerPage int
+}
+
+func generatePagination(total int, opts datastore.ListOptions) Pagination {
+	pagination := Pagination{
+		Current: opts.Page,
+		Next:    opts.Page + 1,
+		Prev:    opts.Page - 1,
+		Last:    total / opts.PerPage,
+		List: []int{
+			opts.Page + 1,
+			opts.Page + 2,
+			opts.Page + 3,
+			opts.Page + 4,
+			opts.Page + 5,
+		},
+		PerPage: opts.PerPage,
+	}
+
+	return pagination
 }
 
 func (app *App) HomeHandler() http.Handler {
