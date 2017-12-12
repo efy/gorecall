@@ -62,6 +62,35 @@ func TestWebInfoGetHtmlTitle(t *testing.T) {
 	}
 }
 
+func TestWebInfoGetImageTitle(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "image/png")
+		w.Write([]byte("imagedata"))
+	}))
+	defer ts.Close()
+
+	info, err := Get(ts.URL + "/test-file.png")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if info.Title != "test-file.png" {
+		t.Error("expected", "test-file.png")
+		t.Error("got     ", info.Title)
+	}
+
+	info, err = Get(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if info.Title != "Unknown" {
+		t.Error("expected", "Unknown")
+		t.Error("got     ", info.Title)
+	}
+
+}
+
 func TestWebInfoGetHtmlCoverImage(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "text/html")

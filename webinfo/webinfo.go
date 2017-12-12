@@ -6,6 +6,7 @@ import (
 	"mime"
 	"net/http"
 	"net/url"
+	"path"
 	"strconv"
 	"time"
 )
@@ -18,7 +19,8 @@ var (
 	ErrInvalidURL = fmt.Errorf("invalid url")
 )
 
-var handlers = map[string]func(*Info, io.Reader) error{
+// Map of mime type to function for handling response body
+var bodyHandlers = map[string]func(*Info, io.Reader) error{
 	"text/html": func(i *Info, r io.Reader) error {
 		// Create a goquery doc from reader
 		doc, err := createDoc(r)
@@ -65,7 +67,7 @@ type Info struct {
 func Get(uri string) (*Info, error) {
 	info := Info{}
 
-	_, err := url.ParseRequestURI(uri)
+	url, err := url.ParseRequestURI(uri)
 	if err != nil {
 		return nil, ErrInvalidURL
 	}
@@ -79,9 +81,20 @@ func Get(uri string) (*Info, error) {
 	info.StatusCode = resp.StatusCode
 	extractHeaders(&info, resp.Header)
 
+	// Handle setting a title for non html urls
+	// defaults to the file name extracted from the url
+	if info.MediaType != "text/html" {
+		name := path.Base(url.Path)
+		if name != "." && name != "/" {
+			info.Title = name
+		} else {
+			info.Title = "Unknown"
+		}
+	}
+
 	// Extract info from body if there is a suitable
 	// handler in the map
-	h, ok := handlers[info.MediaType]
+	h, ok := bodyHandlers[info.MediaType]
 	if !ok {
 		return &info, nil
 	}
