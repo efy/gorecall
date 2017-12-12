@@ -8,6 +8,7 @@ import (
 	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/templates"
+	"github.com/efy/gorecall/webinfo"
 	"github.com/gorilla/mux"
 )
 
@@ -111,6 +112,12 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 		err := decoder.Decode(bm, r.PostForm)
 		if err != nil {
 			renderError(w, err)
+			return
+		}
+
+		info, err := webinfo.Get(bm.URL)
+		if err == nil && bm.Title == "" {
+			bm.Title = info.Title
 		}
 
 		bm, err = app.br.Create(bm)

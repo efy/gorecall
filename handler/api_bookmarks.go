@@ -8,6 +8,7 @@ import (
 
 	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
+	"github.com/efy/gorecall/webinfo"
 )
 
 func (app *Api) ApiBookmarksHandler() http.Handler {
@@ -45,6 +46,11 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 			return
 		}
 
+		info, err := webinfo.Get(b.URL)
+		if err == nil && b.Title == "" {
+			b.Title = info.Title
+		}
+
 		b, err = app.br.Create(b)
 		if err != nil {
 			jsonResponse(w, http.StatusConflict, "Bookmark exists")
@@ -57,7 +63,14 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 			log.Printf("Error indexing bookmark %s", id)
 		}
 
-		jsonResponse(w, http.StatusCreated, "Successfully created bookmark")
+		payload, err := json.Marshal(b)
+		if err != nil {
+			jsonResponse(w, http.StatusInternalServerError, "Could not marshal json")
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		w.Write(payload)
 	})
 }
 

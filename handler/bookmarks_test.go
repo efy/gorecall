@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strings"
 	"testing"
 )
 
@@ -14,9 +13,10 @@ func TestCreateBookmarkHandler(t *testing.T) {
 	form.Add("title", "test create bookmark handler")
 	form.Add("url", "http://testcreatebookmarkhandler.com")
 
-	req, err := http.NewRequest("POST", "/bookmarks", strings.NewReader(form.Encode()))
-	if err != nil {
-		t.Fatal(err)
+	req := &http.Request{
+		Method:   "POST",
+		URL:      &url.URL{Path: "/bookmarks"},
+		PostForm: form,
 	}
 
 	rr := httptest.NewRecorder()
@@ -127,6 +127,39 @@ func TestSearchBookmarksHandler(t *testing.T) {
 
 	if rr.Code != http.StatusOK {
 		t.Errorf("expected 200 got %d", rr.Code)
+	}
+}
+
+func TestCreateGetsInfo(t *testing.T) {
+	requested := false
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requested = true
+		w.Header().Set("content-type", "image/png")
+		w.Write([]byte("dummy image"))
+	}))
+	defer ts.Close()
+
+	form := url.Values{}
+	form.Add("url", ts.URL)
+
+	req := &http.Request{
+		Method:   "POST",
+		URL:      &url.URL{Path: "/bookmarks"},
+		PostForm: form,
+	}
+
+	rr := httptest.NewRecorder()
+	h := mockApp.CreateBookmarkHandler()
+
+	h.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusFound {
+		t.Error("expected", http.StatusFound)
+		t.Error("got     ", rr.Code)
+	}
+
+	if !requested {
+		t.Error("expected external url to be requested")
 	}
 }
 
