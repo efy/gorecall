@@ -42,6 +42,40 @@ func TestWebInfoGet(t *testing.T) {
 	}
 }
 
+func TestWebInfoExtractsTextContent(t *testing.T) {
+	html := `
+			<html>
+				<head>
+					<title>Test</title>
+				</head>
+				<body>
+					<h2>Title</h2>
+				</body>
+			</html>`
+
+	expect := `Title`
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "text/html")
+		w.Write([]byte(html))
+	}))
+	defer ts.Close()
+
+	testurl := ts.URL
+
+	info, err := Get(testurl)
+	if err != nil {
+		t.Error("expected", "no error")
+		t.Error("got     ", err)
+	}
+
+	if info.TextContent != expect {
+		t.Error("expected", expect)
+		t.Error("got     ", info.TextContent)
+	}
+
+}
+
 func TestWebInfoGetHtmlTitle(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "text/html")

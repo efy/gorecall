@@ -43,6 +43,11 @@ var bodyHandlers = map[string]func(*Info, io.Reader) error{
 			i.Cover = image
 		}
 
+		content, err := extractTextContent(doc)
+		if err == nil {
+			i.TextContent = content
+		}
+
 		return nil
 	},
 	"text/plain": func(i *Info, r io.Reader) error {
@@ -58,9 +63,10 @@ type Info struct {
 	Ext        string `json:"ext"`
 
 	// HTML specific
-	OpenGraph *OG    `json:"opengraph"`
-	Keywords  string `json:"keywords"`
-	Cover     string `json:"cover"`
+	OpenGraph   *OG    `json:"opengraph"`
+	Keywords    string `json:"keywords"`
+	Cover       string `json:"cover"`
+	TextContent string `json:"text_content"`
 }
 
 // Get takes a URL and returns the releted information

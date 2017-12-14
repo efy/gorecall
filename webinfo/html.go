@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/k3a/html2text"
 )
 
 var (
@@ -35,4 +36,14 @@ func extractOpenGraphImage(doc *goquery.Document) (string, error) {
 	}
 
 	return url, nil
+}
+
+// Given a html document returns the text content with html tags stripped out
+func extractTextContent(doc *goquery.Document) (string, error) {
+	html, err := doc.Html()
+	if err != nil {
+		return "", err
+	}
+	plain := html2text.HTML2Text(html)
+	return plain, nil
 }
