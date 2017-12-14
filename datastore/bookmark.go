@@ -8,16 +8,19 @@ import (
 )
 
 type Bookmark struct {
-	ID      int64     `db:"id" schema:"-" json:"id"`
-	Title   string    `db:"title" schema:"title" json:"title"`
-	URL     string    `db:"url" schema:"url" json:"url"`
-	Icon    string    `db:"icon" schema:"icon" json:"icon"`
-	Status  int64     `db:"status" schema:"status" json:"status"`
-	Created time.Time `db:"created" schema:"-" json:"created"`
+	ID          int64     `db:"id" schema:"-" json:"id"`
+	Title       string    `db:"title" schema:"title" json:"title"`
+	URL         string    `db:"url" schema:"url" json:"url"`
+	Icon        string    `db:"icon" schema:"icon" json:"icon"`
+	Status      int64     `db:"status" schema:"status" json:"status"`
+	MediaType   string    `db:"media_type" schema:"media_type" json:"media_type"`
+	Keywords    string    `db:"keywords" schema:"keywords" json:"keywords"`
+	Description string    `db:"description" schema:"description" json:"description"`
+	Created     time.Time `db:"created" schema:"-" json:"created"`
 }
 
 const (
-	bookmarkInsert     = `INSERT INTO bookmarks (title, url, icon, created) VALUES ($1, $2, $3, $4)`
+	bookmarkInsert     = `INSERT INTO bookmarks (title, url, icon, media_type, keywords, description, status, created) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	bookmarkSelectBase = `SELECT * FROM bookmarks `
 	bookmarkListBase   = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
@@ -75,7 +78,7 @@ func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.Created)
+	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.MediaType, bm.Keywords, bm.Description, bm.Status, bm.Created)
 	if err != nil {
 		tx.Rollback()
 		return nil, err

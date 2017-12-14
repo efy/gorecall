@@ -15,6 +15,9 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
+			media_type TEXT DEFAULT "",
+			description TEXT DEFAULT "",
+			keywords TEXT DEFAULT "",
 			status INTEGER DEFAULT 0,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
@@ -51,6 +54,9 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
+			media_type TEXT DEFAULT "",
+			description TEXT DEFAULT "",
+			keywords TEXT DEFAULT "",
 			status INTEGER DEFAULT 0,
 			created TIMESTAMP DEFAULT NOW()
 		);
