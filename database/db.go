@@ -15,6 +15,7 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
+			status INTEGER DEFAULT 0,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 
@@ -50,6 +51,7 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
+			status INTEGER DEFAULT 0,
 			created TIMESTAMP DEFAULT NOW()
 		);
 
