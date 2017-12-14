@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/efy/bookmark"
 	"github.com/efy/gorecall/datastore"
+	"github.com/efy/gorecall/importer"
 	"github.com/efy/gorecall/templates"
 )
 
@@ -42,17 +42,16 @@ func (app *App) ImportHandler() http.Handler {
 			})
 		}
 
-		for _, bm := range bookmarks {
-			_, err := app.br.Create(&bm)
-			if err != nil {
-				log.Println(err)
-			}
+		report, err := importer.Import(bookmarks, app.br, importer.DefaultOptions)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 
 		templates.RenderTemplate(w, "importsuccess.html", struct {
-			Bookmarks []datastore.Bookmark
+			Report importer.Report
 		}{
-			bookmarks,
+			*report,
 		})
 	})
 }

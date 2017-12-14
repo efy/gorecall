@@ -113,8 +113,32 @@ const importsuccesstmpl = `
 
 <div>
   <p>
-    Successfully imported {{ len .Bookmarks }} bookmarks.
+    Successgfully imported {{ .Report.SuccessCount }} bookmarks. {{ .Report.FailureCount }} failed (see below).
   </p>
+	<table class="table">
+		<thead>
+			<th>
+				Title
+			</th>
+			<th>
+				Error
+			</th>
+		</thead>
+		<tbody>
+		{{ range .Report.Results }}
+			{{ if .Error }}
+			<tr>
+				<td>
+					{{ .Bookmark.Title }}
+				</td>
+				<td>
+					{{ .Error.Error }}
+				</td>
+			</tr>
+			{{ end }}
+		{{ end }}
+		</tbody>
+	</table>
 </div>
 {{ end }}
 `
