@@ -47,8 +47,16 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 		}
 
 		info, err := webinfo.Get(b.URL)
-		if err == nil && b.Title == "" {
-			b.Title = info.Title
+		if err == nil {
+			if b.Title == "" {
+				b.Title = info.Title
+			}
+			if b.MediaType == "" {
+				b.MediaType = info.MediaType
+			}
+			if b.Status == 0 {
+				b.Status = info.StatusCode
+			}
 		}
 
 		b, err = app.br.Create(b)

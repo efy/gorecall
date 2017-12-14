@@ -88,4 +88,14 @@ func TestApiCreateGetsInfo(t *testing.T) {
 		t.Error("expected", "test.png")
 		t.Error("got     ", bm.Title)
 	}
+
+	if bm.Status != http.StatusOK {
+		t.Error("expected", http.StatusOK)
+		t.Error("got     ", bm.Status)
+	}
+
+	if bm.MediaType != "image/png" {
+		t.Error("expected", "image/png")
+		t.Error("got     ", bm.MediaType)
+	}
 }

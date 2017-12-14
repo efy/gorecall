@@ -115,9 +115,18 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 			return
 		}
 
+		// Add fetched information if the field was not provided by user
 		info, err := webinfo.Get(bm.URL)
-		if err == nil && bm.Title == "" {
-			bm.Title = info.Title
+		if err == nil {
+			if bm.Title == "" {
+				bm.Title = info.Title
+			}
+			if bm.MediaType == "" {
+				bm.MediaType = info.MediaType
+			}
+			if bm.Status == 0 {
+				bm.Status = info.StatusCode
+			}
 		}
 
 		bm, err = app.br.Create(bm)

@@ -12,7 +12,7 @@ type Bookmark struct {
 	Title       string    `db:"title" schema:"title" json:"title"`
 	URL         string    `db:"url" schema:"url" json:"url"`
 	Icon        string    `db:"icon" schema:"icon" json:"icon"`
-	Status      int64     `db:"status" schema:"status" json:"status"`
+	Status      int       `db:"status" schema:"status" json:"status"`
 	MediaType   string    `db:"media_type" schema:"media_type" json:"media_type"`
 	Keywords    string    `db:"keywords" schema:"keywords" json:"keywords"`
 	Description string    `db:"description" schema:"description" json:"description"`

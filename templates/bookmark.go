@@ -29,6 +29,22 @@ const bookmarktmpl = `
 			<td> {{ .Bookmark.URL }}</td>
 		</tr>
 		<tr>
+			<th>Media Type</th>
+			<td> {{ .Bookmark.MediaType }}</td>
+		</tr>
+		<tr>
+			<th>Description</th>
+			<td> {{ .Bookmark.Description }}</td>
+		</tr>
+		<tr>
+			<th>Keywords</th>
+			<td> {{ .Bookmark.Keywords }}</td>
+		</tr>
+		<tr>
+			<th>Status</th>
+			<td> {{ .Bookmark.Status }}</td>
+		</tr>
+		<tr>
 			<th>Created</th>
 			<td>{{ .Bookmark.Created}}</td>
 		</tr>
