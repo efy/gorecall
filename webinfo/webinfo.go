@@ -9,6 +9,8 @@ import (
 	"path"
 	"strconv"
 	"time"
+
+	"github.com/wolfgangmeyers/go-rake/rake"
 )
 
 var client = http.Client{
@@ -46,6 +48,16 @@ var bodyHandlers = map[string]func(*Info, io.Reader) error{
 		content, err := extractTextContent(doc)
 		if err == nil {
 			i.TextContent = content
+		}
+
+		if i.TextContent != "" {
+			r := rake.NewRake("./public/stopwords.txt", 5, 3, 3)
+			keywords := r.Run(i.TextContent)
+			keywordsstr := ""
+			for _, v := range keywords {
+				keywordsstr += v.Keyword + ", "
+			}
+			i.Keywords = keywordsstr
 		}
 
 		return nil
