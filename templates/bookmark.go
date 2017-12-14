@@ -33,6 +33,10 @@ const bookmarktmpl = `
 			<td> {{ .Bookmark.MediaType }}</td>
 		</tr>
 		<tr>
+			<th>Text Content</th>
+			<td> {{ .Bookmark.TextContent }}</td>
+		</tr>
+		<tr>
 			<th>Description</th>
 			<td> {{ .Bookmark.Description }}</td>
 		</tr>

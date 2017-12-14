@@ -127,6 +127,9 @@ func (app *App) CreateBookmarkHandler() http.Handler {
 			if bm.Status == 0 {
 				bm.Status = info.StatusCode
 			}
+			if bm.TextContent == "" {
+				bm.TextContent = info.TextContent
+			}
 		}
 
 		bm, err = app.br.Create(bm)

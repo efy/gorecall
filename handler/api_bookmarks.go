@@ -57,6 +57,9 @@ func (app *Api) ApiCreateBookmarkHandler() http.Handler {
 			if b.Status == 0 {
 				b.Status = info.StatusCode
 			}
+			if b.TextContent == "" {
+				b.TextContent = info.TextContent
+			}
 		}
 
 		b, err = app.br.Create(b)

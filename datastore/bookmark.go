@@ -16,11 +16,16 @@ type Bookmark struct {
 	MediaType   string    `db:"media_type" schema:"media_type" json:"media_type"`
 	Keywords    string    `db:"keywords" schema:"keywords" json:"keywords"`
 	Description string    `db:"description" schema:"description" json:"description"`
+	TextContent string    `db:"text_content" schema:"text_content" json:"text_content"`
 	Created     time.Time `db:"created" schema:"-" json:"created"`
 }
 
 const (
-	bookmarkInsert     = `INSERT INTO bookmarks (title, url, icon, media_type, keywords, description, status, created) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	bookmarkInsert = `
+		INSERT INTO 
+		bookmarks (title, url, icon, media_type, keywords, description, status, text_content, created)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	`
 	bookmarkSelectBase = `SELECT * FROM bookmarks `
 	bookmarkListBase   = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
@@ -78,7 +83,7 @@ func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.MediaType, bm.Keywords, bm.Description, bm.Status, bm.Created)
+	_, err = tx.Exec(bookmarkInsert, bm.Title, bm.URL, bm.Icon, bm.MediaType, bm.Keywords, bm.Description, bm.Status, bm.TextContent, bm.Created)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
