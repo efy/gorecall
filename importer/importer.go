@@ -4,8 +4,10 @@ package importer
 
 import (
 	"log"
+	"strconv"
 	"sync"
 
+	"github.com/blevesearch/bleve"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/webinfo"
 )
@@ -24,11 +26,13 @@ type Report struct {
 type Options struct {
 	RunWebinfo bool `schema:"webinfo"`
 	RunIndex   bool `schema:"index"`
+	Index      bleve.Index
 }
 
 var DefaultOptions = Options{
 	RunWebinfo: false,
 	RunIndex:   false,
+	Index:      nil,
 }
 
 func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
@@ -49,8 +53,17 @@ func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) 
 			item.Error = err
 			report.FailureCount++
 		} else {
+			if opts.RunIndex && opts.Index != nil {
+				id := strconv.FormatInt(b.ID, 10)
+				err := opts.Index.Index(id, b)
+				if err != nil {
+					log.Println("failed to index bookmark id: %d\n", b.ID)
+				}
+			}
+
 			report.SuccessCount++
 		}
+
 		item.Bookmark = *b
 
 		report.Results = append(report.Results, item)
@@ -69,9 +82,7 @@ func BatchWebinfo(bms []datastore.Bookmark) []datastore.Bookmark {
 		wg.Add(1)
 		go func(bookmark datastore.Bookmark) {
 			info, err := webinfo.Get(bookmark.URL)
-			if err != nil {
-				log.Println(err)
-			} else {
+			if err == nil {
 				fillBookmarkFromWebinfo(&bookmark, *info)
 			}
 			mu.Lock()

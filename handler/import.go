@@ -17,6 +17,7 @@ func (app *App) ImportHandler() http.Handler {
 		}
 
 		importopts := importer.DefaultOptions
+		importopts.Index = app.index
 
 		r.ParseMultipartForm(32 << 20)
 		err := decoder.Decode(&importopts, r.PostForm)
