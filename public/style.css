@@ -220,3 +220,8 @@ body {
   width: 400px;
   transform: translate(-50%, -50%);
 }
+
+.rc-import-errors {
+  height: 500px;
+  overflow-y: scroll;
+}
