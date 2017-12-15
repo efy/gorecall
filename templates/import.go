@@ -34,6 +34,49 @@ const importtmpl = `
       A file exported from your browser or bookmarking service.
     </p>
   </div>
+	
+	<div class="columns">
+		<div class="column col-4">
+			<div class="form-group">
+				<label class="form-switch">
+					<input type="checkbox" name="folders_to_tags">
+					<i class="form-icon"></i>
+					Folders to tags?
+				</label>
+				<p class="form-input-hint">
+					Faltten out hierarchical folders and add them as tags
+				</p>
+			</div>
+		</div>
+
+		<div class="column col-4">
+			<div class="form-group">
+				<label class="form-switch">
+					<input type="checkbox" name="webinfo">
+					<i class="form-icon"></i>
+					Run webinfo for each bookmark
+				</label>
+				<p class="form-input-hint">
+					Requests each URL and adds additonal information
+					Will significantly increase time to import
+				</p>
+			</div>
+		</div>
+
+		<div class="column col-4">
+			<div class="form-group">
+				<label class="form-switch">
+					<input type="checkbox" name="index">
+					<i class="form-icon"></i>
+					Index each bookmark
+				</label>
+				<p class="form-input-hint">
+					Will increase time to import
+				</p>
+			</div>
+		</div>
+	</div>
+
 
   <div class="form-group">
     <button type="submit" class="btn btn-primary">Import</button>

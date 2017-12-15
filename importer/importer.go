@@ -2,7 +2,13 @@
 // of successfully imported items returning a list of failed imports and their respective errors
 package importer
 
-import "github.com/efy/gorecall/datastore"
+import (
+	"log"
+	"sync"
+
+	"github.com/efy/gorecall/datastore"
+	"github.com/efy/gorecall/webinfo"
+)
 
 type ItemReport struct {
 	Bookmark datastore.Bookmark `json:"bookmark"`
@@ -16,17 +22,26 @@ type Report struct {
 }
 
 type Options struct {
-	RunWebinfo bool
+	RunWebinfo bool `schema:"webinfo"`
+	RunIndex   bool `schema:"index"`
 }
 
 var DefaultOptions = Options{
 	RunWebinfo: false,
+	RunIndex:   false,
 }
 
 func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
 	report := &Report{}
+	var bookmarks []datastore.Bookmark
 
-	for _, bm := range src {
+	if opts.RunWebinfo {
+		bookmarks = BatchWebinfo(src)
+	} else {
+		bookmarks = src
+	}
+
+	for _, bm := range bookmarks {
 		item := ItemReport{}
 		b, err := dst.Create(&bm)
 		if err != nil {
@@ -42,4 +57,46 @@ func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) 
 	}
 
 	return report, nil
+}
+
+// Takes a list of bookmarks running a webinfo request for each and filling
+// appropriate fields returning a channel of bookmarks
+func BatchWebinfo(bms []datastore.Bookmark) []datastore.Bookmark {
+	mu := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+	bookmarks := make([]datastore.Bookmark, 0)
+	for _, v := range bms {
+		wg.Add(1)
+		go func(bookmark datastore.Bookmark) {
+			info, err := webinfo.Get(bookmark.URL)
+			if err != nil {
+				log.Println(err)
+			} else {
+				fillBookmarkFromWebinfo(&bookmark, *info)
+			}
+			mu.Lock()
+			bookmarks = append(bookmarks, bookmark)
+			mu.Unlock()
+			wg.Done()
+		}(v)
+	}
+
+	wg.Wait()
+	return bookmarks
+}
+
+// Overwrites Bookmark model fields with data from webinfo request where appropriate
+func fillBookmarkFromWebinfo(bm *datastore.Bookmark, info webinfo.Info) {
+	if bm.Title == "" {
+		bm.Title = info.Title
+	}
+	if bm.MediaType == "" {
+		bm.MediaType = info.MediaType
+	}
+	if bm.Status == 0 {
+		bm.Status = info.StatusCode
+	}
+	if bm.TextContent == "" {
+		bm.TextContent = info.TextContent
+	}
 }

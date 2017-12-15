@@ -15,7 +15,15 @@ func (app *App) ImportHandler() http.Handler {
 			templates.RenderTemplate(w, "import.html", nil)
 			return
 		}
+
+		importopts := importer.DefaultOptions
+
 		r.ParseMultipartForm(32 << 20)
+		err := decoder.Decode(&importopts, r.PostForm)
+		if err != nil {
+			http.Error(w, "Could not decode import options", http.StatusBadRequest)
+			return
+		}
 
 		file, _, err := r.FormFile("bookmarks")
 		if err != nil {
@@ -42,7 +50,7 @@ func (app *App) ImportHandler() http.Handler {
 			})
 		}
 
-		report, err := importer.Import(bookmarks, app.br, importer.DefaultOptions)
+		report, err := importer.Import(bookmarks, app.br, importopts)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
