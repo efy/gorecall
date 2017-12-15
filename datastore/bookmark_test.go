@@ -196,3 +196,30 @@ func TestBookmarkDelete(t *testing.T) {
 		t.Error("expected error got nil")
 	}
 }
+
+func TestBookmarkRepoUpdate(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	bm := &Bookmark{
+		ID:    1,
+		Title: "Updated bookmark",
+		URL:   "http://updated.com",
+	}
+
+	bm, err := bookmarkRepo.Update(bm)
+	if err != nil {
+		t.Error(err)
+	}
+
+	bookmark, err := bookmarkRepo.GetByID(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if bookmark.Title != "Updated bookmark" {
+		t.Error("expected", "Updated bookmark")
+		t.Error("got     ", bookmark.Title)
+	}
+}

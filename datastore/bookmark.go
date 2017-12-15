@@ -26,6 +26,21 @@ const (
 		bookmarks (title, url, icon, media_type, keywords, description, status, text_content, created)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
+	bookmarkUpdate = `
+		UPDATE bookmarks
+		SET
+		title = $1,
+		url = $2,
+		icon = $3,
+		media_type = $4,
+		keywords = $5,
+		description = $6,
+		status = $7,
+		text_content = $8,
+		created = $9
+		WHERE
+		id = $10
+	`
 	bookmarkSelectBase = `SELECT * FROM bookmarks `
 	bookmarkListBase   = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
 	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
@@ -60,6 +75,7 @@ type BookmarkRepo interface {
 	CountTags(bid int64) (int, error)
 	AddTag(bid int64, tid int64) error
 	RemoveTag(bid int64, tid int64) error
+	Update(bookmark *Bookmark) (*Bookmark, error)
 }
 
 type bookmarkRepo struct {
@@ -179,6 +195,14 @@ func (b *bookmarkRepo) RemoveTag(bid int64, tid int64) error {
 		return err
 	}
 	return nil
+}
+
+func (b *bookmarkRepo) Update(bm *Bookmark) (*Bookmark, error) {
+	_, err := b.db.Exec(bookmarkUpdate, bm.Title, bm.URL, bm.Icon, bm.MediaType, bm.Keywords, bm.Description, bm.Status, bm.TextContent, bm.Created, bm.ID)
+	if err != nil {
+		return bm, err
+	}
+	return bm, nil
 }
 
 func NewBookmarkRepo(database *sqlx.DB) (*bookmarkRepo, error) {
