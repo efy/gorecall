@@ -215,6 +215,7 @@ func (app *App) BookmarkRemoveTagHandler() http.Handler {
 		bid, err := strconv.ParseInt(vars["id"], 10, 64)
 		if err != nil {
 			renderError(w, err)
+			return
 		}
 
 		tid, err := strconv.ParseInt(r.FormValue("tag_id"), 10, 64)
@@ -230,5 +231,38 @@ func (app *App) BookmarkRemoveTagHandler() http.Handler {
 		}
 
 		http.Redirect(w, r, "/bookmarks/"+vars["id"], 302)
+	})
+}
+
+func (app *App) BookmarkWebinfoHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		bid, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		bm, err := app.br.GetByID(bid)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		info, err := webinfo.Get(bm.URL)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		fillBookmarkFromWebinfo(bm, *info)
+
+		_, err = app.br.Update(bm)
+		if err != nil {
+			renderError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, "/bookmarks/"+vars["id"], http.StatusFound)
 	})
 }

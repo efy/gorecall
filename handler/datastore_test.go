@@ -188,3 +188,7 @@ func (b *bookmarkRepo) AddTag(bid int64, tid int64) error {
 func (b *bookmarkRepo) RemoveTag(bid int64, tid int64) error {
 	panic("not implemented")
 }
+
+func (b *bookmarkRepo) Update(bm *datastore.Bookmark) (*datastore.Bookmark, error) {
+	return bm, nil
+}

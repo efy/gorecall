@@ -13,6 +13,11 @@ const bookmarktmpl = `
 			<a href="/bookmarks/{{ .Bookmark.ID }}">{{ .Bookmark.Title }}</a>
 		</li>
 	</ul>
+	<div>
+		<form action="/bookmarks/{{ .Bookmark.ID }}/webinfo" method="post">
+			<button class="btn btn-sm">Run Webinfo</button>
+		</form>
+	</div>
 </div>
 <table class="table">
 	<tbody>

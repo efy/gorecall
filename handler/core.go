@@ -30,6 +30,7 @@ func (app *App) Handler() http.Handler {
 	r.Get(router.Bookmark).Handler(app.AuthMiddleware(app.BookmarkHandler()))
 	r.Get(router.BookmarkAddTag).Handler(app.AuthMiddleware(app.BookmarkAddTagHandler()))
 	r.Get(router.BookmarkRemoveTag).Handler(app.AuthMiddleware(app.BookmarkRemoveTagHandler()))
+	r.Get(router.BookmarkWebinfo).Handler(app.AuthMiddleware(app.BookmarkWebinfoHandler()))
 
 	r.Get(router.Tags).Handler(app.AuthMiddleware(app.TagsHandler()))
 	r.Get(router.NewTag).Handler(app.AuthMiddleware(app.NewTagHandler()))
