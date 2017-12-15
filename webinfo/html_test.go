@@ -42,3 +42,21 @@ func TestExtractTextContent(t *testing.T) {
 		t.Error("got     ", got)
 	}
 }
+
+func TestDocToString(t *testing.T) {
+	html := `<html><head></head><body>Hello world</body></html>`
+	doc, err := createDoc(strings.NewReader(html))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := docToString(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result != html {
+		t.Error("expected", html)
+		t.Error("got     ", result)
+	}
+}

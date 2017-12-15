@@ -40,10 +40,29 @@ func extractOpenGraphImage(doc *goquery.Document) (string, error) {
 
 // Given a html document returns the text content with html tags stripped out
 func extractTextContent(doc *goquery.Document) (string, error) {
+	html, err := docToString(doc)
+	if err != nil {
+		return "", err
+	}
+	plain := extractTextFromHtml(html)
+	return plain, nil
+}
+
+func docToString(doc *goquery.Document) (string, error) {
 	html, err := doc.Html()
 	if err != nil {
 		return "", err
 	}
-	plain := html2text.HTML2Text(html)
-	return plain, nil
+	return html, nil
+}
+
+// Wrapped content extraction dependency to make it easier
+// to replace with custom implmentation / fork. Currently
+// the dependency does not function quite as expected and
+// looks to contain bugs.
+//
+// e.g. does not extract any content from:
+// https://snook.ca/archives/html_and_css/calendar-css-grid correctly
+func extractTextFromHtml(html string) string {
+	return html2text.HTML2Text(html)
 }
