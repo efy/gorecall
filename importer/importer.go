@@ -3,7 +3,6 @@
 package importer
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"sync"
@@ -87,7 +86,6 @@ func BatchWebinfo(bms []datastore.Bookmark, cap int) []datastore.Bookmark {
 		rateLimit <- struct{}{}
 		go func(bookmark datastore.Bookmark, rl chan struct{}) {
 			defer func() { <-rl }()
-			fmt.Println("running web info:", bookmark.URL)
 			info, err := webinfo.Get(bookmark.URL)
 			if err == nil {
 				fillBookmarkFromWebinfo(&bookmark, *info)

@@ -18,6 +18,7 @@ func (app *App) ImportHandler() http.Handler {
 
 		importopts := importer.DefaultOptions
 		importopts.Index = app.index
+		importopts.Concurrency = 150
 
 		r.ParseMultipartForm(32 << 20)
 		err := decoder.Decode(&importopts, r.PostForm)

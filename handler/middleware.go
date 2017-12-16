@@ -12,7 +12,7 @@ import (
 
 // Wrap http timeout handler
 func TimeoutMiddleware(h http.Handler) http.Handler {
-	return http.TimeoutHandler(h, 30*time.Second, "timed out")
+	return http.TimeoutHandler(h, 60*time.Second, "timed out")
 }
 
 // Wrap the gorilla handler for use with alice
