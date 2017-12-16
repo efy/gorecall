@@ -81,9 +81,10 @@ func TestBatchWebinfo(t *testing.T) {
 		},
 	}
 
-	bms := BatchWebinfo(bookmarks)
+	bms := BatchWebinfo(bookmarks, 5)
 	if len(bms) != 3 {
-		t.Error("Expected 3 bookmarks")
+		t.Error("expected", 3)
+		t.Error("got     ", len(bms))
 	}
 }
 

@@ -17,6 +17,7 @@ var webinfo = subcmd.Command{
 	Run: func(cmd *subcmd.Command, args []string) {
 		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
 		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
+		concurrency := cmd.Flag.Int("concurrency", 10, "max number of conncurrent requests")
 		cmd.ParseFlags(args)
 
 		dbopts := database.Options{
@@ -44,7 +45,7 @@ var webinfo = subcmd.Command{
 
 		fmt.Println("Starting webinfo...")
 		start := time.Now()
-		bookmarks = importer.BatchWebinfoSerial(bookmarks)
+		bookmarks = importer.BatchWebinfo(bookmarks, *concurrency)
 		dur := time.Now().Sub(start)
 
 		fmt.Println("Saving bookmarks...")

@@ -3,6 +3,7 @@
 package importer
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"sync"
@@ -24,15 +25,17 @@ type Report struct {
 }
 
 type Options struct {
-	RunWebinfo bool `schema:"webinfo"`
-	RunIndex   bool `schema:"index"`
-	Index      bleve.Index
+	RunWebinfo  bool `schema:"webinfo"`
+	RunIndex    bool `schema:"index"`
+	Concurrency int
+	Index       bleve.Index
 }
 
 var DefaultOptions = Options{
-	RunWebinfo: false,
-	RunIndex:   false,
-	Index:      nil,
+	RunWebinfo:  false,
+	Concurrency: 10,
+	RunIndex:    false,
+	Index:       nil,
 }
 
 func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
@@ -40,7 +43,7 @@ func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) 
 	var bookmarks []datastore.Bookmark
 
 	if opts.RunWebinfo {
-		bookmarks = BatchWebinfo(src)
+		bookmarks = BatchWebinfo(src, opts.Concurrency)
 	} else {
 		bookmarks = src
 	}
@@ -74,13 +77,17 @@ func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) 
 
 // Takes a list of bookmarks running a webinfo request for each and filling
 // appropriate fields returning a channel of bookmarks
-func BatchWebinfo(bms []datastore.Bookmark) []datastore.Bookmark {
-	mu := &sync.Mutex{}
-	wg := &sync.WaitGroup{}
+func BatchWebinfo(bms []datastore.Bookmark, cap int) []datastore.Bookmark {
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	rateLimit := make(chan struct{}, cap)
 	bookmarks := make([]datastore.Bookmark, 0)
 	for _, v := range bms {
 		wg.Add(1)
-		go func(bookmark datastore.Bookmark) {
+		rateLimit <- struct{}{}
+		go func(bookmark datastore.Bookmark, rl chan struct{}) {
+			defer func() { <-rl }()
+			fmt.Println("running web info:", bookmark.URL)
 			info, err := webinfo.Get(bookmark.URL)
 			if err == nil {
 				fillBookmarkFromWebinfo(&bookmark, *info)
@@ -89,7 +96,7 @@ func BatchWebinfo(bms []datastore.Bookmark) []datastore.Bookmark {
 			bookmarks = append(bookmarks, bookmark)
 			mu.Unlock()
 			wg.Done()
-		}(v)
+		}(v, rateLimit)
 	}
 
 	wg.Wait()
