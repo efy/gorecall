@@ -8,4 +8,5 @@ var Commands = []subcmd.Command{
 	migrate,
 	index,
 	search,
+	webinfo,
 }
