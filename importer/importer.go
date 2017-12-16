@@ -96,6 +96,22 @@ func BatchWebinfo(bms []datastore.Bookmark) []datastore.Bookmark {
 	return bookmarks
 }
 
+// Same as BatchWebinfo but handles requests in serial
+func BatchWebinfoSerial(bms []datastore.Bookmark) []datastore.Bookmark {
+	bookmarks := make([]datastore.Bookmark, 0)
+	for _, v := range bms {
+		func(bookmark datastore.Bookmark) {
+			info, err := webinfo.Get(bookmark.URL)
+			if err == nil {
+				fillBookmarkFromWebinfo(&bookmark, *info)
+			}
+			bookmarks = append(bookmarks, bookmark)
+		}(v)
+	}
+
+	return bookmarks
+}
+
 // Overwrites Bookmark model fields with data from webinfo request where appropriate
 func fillBookmarkFromWebinfo(bm *datastore.Bookmark, info webinfo.Info) {
 	if bm.Title == "" {

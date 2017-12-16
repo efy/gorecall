@@ -87,6 +87,42 @@ func TestBatchWebinfo(t *testing.T) {
 	}
 }
 
+func TestBatchWebinfoSerial(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		status, err := strconv.ParseInt(r.URL.Path[1:], 10, 32)
+		if err != nil {
+			t.Fatal(err)
+		}
+		w.WriteHeader(int(status))
+		fmt.Fprintln(w, "response")
+	}))
+	defer ts.Close()
+
+	bookmarks := []datastore.Bookmark{
+		{
+			Title: "Bookmark 1",
+			URL:   ts.URL + "/404",
+		},
+		{
+			Title: "Bookmark 2",
+			URL:   ts.URL + "/200",
+		},
+		{
+			Title: "Bookmark 3",
+			URL:   ts.URL + "/500",
+		},
+	}
+
+	bms := BatchWebinfoSerial(bookmarks)
+	if len(bms) != 3 {
+		t.Error("Expected 3 bookmarks")
+	}
+	if bms[0].Status != http.StatusNotFound {
+		t.Error("expected", http.StatusNotFound)
+		t.Error("got     ", bms[0].Status)
+	}
+}
+
 // Returns in memory database with schema applied
 func testDB() *sqlx.DB {
 	db, err := sqlx.Open("sqlite3", ":memory:")
