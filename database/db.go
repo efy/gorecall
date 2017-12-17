@@ -27,6 +27,7 @@ const (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username VARCHAR(50) UNIQUE,
 			password CHAR(60),
+			email VARCHAR(255) UNIQUE,
 			created DATETIME DEFAULT CURRENT_TIMESTAMP
 		);
 
@@ -67,6 +68,7 @@ const (
 			id SERIAL PRIMARY KEY,
 			username VARCHAR(50) UNIQUE,
 			password CHAR(60),
+			email VARCHAR(255) UNIQUE,
 			created TIMESTAMP DEFAULT NOW()
 		);
 

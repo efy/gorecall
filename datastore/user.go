@@ -7,14 +7,15 @@ import (
 )
 
 type User struct {
-	ID       int64     `db:"id" schema:"id"`
-	Username string    `db:"username" schema:"username"`
-	Password string    `db:"password" schema:"-"`
-	Created  time.Time `db:"created" schema:"created"`
+	ID       int64     `json:"id" db:"id" schema:"id"`
+	Username string    `json:"username" db:"username" schema:"username"`
+	Password string    `json:"-" db:"password" schema:"-"`
+	Email    string    `json:"email" db:"email" schema:"email"`
+	Created  time.Time `json:"created" db:"created" schema:"created"`
 }
 
 const (
-	userInsert           = `INSERT INTO users (username, password) VALUES ($1, $2)`
+	userInsert           = `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
 	userSelectBase       = `SELECT * FROM users `
 	userSelectByID       = userSelectBase + `WHERE id = $1 LIMIT 1`
 	userSelectByUsername = userSelectBase + `WHERE username = $1 LIMIT 1`
@@ -45,7 +46,7 @@ func (ur *userRepo) Create(u *User) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = tx.Exec(userInsert, u.Username, u.Password)
+	_, err = tx.Exec(userInsert, u.Username, u.Password, u.Email)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
