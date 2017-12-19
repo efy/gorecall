@@ -44,7 +44,7 @@ const importtmpl = `
 					Folders to tags?
 				</label>
 				<p class="form-input-hint">
-					Faltten out hierarchical folders and add them as tags
+					Flatten out hierarchical folders and add them as tags
 				</p>
 			</div>
 		</div>
