@@ -41,6 +41,7 @@ func (t *Tag) Validate() (bool, []error) {
 type TagRepo interface {
 	Create(tag *Tag) (*Tag, error)
 	GetByID(id int64) (*Tag, error)
+	GetByLabel(label string) (*Tag, error)
 	GetAll() ([]Tag, error)
 	List(opts ListOptions) ([]Tag, error)
 	Count() (int, error)
@@ -54,6 +55,7 @@ const (
 	tagSelectBase      = `SELECT * FROM tags`
 	tagSelectCount     = `SELECT COUNT(*) FROM tags`
 	tagSelectByID      = tagSelectBase + ` WHERE id = $1 LIMIT 1`
+	tagSelectByLabel   = tagSelectBase + ` WHERE label = $1 LIMIT 1`
 	tagListBase        = tagSelectBase + ` ORDER BY %s %s LIMIT $1 OFFSET $2 `
 	tagLastInsert      = `SELECT id FROM tags ORDER BY id DESC limit 1`
 	tagDelete          = `DELETE FROM tags WHERE id = $1`
@@ -118,6 +120,15 @@ func (t *tagRepo) Create(tag *Tag) (*Tag, error) {
 func (t *tagRepo) GetByID(id int64) (*Tag, error) {
 	tag := Tag{}
 	if err := t.db.Get(&tag, tagSelectByID, id); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return &tag, nil
+}
+
+func (t *tagRepo) GetByLabel(label string) (*Tag, error) {
+	tag := Tag{}
+	if err := t.db.Get(&tag, tagSelectByLabel, label); err != nil {
 		log.Println(err)
 		return nil, err
 	}

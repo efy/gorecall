@@ -104,6 +104,17 @@ func TestTagRepoGetByID(t *testing.T) {
 	}
 }
 
+func TestTagRepoGetByLabel(t *testing.T) {
+	db, tagRepo := tagRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	_, err := tagRepo.GetByLabel("tag1")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestTagRepoCount(t *testing.T) {
 	db, tagRepo := tagRepoTestDeps()
 	loadDefaultFixture(db)
