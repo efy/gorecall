@@ -3,11 +3,13 @@
 package importer
 
 import (
+	"io"
 	"log"
 	"strconv"
 	"sync"
 
 	"github.com/blevesearch/bleve"
+	"github.com/efy/bookmark"
 	"github.com/efy/gorecall/datastore"
 	"github.com/efy/gorecall/webinfo"
 )
@@ -24,27 +26,46 @@ type Report struct {
 }
 
 type Options struct {
-	RunWebinfo  bool `schema:"webinfo"`
-	RunIndex    bool `schema:"index"`
-	Concurrency int
-	Index       bleve.Index
+	RunWebinfo    bool `schema:"webinfo"`
+	RunIndex      bool `schema:"index"`
+	FoldersAsTags bool `schema:"folders_as_tags"`
+	ImportTags    bool `schema:"import_tags"`
+	Concurrency   int
+	Index         bleve.Index
 }
 
 var DefaultOptions = Options{
-	RunWebinfo:  false,
-	Concurrency: 10,
-	RunIndex:    false,
-	Index:       nil,
+	RunWebinfo:    false,
+	Concurrency:   10,
+	RunIndex:      false,
+	FoldersAsTags: false,
+	ImportTags:    true,
+	Index:         nil,
 }
 
-func Import(src []datastore.Bookmark, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
-	report := &Report{}
+// Import takes an io.Reader and handles parsing and persisting to the datastore
+func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
 	var bookmarks []datastore.Bookmark
 
+	parsed, err := bookmark.ParseWithOptions(file, bookmark.DefaultParseOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert from bookmark.Bookmark to datastore.Bookmark
+	for _, v := range parsed {
+		bookmarks = append(bookmarks, datastore.Bookmark{
+			Title:   v.Title,
+			URL:     v.Url,
+			Icon:    v.Icon,
+			Created: v.Created,
+		})
+	}
+
+	report := &Report{}
+
 	if opts.RunWebinfo {
-		bookmarks = BatchWebinfo(src, opts.Concurrency)
-	} else {
-		bookmarks = src
+		bookmarks = BatchWebinfo(bookmarks, opts.Concurrency)
 	}
 
 	for _, bm := range bookmarks {

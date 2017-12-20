@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/efy/gorecall/database"
@@ -13,24 +14,14 @@ import (
 )
 
 func TestImport(t *testing.T) {
-	bookmarks := []datastore.Bookmark{
-		{
-			Title: "Bookmark 1",
-			URL:   "http://bookmark1.com",
-		},
-		{
-			Title: "Bookmark 2",
-			URL:   "http://bookmark2.com",
-		},
-		{
-			Title: "Bookmark 3",
-			URL:   "http://bookmark3.com",
-		},
-		{
-			Title: "Bookmark 3",
-			URL:   "http://bookmark3.com",
-		},
-	}
+	bookmarks := `
+		<a href="http://bookmark1.com">Bookmark 1</a>
+		<a href="http://bookmark2.com">Bookmark 2</a>
+		<a href="http://bookmark3.com">Bookmark 3</a>
+		<!-- dup -->
+		<a href="http://bookmark3.com">Bookmark 3</a>
+	`
+
 	db := testDB()
 	defer db.Close()
 
@@ -39,7 +30,7 @@ func TestImport(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	report, err := Import(bookmarks, bookmarkRepo, DefaultOptions)
+	report, err := Import(strings.NewReader(bookmarks), bookmarkRepo, DefaultOptions)
 	if err != nil {
 		t.Fatal(err)
 	}

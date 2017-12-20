@@ -36,12 +36,25 @@ const importtmpl = `
   </div>
 	
 	<div class="columns">
-		<div class="column col-4">
+		<div class="column col-3">
 			<div class="form-group">
 				<label class="form-switch">
-					<input type="checkbox" name="folders_to_tags">
+					<input type="checkbox" name="import_tags">
 					<i class="form-icon"></i>
-					Folders to tags?
+					Import tags?
+				</label>
+				<p class="form-input-hint">
+					Create tags found in the bookmarks file
+				</p>
+			</div>
+		</div>
+
+		<div class="column col-3">
+			<div class="form-group">
+				<label class="form-switch">
+					<input type="checkbox" name="folders_as_tags">
+					<i class="form-icon"></i>
+					Import folders as tags?
 				</label>
 				<p class="form-input-hint">
 					Flatten out hierarchical folders and add them as tags
@@ -49,7 +62,7 @@ const importtmpl = `
 			</div>
 		</div>
 
-		<div class="column col-4">
+		<div class="column col-3">
 			<div class="form-group">
 				<label class="form-switch">
 					<input type="checkbox" name="webinfo">
@@ -63,7 +76,7 @@ const importtmpl = `
 			</div>
 		</div>
 
-		<div class="column col-4">
+		<div class="column col-3">
 			<div class="form-group">
 				<label class="form-switch">
 					<input type="checkbox" name="index">
