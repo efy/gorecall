@@ -47,12 +47,22 @@ func TestBookmarkRepoGetByID(t *testing.T) {
 
 	bm, err := bookmarkRepo.GetByID(1)
 	if err != nil {
-		t.Error(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 	if bm.Title != "bm1" {
 		t.Error("expected", "bm1")
 		t.Error("got     ", bm.Title)
+	}
+}
+
+func TestBookmarkRepoGetByURL(t *testing.T) {
+	db, bookmarkRepo := bookmarkRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	_, err := bookmarkRepo.GetByURL("bmurl1")
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

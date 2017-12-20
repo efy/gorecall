@@ -158,6 +158,10 @@ func (b *bookmarkRepo) GetByID(id int64) (*datastore.Bookmark, error) {
 	return nil, fmt.Errorf("bookmark not found")
 }
 
+func (b *bookmarkRepo) GetByURL(url string) (*datastore.Bookmark, error) {
+	return &bookmarks[0], nil
+}
+
 func (b *bookmarkRepo) GetAll() ([]datastore.Bookmark, error) {
 	return bookmarks, nil
 }

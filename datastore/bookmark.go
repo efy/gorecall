@@ -41,12 +41,13 @@ const (
 		WHERE
 		id = $10
 	`
-	bookmarkSelectBase = `SELECT * FROM bookmarks `
-	bookmarkListBase   = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
-	bookmarkSelectByID = bookmarkSelectBase + `WHERE id = $1`
-	bookmarkCount      = `SELECT COUNT(*) as count FROM bookmarks`
-	bookmarkDelete     = `DELETE FROM bookmarks WHERE id = $1`
-	bookmarkLastInsert = `SELECT id FROM bookmarks ORDER BY id DESC LIMIT 1`
+	bookmarkSelectBase  = `SELECT * FROM bookmarks `
+	bookmarkListBase    = `SELECT * FROM bookmarks ORDER BY %s %s LIMIT $1 OFFSET $2`
+	bookmarkSelectByID  = bookmarkSelectBase + `WHERE id = $1`
+	bookmarkSelectByURL = bookmarkSelectBase + `WHERE url = $1`
+	bookmarkCount       = `SELECT COUNT(*) as count FROM bookmarks`
+	bookmarkDelete      = `DELETE FROM bookmarks WHERE id = $1`
+	bookmarkLastInsert  = `SELECT id FROM bookmarks ORDER BY id DESC LIMIT 1`
 
 	tagList = `
 		SELECT tags.* FROM tags
@@ -67,6 +68,7 @@ const (
 type BookmarkRepo interface {
 	Create(bookmark *Bookmark) (*Bookmark, error)
 	GetByID(id int64) (*Bookmark, error)
+	GetByURL(url string) (*Bookmark, error)
 	GetAll() ([]Bookmark, error)
 	List(opts ListOptions) ([]Bookmark, error)
 	Count() (int, error)
@@ -88,6 +90,14 @@ func (b *bookmarkRepo) GetByID(id int64) (*Bookmark, error) {
 		return nil, err
 	}
 	return &bm, nil
+}
+
+func (b *bookmarkRepo) GetByURL(url string) (*Bookmark, error) {
+	bm := &Bookmark{}
+	if err := b.db.Get(bm, bookmarkSelectByURL, url); err != nil {
+		return nil, err
+	}
+	return bm, nil
 }
 
 func (b *bookmarkRepo) Create(bm *Bookmark) (*Bookmark, error) {
