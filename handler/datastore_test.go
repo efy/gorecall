@@ -117,6 +117,10 @@ func (t *tagRepo) GetByID(id int64) (*datastore.Tag, error) {
 	return &tags[id], nil
 }
 
+func (t *tagRepo) GetByLabel(label string) (*datastore.Tag, error) {
+	return &tags[0], nil
+}
+
 func (t *tagRepo) GetAll() ([]datastore.Tag, error) {
 	return tags, nil
 }
