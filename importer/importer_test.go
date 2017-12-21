@@ -46,6 +46,65 @@ func TestImport(t *testing.T) {
 	}
 }
 
+func TestImportFile(t *testing.T) {
+	file := `
+		<DT><H3>One</H3>
+		<DL>
+			<DT><A HREF="http://bookmark1.com">Bookmark1</A>
+			<DT><H3>Two</H3>
+			<DL>
+				<DT><A HREF="http://bookmark2.com">Bookmark2</A>
+			</DL>
+			<DT><H3>Three</H3>
+			<DL>
+				<DT><A HREF="http://bookmark3.com">Bookmark3</A>
+			</DL>
+		</DL>
+	`
+	db := testDB()
+	defer db.Close()
+
+	bookmarkRepo, err := datastore.NewBookmarkRepo(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tagRepo, err := datastore.NewTagRepo(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	opts := DefaultOptions
+	opts.TagRepo = tagRepo
+	opts.ImportTags = true
+	opts.FoldersAsTags = true
+
+	report, err := Import(strings.NewReader(file), bookmarkRepo, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if report.TaggingCount != 5 {
+		t.Error("expected", 5)
+		t.Error("got     ", report.TaggingCount)
+	}
+
+	tag, err := tagRepo.GetByLabel("Two")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, err := tagRepo.CountBookmarks(tag.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if count != 1 {
+		t.Error("expected", 1)
+		t.Error("got     ", count)
+	}
+}
+
 func TestBatchWebinfo(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		status, err := strconv.ParseInt(r.URL.Path[1:], 10, 32)

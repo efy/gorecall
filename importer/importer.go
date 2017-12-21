@@ -22,6 +22,7 @@ type ItemReport struct {
 type Report struct {
 	SuccessCount int          `json:"success_count"`
 	FailureCount int          `json:"failure_count"`
+	TaggingCount int          `json:"tagging_count"`
 	Results      []ItemReport `json:"results"`
 }
 
@@ -125,6 +126,7 @@ func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, 
 					if err != nil {
 						continue
 					}
+					report.TaggingCount++
 				}
 			}
 		}

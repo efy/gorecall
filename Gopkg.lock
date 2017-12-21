@@ -58,8 +58,8 @@
 [[projects]]
   name = "github.com/efy/bookmark"
   packages = ["."]
-  revision = "cf934987f13d791e2e4181388d3cb0a6bd8cfa96"
-  version = "0.2.0"
+  revision = "b7d81b93b689c7f115836a159e901fc79389de3b"
+  version = "0.2.1"
 
 [[projects]]
   branch = "master"
@@ -172,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6f567303dda2c4e0dfe8fe81ed8f1f96047c2021defa318b34db0592874bc05e"
+  inputs-digest = "d772292098ac9aae102d272d7b5fccad5b1388673bb1a697d970fd7c4ac0a6a0"
   solver-name = "gps-cdcl"
   solver-version = 1
