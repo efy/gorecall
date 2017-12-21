@@ -40,9 +40,12 @@ func (app *App) Handler() http.Handler {
 
 	r.Get(router.Import).Handler(app.AuthMiddleware(app.ImportHandler()))
 	r.Get(router.Export).Handler(app.AuthMiddleware(app.ExportHandler()))
-	r.Get(router.Account).Handler(app.AuthMiddleware(app.AccountShowHandler()))
+
+	r.Get(router.Account).Handler(app.AuthMiddleware(app.AccountHandler()))
+	r.Get(router.UpdateAccount).Handler(app.AuthMiddleware(app.UpdateAccountHandler()))
+
 	r.Get(router.Preferences).Handler(app.AuthMiddleware(app.PreferencesHandler()))
-	r.Get(router.EditAccount).Handler(app.AuthMiddleware(app.AccountEditHandler()))
+
 	r.Get(router.Login).Handler(app.LoginHandler())
 	r.Get(router.Logout).Handler(app.LogoutHandler())
 

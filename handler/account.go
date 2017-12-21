@@ -7,7 +7,7 @@ import (
 	"github.com/efy/gorecall/templates"
 )
 
-func (app *App) AccountShowHandler() http.Handler {
+func (app *App) AccountHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := app.store.Get(r, "sesh")
 		if err != nil {
@@ -32,7 +32,7 @@ func (app *App) AccountShowHandler() http.Handler {
 	})
 }
 
-func (app *App) AccountEditHandler() http.Handler {
+func (app *App) UpdateAccountHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templates.RenderTemplate(w, "account.html", nil)
 	})

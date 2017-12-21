@@ -9,8 +9,7 @@ const accounttmpl = `
 			Account
 		</a>
 	</li>
-	<li class="tab-item">
-		<a href="/settings/preferences">
+	<li class="tab-item"> <a href="/settings/preferences">
 			Preferences
 		</a>
 	</li>
@@ -26,10 +25,15 @@ const accounttmpl = `
 	</li>
 </ul>
 
-<form action="/account/edit" method="post">
+<form action="/settings/account" method="post">
   <div class="form-group">
     <label class="form-label" for="username">Username</label>
     <input id="username" class="form-input" value="{{ .User.Username }}" type="text" name="username">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="email">Email</label>
+    <input id="email" class="form-input" value="{{ .User.Email }}" type="text" name="email">
   </div>
 
   <div class="form-group">

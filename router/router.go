@@ -5,30 +5,35 @@ import "github.com/gorilla/mux"
 // Route Names
 const (
 	// Shared
+	Tags      = "tags"
+	CreateTag = "tags:create"
+	Tag       = "tag"
+	DeleteTag = "tag:delete"
+
 	Bookmarks         = "bookmarks:index"
 	CreateBookmark    = "bookmarks:create"
 	Bookmark          = "bookmark"
 	DeleteBookmark    = "bookmark:delete"
-	Tags              = "tags"
-	CreateTag         = "tags:create"
-	Tag               = "tag"
-	DeleteTag         = "tag:delete"
 	BookmarkAddTag    = "bookmark:addtag"
 	BookmarkRemoveTag = "bookmark:removetag"
 	BookmarkWebinfo   = "bookmark:webinfo"
 	SearchBookmarks   = "bookmarks:search"
 
+	Account       = "account"
+	UpdateAccount = "account:update"
+
+	Preferences       = "preferences"
+	UpdatePreferences = "preferences:update"
+
+	Import = "import"
+	Export = "export"
+
 	// Webapp only
 	Dashboard   = "dashboard:index"
-	Import      = "import"
-	Export      = "export"
-	Account     = "account"
-	EditAccount = "account:edit"
 	Login       = "login"
 	Logout      = "logout"
 	NewBookmark = "bookmarks:new"
 	NewTag      = "tag:new"
-	Preferences = "preferences"
 
 	// Api only
 	Ping         = "ping"
@@ -57,7 +62,7 @@ func App() *mux.Router {
 	m.Path("/tags/{id:[0-9]+}").Methods("DELETE").Name(DeleteTag)
 	m.Path("/settings/preferences").Methods("GET").Name(Preferences)
 	m.Path("/settings/account").Methods("GET").Name(Account)
-	m.Path("/settings/account/edit").Methods("GET").Name(EditAccount)
+	m.Path("/settings/account").Methods("POST").Name(UpdateAccount)
 	m.Path("/settings/import").Methods("GET", "POST").Name(Import)
 	m.Path("/settings/export").Methods("GET").Name(Export)
 	m.Path("/login").Methods("GET", "POST").Name(Login)
