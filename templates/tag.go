@@ -61,18 +61,19 @@ const tagtmpl = `
 	{{ if lt .Pagination.Prev 0 }}
 		<li class="page-item disabled"><a href="#">Previous</a></li>
 	{{ else }}
-		<li class="page-item"><a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Prev }}">Previous</a></li>
+		<li class="page-item"><a href="/tags/{{ .Tag.ID }}?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Prev }}">Previous</a></li>
 	{{ end }}
 
 	<li class="page-item active">
-		<a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Current }}">{{ .Pagination.Current }}</a>
+		<a href="/tags/{{ .Tag.ID }}?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Current }}">{{ .Pagination.Current }}</a>
 	</li>
 
 	{{ $save := .Pagination }}
+	{{ $root := . }}
 	{{ range $page := .Pagination.List }}
 		{{ if lt $page $save.Last }}
 			<li class="page-item">
-				<a href="/bookmarks?per_page={{ $save.PerPage }}&page={{ $page}}">{{ $page }}</a>
+				<a href="/tags/{{ $root.Tag.ID }}?per_page={{ $save.PerPage }}&page={{ $page}}">{{ $page }}</a>
 			</li>
 		{{ end }}
 	{{ end }}
@@ -82,14 +83,14 @@ const tagtmpl = `
 			<span>...</span>
 		</li>
 		<li class="page-item">
-			<a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Last }}">{{ .Pagination.Last }}</a>
+			<a href="/tags/{{ .Tag.ID }}?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Last }}">{{ .Pagination.Last }}</a>
 		</li>
 	{{ end }}
 
 	{{ if gt .Pagination.Next .Pagination.Last }}
 		<li class="page-item disabled"><a href="#">Next</a></li>
 	{{ else }}
-		<li class="page-item"><a href="/bookmarks?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Next }}">Next</a></li>
+		<li class="page-item"><a href="/tags/{{ .Tag.ID }}?per_page={{ .Pagination.PerPage }}&page={{ .Pagination.Next }}">Next</a></li>
 	{{ end }}
 </ul>
 </div>

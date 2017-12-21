@@ -155,6 +155,7 @@ body {
 
 .rc-tag .rc-tag-marker {
   border-radius: 100%;
+  display: inline-block;
   width: .8rem;
   height: .8rem;
 }

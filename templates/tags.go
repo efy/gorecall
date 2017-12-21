@@ -28,10 +28,11 @@ const tagstmpl = `
 	{{ range .Tags }}
 		<div class="column col-3">
 			<div class="rc-tag">
-				<a href="/tags/{{ .ID }}">
-					{{ .Label }}
+				<a href="/tags/{{ .Tag.ID }}">
+					{{ .Tag.Label }}
 				</a>
-				<div class="rc-tag-marker" style="background-color: {{ .Color }};">
+				<div>
+					<span class="label">{{ .Count }}</span>
 				</div>
 			</div>
 		</div>

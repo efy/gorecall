@@ -110,6 +110,11 @@ func (app *App) DeleteTagHandler() http.Handler {
 	})
 }
 
+type TagCount struct {
+	Tag   datastore.Tag
+	Count int
+}
+
 func (app *App) TagsHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tags, err := app.tr.GetAll()
@@ -118,10 +123,22 @@ func (app *App) TagsHandler() http.Handler {
 			return
 		}
 
+		tagcounts := make([]TagCount, 0)
+		for _, v := range tags {
+			count, err := app.tr.CountBookmarks(v.ID)
+			if err != nil {
+				continue
+			}
+			tagcounts = append(tagcounts, TagCount{
+				v,
+				count,
+			})
+		}
+
 		templates.RenderTemplate(w, "tags.html", struct {
-			Tags []datastore.Tag
+			Tags []TagCount
 		}{
-			tags,
+			tagcounts,
 		})
 	})
 }
