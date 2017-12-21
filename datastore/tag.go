@@ -66,6 +66,7 @@ const (
 		bookmarks.id,
 		bookmarks.title,
 		bookmarks.url,
+		bookmarks.icon,
 		bookmarks.created
 		FROM bookmarks
 		INNER JOIN bookmark_tags
