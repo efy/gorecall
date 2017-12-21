@@ -15,7 +15,15 @@ type User struct {
 }
 
 const (
-	userInsert           = `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
+	userInsert = `INSERT INTO users (username, password, email) VALUES ($1, $2, $3)`
+	userUpdate = `
+		UPDATE users
+		SET
+		username = $1,
+		email = $2
+		WHERE
+		id = $3
+	`
 	userSelectBase       = `SELECT * FROM users `
 	userSelectByID       = userSelectBase + `WHERE id = $1 LIMIT 1`
 	userSelectByUsername = userSelectBase + `WHERE username = $1 LIMIT 1`
@@ -27,6 +35,7 @@ type UserRepo interface {
 	GetByID(id int64) (*User, error)
 	GetAll() ([]User, error)
 	GetByUsername(username string) (*User, error)
+	Update(user *User) (*User, error)
 }
 
 type userRepo struct {
@@ -68,6 +77,14 @@ func (ur *userRepo) Create(u *User) (*User, error) {
 		return nil, err
 	}
 	return u, nil
+}
+
+func (ur *userRepo) Update(user *User) (*User, error) {
+	_, err := ur.db.Exec(userUpdate, user.Username, user.Email, user.ID)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }
 
 func (ur *userRepo) GetAll() ([]User, error) {

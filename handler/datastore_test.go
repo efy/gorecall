@@ -79,6 +79,10 @@ func (u *userRepo) Create(user *datastore.User) (*datastore.User, error) {
 	return user, nil
 }
 
+func (u *userRepo) Update(user *datastore.User) (*datastore.User, error) {
+	return user, nil
+}
+
 func (u *userRepo) GetByID(id int64) (*datastore.User, error) {
 	for _, user := range users {
 		if user.ID == id {

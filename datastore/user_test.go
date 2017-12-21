@@ -36,6 +36,24 @@ func TestUserRepoCreate(t *testing.T) {
 	}
 }
 
+func TestUserRepoUpdate(t *testing.T) {
+	db, userRepo := userRepoTestDeps()
+	loadDefaultFixture(db)
+	defer db.Close()
+
+	user, err := userRepo.GetByID(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	user.Username = "updated"
+
+	user, err = userRepo.Update(user)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestUserRepoGet(t *testing.T) {
 	db, userRepo := userRepoTestDeps()
 	loadDefaultFixture(db)
