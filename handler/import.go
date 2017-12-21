@@ -16,6 +16,7 @@ func (app *App) ImportHandler() http.Handler {
 
 		importopts := importer.DefaultOptions
 		importopts.Index = app.index
+		importopts.TagRepo = app.tr
 		importopts.Concurrency = 150
 
 		r.ParseMultipartForm(32 << 20)

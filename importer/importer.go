@@ -32,6 +32,7 @@ type Options struct {
 	ImportTags    bool `schema:"import_tags"`
 	Concurrency   int
 	Index         bleve.Index
+	TagRepo       datastore.TagRepo
 }
 
 var DefaultOptions = Options{
@@ -41,13 +42,19 @@ var DefaultOptions = Options{
 	FoldersAsTags: false,
 	ImportTags:    true,
 	Index:         nil,
+	TagRepo:       nil,
 }
 
 // Import takes an io.Reader and handles parsing and persisting to the datastore
 func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, error) {
 	var bookmarks []datastore.Bookmark
+	tagMap := make(map[string][]string)
 
-	parsed, err := bookmark.ParseWithOptions(file, bookmark.DefaultParseOptions)
+	// Set bookmark parsing options from options
+	parseopts := bookmark.DefaultParseOptions
+	parseopts.FoldersAsTags = opts.FoldersAsTags
+
+	parsed, err := bookmark.ParseWithOptions(file, parseopts)
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +67,18 @@ func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, 
 			Icon:    v.Icon,
 			Created: v.Created,
 		})
-	}
 
-	report := &Report{}
+		// Add to tag map
+		for _, t := range v.Tags {
+			tagMap[t] = append(tagMap[t], v.Url)
+		}
+	}
 
 	if opts.RunWebinfo {
 		bookmarks = BatchWebinfo(bookmarks, opts.Concurrency)
 	}
+
+	report := &Report{}
 
 	for _, bm := range bookmarks {
 		item := ItemReport{}
@@ -90,6 +102,32 @@ func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, 
 		item.Bookmark = *b
 
 		report.Results = append(report.Results, item)
+	}
+
+	if opts.TagRepo != nil && opts.ImportTags {
+		for k, v := range tagMap {
+			log.Printf("%s has %d bookmarks", k, len(v))
+			tag := &datastore.Tag{
+				Label: k,
+			}
+			tag, err := opts.TagRepo.Create(tag)
+			if err != nil {
+				log.Println("import:", err)
+			}
+
+			if tag, err = opts.TagRepo.GetByLabel(k); err == nil {
+				for _, url := range v {
+					bm, err := dst.GetByURL(url)
+					if err != nil {
+						continue
+					}
+					err = dst.AddTag(bm.ID, tag.ID)
+					if err != nil {
+						continue
+					}
+				}
+			}
+		}
 	}
 
 	return report, nil
