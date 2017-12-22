@@ -14,12 +14,12 @@ func (app *App) AccountHandler() http.Handler {
 			renderError(w, err)
 			return
 		}
-		username, ok := session.Values["username"].(string)
+		userid, ok := session.Values["user_id"].(int64)
 		if !ok {
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
-		user, err := app.ur.GetByUsername(username)
+		user, err := app.ur.GetByID(userid)
 		if err != nil {
 			renderError(w, err)
 		}
@@ -42,12 +42,12 @@ func (app *App) UpdateAccountHandler() http.Handler {
 
 		r.ParseForm()
 
-		username, ok := session.Values["username"].(string)
+		userid, ok := session.Values["user_id"].(int64)
 		if !ok {
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
-		user, err := app.ur.GetByUsername(username)
+		user, err := app.ur.GetByID(userid)
 		if err != nil {
 			renderError(w, err)
 			return

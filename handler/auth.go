@@ -32,12 +32,18 @@ func (app *App) LoginHandler() http.Handler {
 		}
 
 		name := r.FormValue("username")
-		name = strings.TrimSpace(strings.ToLower(name))
-
 		pass := r.FormValue("password")
 
+		name = strings.TrimSpace(strings.ToLower(name))
+
 		if name != "" && pass != "" {
-			check := app.authenticate(name, pass)
+			user, err := app.ur.GetByUsername(name)
+			if err != nil {
+				templates.RenderTemplate(w, "login.html", nil)
+				return
+			}
+
+			check := app.authenticate(user.Username, pass)
 
 			if !check {
 				templates.RenderTemplate(w, "login.html", nil)
@@ -48,8 +54,8 @@ func (app *App) LoginHandler() http.Handler {
 			if err != nil {
 				log.Println(err)
 			}
-			session.Values["username"] = name
 			session.Values["authenticated"] = true
+			session.Values["user_id"] = user.ID
 			session.Save(r, w)
 
 			http.Redirect(w, r, "/", 302)
