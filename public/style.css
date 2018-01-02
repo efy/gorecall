@@ -87,6 +87,10 @@ body {
   align-items: center;
 }
 
+.rc-bm-favicon {
+  width: auto;
+}
+
 .rc-bm-title a {
   text-decoration: none;
   color: #1d1123;
