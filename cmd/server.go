@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
@@ -25,6 +26,8 @@ var serve = subcmd.Command{
 		indexname := cmd.Flag.String("indexname", "gorecall.idx", "path to index directory")
 		usecgi := cmd.Flag.Bool("cgi", false, "Serve app using cgi")
 		usefcgi := cmd.Flag.Bool("fcgi", false, "Serve app using fastcgi")
+		secret := cmd.Flag.String("secret", "", "Session secret, a key can be generated with the `secret` command. The key should be base64 encoded.")
+
 		cmd.ParseFlags(args)
 
 		db, err := database.Connect(database.Options{
@@ -60,7 +63,17 @@ var serve = subcmd.Command{
 			os.Exit(1)
 		}
 
-		store := sessions.NewCookieStore([]byte("something-very-secret"))
+		if *secret == "" {
+			fmt.Println("A session secret must be provided")
+			os.Exit(1)
+		}
+
+		dec, err := base64.StdEncoding.DecodeString(*secret)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		store := sessions.NewCookieStore(dec)
 
 		app := handler.NewApp(uRepo, bmRepo, trRepo, store, index)
 		api := handler.NewApi(uRepo, bmRepo, trRepo, index)

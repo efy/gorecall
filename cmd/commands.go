@@ -9,4 +9,5 @@ var Commands = []subcmd.Command{
 	index,
 	search,
 	webinfo,
+	secret,
 }
