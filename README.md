@@ -1,4 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/efy/gorecall)](https://goreportcard.com/report/github.com/efy/gorecall)
+[![CircleCI](https://circleci.com/gh/efy/gorecall/tree/master.svg?style=svg)](https://circleci.com/gh/efy/gorecall/tree/master)
 
 # Recall
 
