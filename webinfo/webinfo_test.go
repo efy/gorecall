@@ -36,8 +36,8 @@ func TestWebInfoGet(t *testing.T) {
 		t.Error("got     ", info.Size)
 	}
 
-	if info.Ext != ".txt" {
-		t.Error("expected", ".Ext to be .txt")
+	if info.Ext != ".txt" || info.Ext != ".asc" {
+		t.Error("expected", ".Ext to be .txt or .asc")
 		t.Error("got     ", info.Ext)
 	}
 }
