@@ -38,8 +38,8 @@ func TestExtractTextContent(t *testing.T) {
 		t.Error(err)
 	}
 	if got != expect {
-		t.Error("expected", []byte(expect))
-		t.Error("got     ", []byte(got))
+		t.Error("expected", expect, []byte(expect))
+		t.Error("got     ", got, []byte(got))
 	}
 }
 

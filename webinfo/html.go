@@ -45,6 +45,7 @@ func extractTextContent(doc *goquery.Document) (string, error) {
 		return "", err
 	}
 	plain := extractTextFromHtml(html)
+	plain = strings.TrimSpace(plain)
 	return plain, nil
 }
 
