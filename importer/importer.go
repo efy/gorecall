@@ -107,7 +107,6 @@ func Import(file io.Reader, dst datastore.BookmarkRepo, opts Options) (*Report, 
 
 	if opts.TagRepo != nil && opts.ImportTags {
 		for k, v := range tagMap {
-			log.Printf("%s has %d bookmarks", k, len(v))
 			tag := &datastore.Tag{
 				Label: k,
 			}

@@ -11,6 +11,13 @@ import (
 	"time"
 )
 
+func init() {
+	// Ensure the lookup is in place for text/plain
+	// the mime package performs a lookup for common mime files
+	// so depends on the environment and is non deterministic
+	mime.AddExtensionType(".txt", "text/plain")
+}
+
 var client = http.Client{
 	Timeout: time.Second * 5,
 }
