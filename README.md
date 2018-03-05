@@ -55,4 +55,4 @@ TODO
 ## Licensing
 
 The code in this project is licensed under MIT license. See the
-[LICENSE](LISENSE) file for more details.
+[LICENSE](LICENSE) file for more details.
