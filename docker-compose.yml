@@ -10,7 +10,7 @@ services:
       - 5432:5432
   app:
     build: .
-    command: ["/go/bin/recall", "serve"]
+    command: ["/go/bin/recall", "serve", "-secret=vBBB12NsG2YOJyLwmGUZ1YvLgTWvYyAOQM+CgVrgfK0="]
     volumes:
       - .:/go/src/app
     ports:
