@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: recall_development
+      POSTGRES_USER: recall
+      POSTGRES_PASSWORD: recall
+    ports:
+      - 5432:5432
+  app:
+    build: .
+    command: ["/go/bin/recall", "serve"]
+    volumes:
+      - .:/go/src/app
+    ports:
+      - "80:8080"
+    depends_on:
+      - db
+    links:
+      - db
