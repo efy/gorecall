@@ -15,13 +15,12 @@ var index = subcmd.Command{
 	UsageLine: "index",
 	Short:     "update the search index",
 	Run: func(cmd *subcmd.Command, args []string) {
-		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
-		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
+		dbdsn := cmd.Flag.String("dsn", "postgres://recall:recall@localhost/recall?sslmode=disable", "data source name")
 		indexname := cmd.Flag.String("indexname", "gorecall.idx", "path to search index")
 		cmd.ParseFlags(args)
 
 		db, err := database.Connect(database.Options{
-			Driver: *dbdriver,
+			Driver: "postgres",
 			DSN:    *dbdsn,
 		})
 		if err != nil {

@@ -15,13 +15,12 @@ var webinfo = subcmd.Command{
 	UsageLine: "webinfo",
 	Short:     "process actual web requests for bookmark links and populate metadata fields",
 	Run: func(cmd *subcmd.Command, args []string) {
-		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
-		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
+		dbdsn := cmd.Flag.String("dsn", "postgres://recall:recall@localhost/recall?sslmode=disable", "data source name")
 		concurrency := cmd.Flag.Int("concurrency", 10, "max number of conncurrent requests")
 		cmd.ParseFlags(args)
 
 		dbopts := database.Options{
-			Driver: *dbdriver,
+			Driver: "postgres",
 			DSN:    *dbdsn,
 		}
 

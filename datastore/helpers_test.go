@@ -39,6 +39,7 @@ func userRepoTestDeps() (*sqlx.DB, *userRepo) {
 }
 
 // Returns in memory database with schema applied
+// TODO: test against a real postgres instance if available
 func testDB() *sqlx.DB {
 	db, err := sqlx.Open("sqlite3", ":memory:")
 	if err != nil {
