@@ -1,9 +1,17 @@
 package datastore
 
 import (
+	"testing"
+
 	"github.com/efy/gorecall/database"
 	"github.com/jmoiron/sqlx"
 )
+
+func TestWithFixtures(t *testing.T) {
+	withFixtures(t, func(db *sqlx.DB) {
+		t.Skip()
+	})
+}
 
 // Returns dependencies required for testing
 // tag repo
@@ -48,6 +56,23 @@ func testDB() *sqlx.DB {
 	database.Setup(database.Options{Driver: "sqlite3"}, db)
 
 	return db
+}
+
+// Function to wrap up tests against a postgres instance
+func withFixtures(t *testing.T, run func(db *sqlx.DB)) {
+	db, err := sqlx.Connect("postgres", "postgres://recall:recall@localhost/recall_test?sslmode=disable")
+	if err != nil {
+		t.Log("could not connect to test database")
+		t.Log(err)
+		t.Skip()
+		return
+	}
+
+	database.Setup(database.Options{Driver: "postgres"}, db)
+	loadDefaultFixture(db)
+	run(db)
+
+	db.Close()
 }
 
 // Fill the database with test data
