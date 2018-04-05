@@ -56,10 +56,10 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
-			media_type TEXT DEFAULT "",
-			description TEXT DEFAULT "",
-			keywords TEXT DEFAULT "",
-			text_content TEXT DEFAULT "",
+			media_type TEXT DEFAULT '',
+			description TEXT DEFAULT '',
+			keywords TEXT DEFAULT '',
+			text_content TEXT DEFAULT '',
 			status INTEGER DEFAULT 0,
 			created TIMESTAMP DEFAULT NOW()
 		);

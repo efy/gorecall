@@ -34,31 +34,31 @@ var serve = subcmd.Command{
 			DSN:    *dbdsn,
 		})
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error connecting to database:", err)
 			os.Exit(1)
 		}
 
 		index, err := bleve.Open(*indexname)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error opening index:", err)
 			os.Exit(1)
 		}
 
 		uRepo, err := datastore.NewUserRepo(db)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error creating user repo:", err)
 			os.Exit(1)
 		}
 
 		bmRepo, err := datastore.NewBookmarkRepo(db)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error creating bookmark repo:", err)
 			os.Exit(1)
 		}
 
 		trRepo, err := datastore.NewTagRepo(db)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error creating tag repo:", err)
 			os.Exit(1)
 		}
 
@@ -69,7 +69,7 @@ var serve = subcmd.Command{
 
 		dec, err := base64.StdEncoding.DecodeString(*secret)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("could not decode secret:", err)
 			os.Exit(1)
 		}
 		store := sessions.NewCookieStore(dec)

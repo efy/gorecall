@@ -22,13 +22,13 @@ var migrate = subcmd.Command{
 
 		db, err := database.Connect(dbopts)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error connecting to database:", err)
 			os.Exit(1)
 		}
 
 		err = database.Setup(dbopts, db)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error migrating databaseL", err)
 			os.Exit(0)
 		}
 
