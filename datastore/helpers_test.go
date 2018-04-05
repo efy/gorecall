@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"os"
 	"testing"
 
 	"github.com/efy/gorecall/database"
@@ -58,13 +59,19 @@ func testDB() *sqlx.DB {
 // Function to wrap up tests against a postgres instance
 // handles database setup and teardown
 func withDatabase(t *testing.T, run func(db *sqlx.DB)) {
-	db, err := sqlx.Connect("sqlite3", ":memory:")
+	dsn := os.Getenv("TEST_DSN")
+	if dsn == "" {
+		t.Skip("no TEST_DSN environment variable set")
+		return
+	}
+
+	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		t.Skip("no test database available:", err)
 		return
 	}
 
-	database.Setup(database.Options{Driver: "sqlite3"}, db)
+	database.Setup(database.Options{Driver: "postgres"}, db)
 	run(db)
 
 	db.Close()
