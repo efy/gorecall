@@ -7,43 +7,40 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func TestWithFixtures(t *testing.T) {
-	withFixtures(t, func(db *sqlx.DB) {
+func TestWithDatabase(t *testing.T) {
+	withDatabaseFixtures(t, func(db *sqlx.DB) {
 		t.Skip()
 	})
 }
 
 // Returns dependencies required for testing
 // tag repo
-func tagRepoTestDeps() (*sqlx.DB, *tagRepo) {
-	db := testDB()
+func tagRepoTestDeps(db *sqlx.DB) *tagRepo {
 	tagRepo, err := NewTagRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, tagRepo
+	return tagRepo
 }
 
 // Returns dependencies required for testing
 // bookmark repo
-func bookmarkRepoTestDeps() (*sqlx.DB, *bookmarkRepo) {
-	db := testDB()
+func bookmarkRepoTestDeps(db *sqlx.DB) *bookmarkRepo {
 	bookmarkRepo, err := NewBookmarkRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, bookmarkRepo
+	return bookmarkRepo
 }
 
 // Returns dependencies required for testing
 // user repo
-func userRepoTestDeps() (*sqlx.DB, *userRepo) {
-	db := testDB()
+func userRepoTestDeps(db *sqlx.DB) *userRepo {
 	userRepo, err := NewUserRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, userRepo
+	return userRepo
 }
 
 // Returns in memory database with schema applied
@@ -59,20 +56,27 @@ func testDB() *sqlx.DB {
 }
 
 // Function to wrap up tests against a postgres instance
-func withFixtures(t *testing.T, run func(db *sqlx.DB)) {
-	db, err := sqlx.Connect("postgres", "postgres://recall:recall@localhost/recall_test?sslmode=disable")
+// handles database setup and teardown
+func withDatabase(t *testing.T, run func(db *sqlx.DB)) {
+	db, err := sqlx.Connect("sqlite3", ":memory:")
 	if err != nil {
-		t.Log("could not connect to test database")
-		t.Log(err)
-		t.Skip()
+		t.Skip("no test database available:", err)
 		return
 	}
 
-	database.Setup(database.Options{Driver: "postgres"}, db)
-	loadDefaultFixture(db)
+	database.Setup(database.Options{Driver: "sqlite3"}, db)
 	run(db)
 
 	db.Close()
+}
+
+// wraps withDatabase loading test data
+func withDatabaseFixtures(t *testing.T, run func(db *sqlx.DB)) {
+	withDatabase(t, func(db *sqlx.DB) {
+		loadDefaultFixture(db)
+		run(db)
+		db.Close()
+	})
 }
 
 // Fill the database with test data
