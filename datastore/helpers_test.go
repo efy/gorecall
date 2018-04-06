@@ -71,8 +71,17 @@ func withDatabase(t *testing.T, run func(db *sqlx.DB)) {
 		return
 	}
 
-	database.Setup(database.Options{Driver: "postgres"}, db)
+	err = database.Setup(database.Options{Driver: "postgres"}, db)
+	if err != nil {
+		panic(err)
+	}
+
 	run(db)
+
+	err = database.Teardown(database.Options{Driver: "postgres"}, db)
+	if err != nil {
+		panic(err)
+	}
 
 	db.Close()
 }
@@ -82,7 +91,6 @@ func withDatabaseFixtures(t *testing.T, run func(db *sqlx.DB)) {
 	withDatabase(t, func(db *sqlx.DB) {
 		loadDefaultFixture(db)
 		run(db)
-		db.Close()
 	})
 }
 

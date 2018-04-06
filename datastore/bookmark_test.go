@@ -16,7 +16,7 @@ func TestNewBookmarkRepo(t *testing.T) {
 }
 
 func TestBookmarkRepoCreate(t *testing.T) {
-	withDatabaseFixtures(t, func(db *sqlx.DB) {
+	withDatabase(t, func(db *sqlx.DB) {
 		bookmarkRepo := bookmarkRepoTestDeps(db)
 
 		bm := &Bookmark{
