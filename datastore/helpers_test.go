@@ -71,17 +71,19 @@ func withDatabase(t *testing.T, run func(db *sqlx.DB)) {
 		return
 	}
 
+	// Ensure database is clean
+	err = database.Teardown(database.Options{Driver: "postgres"}, db)
+	if err != nil {
+		t.Log(err)
+	}
+
+	// Setup the schema
 	err = database.Setup(database.Options{Driver: "postgres"}, db)
 	if err != nil {
 		panic(err)
 	}
 
 	run(db)
-
-	err = database.Teardown(database.Options{Driver: "postgres"}, db)
-	if err != nil {
-		panic(err)
-	}
 
 	db.Close()
 }
