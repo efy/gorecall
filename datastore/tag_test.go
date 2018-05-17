@@ -42,18 +42,18 @@ func TestTagValidate(t *testing.T) {
 	}
 
 	for k, tr := range tt {
-		t.Log("running test case:", k)
+		t.Run(k, func(t *testing.T) {
+			valid, errs := tr.tag.Validate()
+			if valid != tr.valid {
+				t.Error("expected", tr.valid)
+				t.Error("got     ", valid)
+			}
 
-		valid, errs := tr.tag.Validate()
-		if valid != tr.valid {
-			t.Error("expected", tr.valid)
-			t.Error("got     ", valid)
-		}
-
-		if !reflect.DeepEqual(errs, tr.errs) {
-			t.Error("expected", tr.errs)
-			t.Error("got     ", errs)
-		}
+			if !reflect.DeepEqual(errs, tr.errs) {
+				t.Error("expected", tr.errs)
+				t.Error("got     ", errs)
+			}
+		})
 	}
 }
 
