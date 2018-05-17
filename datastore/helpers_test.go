@@ -8,12 +8,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func TestWithDatabase(t *testing.T) {
-	withDatabaseFixtures(t, func(db *sqlx.DB) {
-		t.Skip()
-	})
-}
-
 // Returns dependencies required for testing
 // tag repo
 func tagRepoTestDeps(db *sqlx.DB) *tagRepo {
