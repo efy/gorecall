@@ -12,24 +12,23 @@ var migrate = subcmd.Command{
 	UsageLine: "migrate",
 	Short:     "run any pending database migrations",
 	Run: func(cmd *subcmd.Command, args []string) {
-		dbdriver := cmd.Flag.String("dbdriver", "sqlite3", "driver of the database you intend to use (sqlite3, postgres)")
-		dbdsn := cmd.Flag.String("dsn", "gorecall.db", "data source name")
+		dbdsn := cmd.Flag.String("dsn", "postgres://recall:recall@localhost/recall?sslmode=disable", "data source name")
 		cmd.ParseFlags(args)
 
 		dbopts := database.Options{
-			Driver: *dbdriver,
+			Driver: "postgres",
 			DSN:    *dbdsn,
 		}
 
 		db, err := database.Connect(dbopts)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error connecting to database:", err)
 			os.Exit(1)
 		}
 
 		err = database.Setup(dbopts, db)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("error migrating databaseL", err)
 			os.Exit(0)
 		}
 

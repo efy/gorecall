@@ -1,44 +1,45 @@
 package datastore
 
 import (
+	"os"
+	"testing"
+
 	"github.com/efy/gorecall/database"
 	"github.com/jmoiron/sqlx"
 )
 
 // Returns dependencies required for testing
 // tag repo
-func tagRepoTestDeps() (*sqlx.DB, *tagRepo) {
-	db := testDB()
+func tagRepoTestDeps(db *sqlx.DB) *tagRepo {
 	tagRepo, err := NewTagRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, tagRepo
+	return tagRepo
 }
 
 // Returns dependencies required for testing
 // bookmark repo
-func bookmarkRepoTestDeps() (*sqlx.DB, *bookmarkRepo) {
-	db := testDB()
+func bookmarkRepoTestDeps(db *sqlx.DB) *bookmarkRepo {
 	bookmarkRepo, err := NewBookmarkRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, bookmarkRepo
+	return bookmarkRepo
 }
 
 // Returns dependencies required for testing
 // user repo
-func userRepoTestDeps() (*sqlx.DB, *userRepo) {
-	db := testDB()
+func userRepoTestDeps(db *sqlx.DB) *userRepo {
 	userRepo, err := NewUserRepo(db)
 	if err != nil {
 		panic(err)
 	}
-	return db, userRepo
+	return userRepo
 }
 
 // Returns in memory database with schema applied
+// TODO: test against a real postgres instance if available
 func testDB() *sqlx.DB {
 	db, err := sqlx.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -47,6 +48,46 @@ func testDB() *sqlx.DB {
 	database.Setup(database.Options{Driver: "sqlite3"}, db)
 
 	return db
+}
+
+// Function to wrap up tests against a postgres instance
+// handles database setup and teardown
+func withDatabase(t *testing.T, run func(db *sqlx.DB)) {
+	dsn := os.Getenv("TEST_DSN")
+	if dsn == "" {
+		t.Skip("no TEST_DSN environment variable set")
+		return
+	}
+
+	db, err := sqlx.Connect("postgres", dsn)
+	if err != nil {
+		t.Skip("no test database available:", err)
+		return
+	}
+
+	// Ensure database is clean
+	err = database.Teardown(database.Options{Driver: "postgres"}, db)
+	if err != nil {
+		t.Log(err)
+	}
+
+	// Setup the schema
+	err = database.Setup(database.Options{Driver: "postgres"}, db)
+	if err != nil {
+		panic(err)
+	}
+
+	run(db)
+
+	db.Close()
+}
+
+// wraps withDatabase loading test data
+func withDatabaseFixtures(t *testing.T, run func(db *sqlx.DB)) {
+	withDatabase(t, func(db *sqlx.DB) {
+		loadDefaultFixture(db)
+		run(db)
+	})
 }
 
 // Fill the database with test data

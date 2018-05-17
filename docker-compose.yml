@@ -1,0 +1,29 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: recall_development
+      POSTGRES_USER: recall
+      POSTGRES_PASSWORD: recall
+    ports:
+      - 5432:5432
+  app:
+    build: .
+    command: [
+      "./bin/wait-for-it.sh", 
+      "postgres:5432",
+      "--",
+      "/go/bin/recall", 
+      "serve", 
+      "-dsn=postgress://recall:recall@localhost/recall_development?sslmode=disable", 
+      "-secret=vBBB12NsG2YOJyLwmGUZ1YvLgTWvYyAOQM+CgVrgfK0="
+    ]
+    volumes:
+      - .:/go/src/app
+    ports:
+      - "80:8080"
+    depends_on:
+      - postgres
+    links:
+      - postgres

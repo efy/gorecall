@@ -56,10 +56,10 @@ const (
 			title TEXT,
 			url TEXT UNIQUE,
 			icon TEXT,
-			media_type TEXT DEFAULT "",
-			description TEXT DEFAULT "",
-			keywords TEXT DEFAULT "",
-			text_content TEXT DEFAULT "",
+			media_type TEXT DEFAULT '',
+			description TEXT DEFAULT '',
+			keywords TEXT DEFAULT '',
+			text_content TEXT DEFAULT '',
 			status INTEGER DEFAULT 0,
 			created TIMESTAMP DEFAULT NOW()
 		);
@@ -89,6 +89,13 @@ const (
 
 		CREATE UNIQUE INDEX tagging
 		ON bookmark_tags (bookmark_id, tag_id);
+	`
+
+	postgresteardown = `
+		DROP TABLE bookmarks;
+		DROP TABLE tags;
+		DROP TABLE users;
+		DROP TABLE bookmark_tags;
 	`
 )
 
@@ -125,6 +132,20 @@ func Connect(opts Options) (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+// WARNING: This will drop all database objects
+func Teardown(opts Options, db *sqlx.DB) error {
+	switch opts.Driver {
+	case "postgres":
+		_, err := db.Exec(postgresteardown)
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("database: no teardown for driver %s", opts.Driver)
+	}
+	return nil
 }
 
 // Apply the correct database schema based on options.Driver

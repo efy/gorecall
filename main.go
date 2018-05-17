@@ -41,5 +41,5 @@ func main() {
 	}
 
 	// Handle invalid / unknown command
-	fmt.Fprintf(os.Stderr, "gorecall: unknown subcommand %q\nRun 'temple help' for usage.\n", os.Args[1])
+	fmt.Fprintf(os.Stderr, "gorecall: unknown subcommand %q\nRun 'gorecall help' for usage.\n", os.Args[1])
 }
