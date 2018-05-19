@@ -3,7 +3,22 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  build:
+  test_frontend:
+    docker:
+      - image: circleci/node:8.11-stretch
+    working_directory: ~/gorecall
+    steps:
+      - checkout
+      - run:
+          name: Fetch frontend dependencies
+          command: cd client && yarn install
+      - run:
+          name: Run frontend unit tests
+          environment:
+            CI: true
+          command: cd client && yarn test
+
+  test_api:
     docker:
       # specify the version
       - image: circleci/golang:1.9.2
@@ -37,11 +52,17 @@ jobs:
             echo Failed waiting for Postgres && exit 1
 
       - run:
-          name: Fetch dependencies
+          name: Fetch go dependencies
           command: go get -v -t -d ./...
 
       - run:
-          name: Run tests
+          name: Run go unit tests
           environment:
             TEST_DSN: "postgres://root@localhost:5432/circle_test?sslmode=disable"
           command: go test -v ./...
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test_frontend
+      - test_api

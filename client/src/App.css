@@ -1,0 +1,12 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.app-logo {
+  width: 100px;
+  height: 100px;
+}
