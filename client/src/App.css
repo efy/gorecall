@@ -12,10 +12,12 @@
 }
 
 .app-left {
-  width: 400px;
+  width: 250px;
   min-height: 100%;
-  background: #eaeaea;
   padding: 20px;
+  border-right: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-right{
@@ -24,3 +26,20 @@
   overflow-y: scroll;
   padding: 20px;
 }
+
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.app-sidebar .nav:last-of-type {
+  margin-top: auto;
+}
+
+.nav-item {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+}
+

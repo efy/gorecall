@@ -1,6 +1,14 @@
 import React, { Component } from 'react'
 import { Redirect, Switch, Route, Link } from 'react-router-dom'
 import logo from './logo.svg'
+import {
+  Search,
+  List,
+  PlusSquare,
+  Tag,
+  Settings,
+  LogOut
+} from 'react-feather'
 import 'spectre.css'
 import './App.css'
 
@@ -9,13 +17,43 @@ class Sidebar extends Component {
     return (
       <header className="app-sidebar">
         <img src={logo} className="app-logo" alt="logo" />
-        <Link to="/bookmarks">All</Link>
-        <Link to="/bookmarks/search">Search</Link>
-        <Link to="/bookmarks/new">Add Link</Link>
+        <ul className="nav">
+          <li className="divider" data-content="Links"></li>
+          <li className="nav-item">
+            <Link to="/bookmarks">All</Link>
+            <List size={16} />
+          </li>
+          <li className="nav-item">
+            <Link to="/bookmarks/search">Search</Link>
+            <Search size={16} />
+          </li>
+          <li className="nav-item">
+            <Link to="/bookmarks/new">Add Link</Link>
+            <PlusSquare size={16} />
+          </li>
 
-        <Link to="/tags">All</Link>
-        <Link to="/tags/search">Search</Link>
-        <Link to="/tags/new">Add Link</Link>
+          <li className="divider" data-content="Tags"></li>
+          <li className="nav-item">
+            <Link to="/tags">All</Link>
+            <Tag size={16} />
+          </li>
+          <li className="nav-item">
+            <Link to="/tags/new">Add Tag</Link>
+            <PlusSquare size={16} />
+          </li>
+          <li className="divider"></li>
+        </ul>
+
+        <ul className="nav">
+          <li className="nav-item">
+            <Link to="/settings">Settings</Link>
+            <Settings size={16} />
+          </li>
+          <li className="nav-item">
+            <Link to="/logout">Logout</Link>
+            <LogOut size={16} />
+          </li>
+        </ul>
       </header>
     )
   }
