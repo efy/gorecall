@@ -100,6 +100,16 @@ class App extends Component {
               <Route exact path="/tags/:id">
                 <h2>Tag 1</h2>
               </Route>
+
+              <Route path="/settings">
+                <h2>Settings</h2>
+              </Route>
+
+              <Route>
+                <h2>
+                  404 Not found
+                </h2>
+              </Route>
             </Switch>
           </main>
         </div>

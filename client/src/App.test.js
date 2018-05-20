@@ -75,4 +75,17 @@ describe('routing', () => {
     const wrapper = setup("/tags/1")
     expect(wrapper.find('h2').text()).toBe("Tag 1")
   })
+
+  it('renders settings page at /settings/*', () => {
+    let wrapper = setup("/settings")
+    expect(wrapper.find('h2').text()).toBe("Settings")
+
+    wrapper = setup("/settings/account")
+    expect(wrapper.find('h2').text()).toBe("Settings")
+  })
+
+  it('renders page not found if no route matche', () => {
+    let wrapper = setup("/nomatch")
+    expect(wrapper.find('h2').text()).toBe("404 Not found")
+  })
 })
