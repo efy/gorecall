@@ -84,7 +84,7 @@ describe('routing', () => {
     expect(wrapper.find('h2').text()).toBe("Settings")
   })
 
-  it('renders page not found if no route matche', () => {
+  it('renders page not found if no route matches', () => {
     let wrapper = setup("/nomatch")
     expect(wrapper.find('h2').text()).toBe("404 Not found")
   })
