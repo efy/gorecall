@@ -14,6 +14,15 @@ describe('App', () => {
     const wrapper = shallow(<App />)
     expect(wrapper.exists()).toBe(true)
   })
+
+  it('renders Sidebar', () => {
+    const wrapper = shallow(<App />)
+    expect(wrapper.find('Sidebar').exists()).toBe(true)
+  })
+})
+
+describe('Sidebar', () => {
+
 })
 
 describe('routing', () => {
@@ -37,6 +46,16 @@ describe('routing', () => {
     expect(wrapper.find('h2').text()).toBe("Bookmarks")
   })
 
+  it('renders bookmarks search at /bookmarks/search', () => {
+    const wrapper = setup("/bookmarks/search")
+    expect(wrapper.find('h2').text()).toBe("Bookmarks search")
+  })
+
+  it('renders new bookmark at /bookmarks/new', () => {
+    const wrapper = setup("/bookmarks/new")
+    expect(wrapper.find('h2').text()).toBe("New bookmark")
+  })
+
   it('renders the bookmark details at /bookmarks/:id', () => {
     const wrapper = setup("/bookmarks/1")
     expect(wrapper.find('h2').text()).toBe("Bookmark 1")
@@ -45,6 +64,11 @@ describe('routing', () => {
   it('renders tag index at /tags', () => {
     const wrapper = setup("/tags")
     expect(wrapper.find('h2').text()).toBe("Tags")
+  })
+
+  it('renders new tag at /tags', () => {
+    const wrapper = setup("/tags/new")
+    expect(wrapper.find('h2').text()).toBe("New tag")
   })
 
   it('renders the tag details at /tags/:id', () => {
