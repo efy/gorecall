@@ -38,54 +38,54 @@ describe('routing', () => {
 
   it('redirects root to /bookmarks', () => {
     const wrapper = setup("/")
-    expect(wrapper.find('h2').text()).toBe("Bookmarks")
+    expect('Bookmarks').toExistIn(wrapper)
   })
 
   it('renders bookmarks index at /bookmarks', () => {
-    const wrapper = setup("/bookmarks")
-    expect(wrapper.find('h2').text()).toBe("Bookmarks")
+    const wrapper = setup("/")
+    expect('Bookmarks').toExistIn(wrapper)
   })
 
   it('renders bookmarks search at /bookmarks/search', () => {
     const wrapper = setup("/bookmarks/search")
-    expect(wrapper.find('h2').text()).toBe("Bookmarks search")
+    expect('Bookmarks').toExistIn(wrapper)
   })
 
   it('renders new bookmark at /bookmarks/new', () => {
     const wrapper = setup("/bookmarks/new")
-    expect(wrapper.find('h2').text()).toBe("New bookmark")
+    expect('NewBookmark').toExistIn(wrapper)
   })
 
   it('renders the bookmark details at /bookmarks/:id', () => {
     const wrapper = setup("/bookmarks/1")
-    expect(wrapper.find('h2').text()).toBe("Bookmark 1")
+    expect('Bookmark').toExistIn(wrapper)
   })
 
   it('renders tag index at /tags', () => {
     const wrapper = setup("/tags")
-    expect(wrapper.find('h2').text()).toBe("Tags")
+    expect('Tags').toExistIn(wrapper)
   })
 
   it('renders new tag at /tags', () => {
     const wrapper = setup("/tags/new")
-    expect(wrapper.find('h2').text()).toBe("New tag")
+    expect('NewTag').toExistIn(wrapper)
   })
 
   it('renders the tag details at /tags/:id', () => {
     const wrapper = setup("/tags/1")
-    expect(wrapper.find('h2').text()).toBe("Tag 1")
+    expect('Tag').toExistIn(wrapper)
   })
 
   it('renders settings page at /settings/*', () => {
     let wrapper = setup("/settings")
-    expect(wrapper.find('h2').text()).toBe("Settings")
+    expect('Settings').toExistIn(wrapper)
 
     wrapper = setup("/settings/account")
-    expect(wrapper.find('h2').text()).toBe("Settings")
+    expect('Settings').toExistIn(wrapper)
   })
 
   it('renders page not found if no route matches', () => {
     let wrapper = setup("/nomatch")
-    expect(wrapper.find('h2').text()).toBe("404 Not found")
+    expect('NotFound').toExistIn(wrapper)
   })
 })

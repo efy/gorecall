@@ -12,6 +12,15 @@ import {
 import 'spectre.css'
 import './App.css'
 
+import BookmarksPage from './pages/Bookmarks'
+import BookmarkPage from './pages/Bookmark'
+import NewBookmarkPage from './pages/NewBookmark'
+import TagsPage from './pages/Tags'
+import TagPage from './pages/Tag'
+import NewTagPage from './pages/NewTag'
+import SettingsPage from './pages/Settings'
+import NotFoundPage from './pages/NotFound'
+
 class Sidebar extends Component {
   render() {
     return (
@@ -74,41 +83,39 @@ class App extends Component {
               </Route>
 
               <Route exact path="/bookmarks">
-                <h2>Bookmarks</h2>
+                <BookmarksPage />
               </Route>
 
               <Route exact path="/bookmarks/search">
-                <h2>Bookmarks search</h2>
+                <BookmarksPage />
               </Route>
 
               <Route exact path="/bookmarks/new">
-                <h2>New bookmark</h2>
+                <NewBookmarkPage />
               </Route>
 
               <Route exact path="/bookmarks/:id">
-                <h2>Bookmark 1</h2>
+                <BookmarkPage />
               </Route>
 
               <Route exact path="/tags">
-                <h2>Tags</h2>
+                <TagsPage />
               </Route>
 
               <Route exact path="/tags/new">
-                <h2>New tag</h2>
+                <NewTagPage />
               </Route>
 
               <Route exact path="/tags/:id">
-                <h2>Tag 1</h2>
+                <TagPage />
               </Route>
 
               <Route path="/settings">
-                <h2>Settings</h2>
+                <SettingsPage />
               </Route>
 
               <Route>
-                <h2>
-                  404 Not found
-                </h2>
+                <NotFoundPage />
               </Route>
             </Switch>
           </main>
