@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Redirect, Switch, Route, Link } from 'react-router-dom'
+import { Redirect, Switch, Route } from 'react-router-dom'
 import 'spectre.css'
 import './App.css'
 
