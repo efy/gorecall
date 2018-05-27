@@ -19,7 +19,7 @@ class BookmarkItem extends React.Component {
     return (
       <div className="bookmarkItem">
         <div class="text-center rc-bm-favicon column col-1">
-          <img width="20" height="20" src={this.props.icon} />
+          <img width="20" height="20" alt={`${this.props.domain} favicon} src={this.props.icon} />
         </div>
         <div class="column col-9">
           <div class="rc-bm-title text-ellipsis">
