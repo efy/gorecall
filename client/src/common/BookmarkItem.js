@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Trash2 } from 'react-feather'
 import PropTypes from 'prop-types'
 import placeholder from '../images/placeholder_favicon.png'
+import './BookmarkItem.css'
 
 class BookmarkItem extends React.Component {
   static propTypes = {
@@ -18,11 +20,11 @@ class BookmarkItem extends React.Component {
 
   render() {
     return (
-      <div className="bookmarkItem">
-        <div class="text-center rc-bm-favicon column col-1">
-          <img width="20" height="20" alt={`${this.props.domain} favicon`} src={this.props.icon || placeholder} />
+      <div className="bookmark-item">
+        <div class="rc-bm-favicon">
+          <img width="18" height="18" alt={`${this.props.domain} favicon`} src={this.props.icon || placeholder} />
         </div>
-        <div class="column col-9">
+        <div>
           <div class="rc-bm-title text-ellipsis">
             <a href={this.props.url} target="_blank" rel="noopener">
               { this.props.title }
@@ -32,18 +34,20 @@ class BookmarkItem extends React.Component {
             <time>
               { this.props.created.toString() }
             </time>
-            •
+            {" "} • {" "}
             <Link to={"/bookmarks/" + this.props.id}>
               show
             </Link>
-            •
+            {" "} • {" "}
             <a href={this.props.domain} rel="noopener" target="_blank">
               { this.props.domain }
             </a>
           </div>
         </div>
-        <div class="column col-2 text-right">
-          <button class="btn btn-sm btn-default">Delete</button>
+        <div class="bookmark-item-actions">
+          <button class="btn btn-sm btn-default">
+            <Trash2 size={14} />
+          </button>
         </div>
       </div>
     )
