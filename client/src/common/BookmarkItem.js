@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
 import { Trash2 } from 'react-feather'
 import PropTypes from 'prop-types'
 import placeholder from '../images/placeholder_favicon.png'
@@ -10,12 +11,20 @@ class BookmarkItem extends React.Component {
     icon: PropTypes.string,
     url: PropTypes.string,
     domain: PropTypes.string,
-    created: PropTypes.date,
+    created: PropTypes.oneOfType([
+      PropTypes.instanceOf(Date),
+      PropTypes.string
+    ]),
     title: PropTypes.string
   }
 
   static defaultProps = {
     created: new Date()
+  }
+
+  timeFormatted = () => {
+    const time = moment(this.props.created)
+    return time.fromNow()
   }
 
   render() {
@@ -32,7 +41,7 @@ class BookmarkItem extends React.Component {
           </div>
           <div class="rc-bm-details">
             <time>
-              { this.props.created.toString() }
+              { this.timeFormatted() }
             </time>
             {" "} • {" "}
             <Link to={"/bookmarks/" + this.props.id}>
