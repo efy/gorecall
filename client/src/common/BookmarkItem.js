@@ -7,8 +7,12 @@ class BookmarkItem extends React.Component {
     icon: PropTypes.string,
     url: PropTypes.string,
     domain: PropTypes.string,
-    created: PropTypes.number,
+    created: PropTypes.date,
     title: PropTypes.string
+  }
+
+  static defaultProps = {
+    created: new Date()
   }
 
   render() {
@@ -20,12 +24,12 @@ class BookmarkItem extends React.Component {
         <div class="column col-9">
           <div class="rc-bm-title text-ellipsis">
             <a href={this.props.url} target="_blank" rel="noopener">
-              this.props.title
+              { this.props.title }
             </a>
           </div>
           <div class="rc-bm-details">
             <time>
-              { this.props.created }
+              { this.props.created.toString() }
             </time>
             •
             <Link to={"/bookmarks/" + this.props.id}>
