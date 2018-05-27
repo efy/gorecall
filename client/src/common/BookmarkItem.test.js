@@ -14,3 +14,8 @@ it('displays the time relative to today', () => {
   const wrapper = shallow(<BookmarkItem created={time} />)
   expect(wrapper.find('time').text()).toBe('2 days ago')
 })
+
+it('displays a placeholder favicon', () => {
+  const wrapper = shallow(<BookmarkItem />)
+  expect(wrapper.find('img').props().src).toContain('placeholder_favicon')
+})
