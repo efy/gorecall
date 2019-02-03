@@ -1,0 +1,32 @@
+module github.com/efy/gorecall
+
+require (
+	github.com/PuerkitoBio/goquery v1.1.0
+	github.com/andybalholm/cascadia v0.0.0-20161224141413-349dd0209470
+	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
+	github.com/blevesearch/bleve v0.0.0-20170912131015-6eea5b78da00
+	github.com/blevesearch/go-porterstemmer v1.0.1
+	github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f
+	github.com/boltdb/bolt v1.3.1
+	github.com/dgrijalva/jwt-go v3.1.0+incompatible
+	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/efy/bookmark v0.0.0-20171221014851-b7d81b93b689
+	github.com/golang/protobuf v0.0.0-20171113180720-1e59b77b52bf
+	github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f
+	github.com/gorilla/handlers v1.3.0
+	github.com/gorilla/mux v1.6.0
+	github.com/gorilla/schema v0.0.0-20171101174852-e6c82218a8b3
+	github.com/gorilla/securecookie v0.0.0-20160422134519-667fe4e3466a
+	github.com/gorilla/sessions v0.0.0-20160922145804-ca9ada445741
+	github.com/jmoiron/sqlx v0.0.0-20171020205521-3379e5993990
+	github.com/justinas/alice v0.0.0-20171023064455-03f45bd4b7da
+	github.com/k3a/html2text v0.0.0-20170506151237-a2eb2347b62d
+	github.com/lib/pq v0.0.0-20171126050459-83612a56d3dd
+	github.com/mattn/go-sqlite3 v1.4.0
+	github.com/namsral/flag v1.7.4-pre
+	github.com/steveyen/gtreap v0.0.0-20150807155958-0abe01ef9be2
+	golang.org/x/crypto v0.0.0-20171127230003-365904b0f315
+	golang.org/x/net v0.0.0-20171128024222-fc492d2e1069
+	golang.org/x/sys v0.0.0-20171130163741-8b4580aae2a0
+	gopkg.in/d4l3k/messagediff.v1 v1.1.0
+)

@@ -1,18 +1,28 @@
-FROM golang:1.9.2
+# Golang build
+FROM golang:1.11 as server_builder
+COPY . /usr/src/go
+WORKDIR /usr/src/go
 
-# Ensure go bin directory exists
-RUN mkdir -p /go/bin
+RUN GOOS=linux GOARCH=amd64 go build -o recall main.go
 
-# Make and set the working directory
-RUN mkdir -p /go/src/app
-WORKDIR /go/src/app
+# Web client build env
+FROM node:9.6.1 as client_builder
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+COPY ./client/package.json /usr/src/app/package.json
+RUN npm install --silent
+RUN npm install react-scripts@1.1.1 -g --silent
+COPY ./client /usr/src/app
+RUN npm run build
 
-# Add app source to working directory
-ADD . /go/src/app
+# Prod env
+FROM alpine:3.7
 
-# Fetch dependencies
-RUN go get -u github.com/golang/dep/...
-RUN dep ensure
+# Add certificates
+RUN apk add --no-cache ca-certificates
 
-# Build the app
-RUN go build -o /go/bin/recall /go/src/app/main.go
+COPY --from=client_builder /usr/src/app/build /usr/share/recall-client
+COPY --from=server_builder /usr/src/go/recall /usr/bin/recall
+EXPOSE 8080
+CMD ["/usr/bin/recall", "serve"]
