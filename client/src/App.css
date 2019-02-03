@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,700');
+
+body {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 16px;
+}
+
 .app {
   width: 100vw;
   height: 100vh;

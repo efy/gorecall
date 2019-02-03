@@ -1,0 +1,36 @@
+.bookmark-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.rc-bookmark {
+  padding: 4px 0;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+}
+
+.rc-bm-favicon {
+  padding: 0 8px;
+}
+
+.rc-bm-title a {
+  text-decoration: none;
+  color: #1d1123;
+  font-weight: bold;
+}
+
+.rc-bm-title a:hover {
+  opacity: .9;
+}
+
+.rc-bm-details {
+  font-size: 12px;
+}
+
+.bookmark-item-actions {
+  margin-left: auto;
+  text-align: right;
+}
