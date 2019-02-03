@@ -1,0 +1,17 @@
+steps:
+# Test client code
+- name: 'gcr.io/cloud-builders/npm'
+  args: [ '--prefix', 'client', 'install' ]
+
+- name: 'gcr.io/cloud-builders/npm'
+  args: [ 'run', '--prefix', 'client', 'test' ]
+  env:
+  - 'CI=true'
+
+# Build the deployable artifact
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/recall:da.$SHORT_SHA.$BUILD_ID', '.' ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ["push", "gcr.io/$PROJECT_ID/recall:da.$SHORT_SHA.$BUILD_ID"]
+
